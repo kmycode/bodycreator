@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer } from 'electron';
+import { electronAPI } from '@electron-toolkit/preload';
 
 const mainWindow = {
   maximize: async () => ipcRenderer.invoke('window.maximize'),
@@ -10,9 +10,13 @@ const mainWindow = {
 
 // Custom APIs for renderer
 const db = {
-  createDb: async () => ipcRenderer.invoke('createDb'),    //データベース作成
-  selectAll: async () => ipcRenderer.invoke('selectAll'),  //SELECT *
-  insertData: async (memoText) => ipcRenderer.invoke('insertData', memoText), //データを挿入
+  query: async (sql) => ipcRenderer.invoke('database.query', sql),
+  queryToArray: async (sql) => ipcRenderer.invoke('database.queryToArray', sql),
+  queryToOneObject: async (sql) => ipcRenderer.invoke('database.queryToOneObject', sql),
+};
+
+const file = {
+  delete: async (path) => ipcRenderer.invoke('file.delete', path),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
@@ -23,12 +27,13 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI);
     contextBridge.exposeInMainWorld('mainWindow', mainWindow);
     contextBridge.exposeInMainWorld('db', db);
+    contextBridge.exposeInMainWorld('file', file);
   } catch (error) {
     console.error(error);
   }
 } else {
   // @ts-ignore (define in dts)
-  window.electron = electronAPI
+  window.electron = electronAPI;
   // @ts-ignore (define in dts)
-  window.api = api
+  window.api = api;
 }

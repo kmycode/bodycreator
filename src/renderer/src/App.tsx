@@ -1,23 +1,49 @@
+import { useEffect } from 'react';
 import AppLogo from './components/generic/AppLogo';
-import EditPane from './components/layout/EditPane';
-import ImageListView from './components/layout/ImageListView';
-import SearchPane from './components/layout/SearchPane';
+import { ModalRoot } from './components/layout/ModalRoot';
+//import SearchPane from './components/layout/SearchPane';
 import WindowHeader from './components/layout/WindowHeader';
+import { WindowTabContainer } from './components/layout/WindowTabContainer';
+import { setInitialLoadStatus } from './models/entities/app_system';
+import { useAppDispatch, useAppSelector } from './models/store';
+import { loadDatabase } from './models/utils/databaseinitializer';
 
 function App(): React.JSX.Element {
-  window.db.createDb();
+  const loadStatus = useAppSelector((state) => state.system.initialLoadStatus);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (loadStatus === 'notyet') {
+      dispatch(setInitialLoadStatus({ status: 'loading' }));
+      loadDatabase(dispatch)
+        .then(() => {
+          dispatch(setInitialLoadStatus({ status: 'loaded' }));
+        })
+        .catch((err) => {
+          console.error(err);
+          dispatch(setInitialLoadStatus({ status: 'error' }));
+        });
+    }
+  }, [loadStatus, dispatch]);
+
+  if (loadStatus !== 'loaded') {
+    return (
+      <div id="app-loading">
+        <div>ロード中です。しばらくお待ちください...</div>
+      </div>
+    );
+  }
 
   return (
-    <div id='windowframe'>
-      <WindowHeader/>
-      <div id='app'>
-        <AppLogo/>
-        <SearchPane/>
-        <ImageListView/>
-        <EditPane/>
+    <div id="windowframe">
+      <WindowHeader />
+      <div id="app">
+        <AppLogo />
+        <WindowTabContainer />
       </div>
+      <ModalRoot />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

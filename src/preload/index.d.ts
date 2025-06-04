@@ -8,13 +8,24 @@ declare global {
     close: () => Promise<void>;
   }
 
+  interface DbApiOptions {
+    destination?: 'app' | 'db';
+  }
+
   interface DbApi {
-    createDb: () => Promise<void>;
+    query: (sql: string, options?: DbApiOptions) => Promise<void>;
+    queryToArray: <T>(sql: string, options?: DbApiOptions) => Promise<T[]>;
+    queryToOneObject: <T>(sql: string, options?: DbApiOptions) => Promise<T>;
+  }
+
+  interface FileApi {
+    delete: (path: string) => Promise<void>;
   }
 
   interface Window {
     electron: ElectronAPI;
     mainWindow: MainWindowApi;
     db: DbApi;
+    file: FileApi;
   }
 }

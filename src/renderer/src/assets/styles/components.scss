@@ -30,11 +30,83 @@
     &.wet.selected {
       color: #88eeee;
     }
+
+    &.tidire.selected {
+      color: #88eeee;
+    }
+
+    &.maki.selected {
+      color: #ee6699;
+    }
+
+    &.saga.selected {
+      color: #cccc66;
+    }
+
+    &.mitsu.selected {
+      color: #44ee44;
+    }
+
+    &.osage.selected {
+      color: #f878f8;
+    }
   }
 }
 
 .icongrouppicker {
   display: inline-block;
+
+  button:hover:not(.enabled) img {
+    filter: invert(67%) sepia(12%) saturate(8%) hue-rotate(36deg) brightness(90%) contrast(85%);
+  }
+
+  button {
+    position: relative;
+    cursor: pointer;
+  }
+
+  &__title-tip {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 14px;
+    text-align: center;
+    overflow: hidden;
+    color: #f0ff24;
+    pointer-events: none;
+
+    button:hover & {
+      display: block;
+    }
+
+    .enabled & {
+      color: #79ffe2;
+    }
+  }
+
+  .reverse {
+    transform: scaleX(-1);
+  }
+}
+
+.evaluation-picker {
+  cursor: pointer;
+
+  img {
+    filter: invert(41%) sepia(38%) saturate(0%) hue-rotate(267deg) brightness(105%) contrast(91%);
+    width: 32px;
+    height: 32px;
+
+    &.fill {
+      filter: invert(84%) sepia(86%) saturate(460%) hue-rotate(360deg) brightness(88%) contrast(98%);
+    }
+  }
+
+  &:hover img:not(.fill) {
+    filter: invert(68%) sepia(20%) saturate(540%) hue-rotate(22deg) brightness(95%) contrast(84%);
+  }
 }
 
 .gesturable-image {
@@ -72,4 +144,49 @@
 
 .tab-contents {
   overflow: auto;
+}
+
+.input-with-selection {
+  button {
+    color: #cccccc;
+    font-size: 14px;
+    height: 28px;
+    padding: 0 16px;
+    background: #555555;
+    margin: 2px 4px;
+    border-radius: 16px;
+
+    &:hover {
+      color: #f0f0f0;
+      background: #777777;
+    }
+  }
+}
+
+.suggestable-text-input {
+  position: relative;
+
+  .suggestion {
+    position: absolute;
+    width: 100%;
+  }
+}
+
+.popup__suggestion {
+  background: #666666;
+  min-width: 100px;
+  max-height: 400px;
+  overflow: auto;
+
+  & &__item {
+    padding: 4px 16px;
+    user-select: none;
+    cursor: pointer;
+    display: block;
+    
+    &.focused, &:hover {
+      background: #3355bb;
+      font-weight: bold;
+    }
+  }
 }

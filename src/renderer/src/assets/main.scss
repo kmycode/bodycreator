@@ -2,6 +2,10 @@
 @use './styles/layout.scss';
 @use './styles/components.scss';
 
+*:not(input):not(textarea) {
+  user-select: none;
+}
+
 img.logo {
   display: none;
 }
@@ -9,11 +13,20 @@ img.logo {
 button {
   background: transparent;
   border: 0;
-  color: #777777;
+  color: #cccccc;
   cursor: pointer;
+  font-size: 16px;
 
   &:hover {
     background: #555555;
+  }
+
+  &.primary {
+    background: #445588;
+
+    &:hover {
+      background: #5566aa;
+    }
   }
 }
 
@@ -28,7 +41,7 @@ button {
   }
 }
 
-input[type=text] {
+input[type='text'] {
   background: black;
   color: white;
   border: 1px solid #6666ff;

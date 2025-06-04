@@ -1,29 +1,48 @@
-import { useAppSelector } from "@renderer/models/store";
-import { WindowTab, WindowTabGroup } from "@renderer/models/entities/window_tab_group";
-import { FunctionComponent } from "react";
-import classNames from "classnames";
+import { useAppDispatch, useAppSelector } from '@renderer/models/store';
+import { switchTab, WindowTab, WindowTabGroup } from '@renderer/models/entities/window_tab_group';
+import classNames from 'classnames';
+import { useCallback } from 'react';
 
-const Tab: FunctionComponent<{
+const Tab: React.FC<{
   tabGroup: WindowTabGroup;
   tab: WindowTab;
-}> = ({ tabGroup, tab }) => {
+  onClick?: (id: number) => void;
+}> = ({ tabGroup, tab, onClick }) => {
+  const handleClick = useCallback(() => {
+    if (!tab.id || !onClick) return;
+
+    onClick(tab.id);
+  }, [tab, onClick]);
+
   return (
-    <div className={classNames({ 'windowheadertab': true, active: tabGroup.activeId === tab.id })}>
+    <button
+      className={classNames({ windowheadertab: true, active: tabGroup.activeId === tab.id })}
+      onClick={handleClick}
+    >
       {tab.title}
-    </div>
+    </button>
   );
-}
+};
 
 function WindowHeader(): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   const tabGroup = useAppSelector((state) => state.windowTabGroup);
 
-  const handleClose = () => window.mainWindow.close();
+  const handleTabClick = useCallback(
+    (id: number) => {
+      dispatch(switchTab({ id }));
+    },
+    [dispatch],
+  );
+
+  const handleClose = (): Promise<void> => window.mainWindow.close();
 
   return (
     <div id="windowheader">
       <div id="windowheader__tabs">
         {tabGroup.tabs.map((tab) => (
-          <Tab key={tab.id} tab={tab} tabGroup={tabGroup}/>
+          <Tab key={tab.id} data-id={tab.id} tab={tab} tabGroup={tabGroup} onClick={handleTabClick} />
         ))}
       </div>
       <div id="windowheader__buttons">
