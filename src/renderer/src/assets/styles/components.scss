@@ -73,3 +73,16 @@
 .tab-contents {
   overflow: auto;
 }
+
+.input-with-selection {
+  button {
+    color: #cccccc;
+    font-size: 16px;
+    height: 32px;
+    padding: 0 16px;
+
+    &:hover {
+      color: #f0f0f0;
+    }
+  }
+}

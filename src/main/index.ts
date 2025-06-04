@@ -52,6 +52,52 @@ app.whenReady().then(() => {
       });
   }));
 
+  ipcMain.handle('database.query', (_ev, sql) =>
+    new Promise((resolve, reject) => {
+      db.run(sql, ex => {
+        if (ex) {
+          reject(ex);
+          return;
+        }
+        resolve(undefined);
+      });
+  }));
+
+  ipcMain.handle('database.queryToArray', (_ev, sql) =>
+    new Promise((resolve, reject) => {
+      db.all(sql, (ex, result) => {
+        if (ex) {
+          reject(ex);
+          return;
+        }
+        resolve(result);
+      });
+  }));
+
+  ipcMain.handle('database.queryToOneObject', (_ev, sql) =>
+    new Promise((resolve, reject) => {
+      db.get(sql, (ex, result) => {
+        if (ex) {
+          reject(ex);
+          return;
+        }
+        resolve(result);
+      });
+  }));
+
+  /*
+    ipcMain.handle('selectAll', (eve) =>
+    new Promise((resolev, reject) => {
+      db.serialize(() => {
+        db.all('SELECT * FROM my_memo', (err, rows) => {
+          if (err) reject(err);
+          resolev(rows);
+        });
+      });
+    })
+  );
+  */
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('net.kmycode.bodycreator')
 

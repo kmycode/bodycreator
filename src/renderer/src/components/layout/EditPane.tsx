@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { VerticalAnglePicker, WearOptionPicker, IconGroupPicker, wearIcons, cubeIcons, faceIcons, lineIcons, sleepIcons, armVerticalIcons, legVerticalIcons, armHorizontalIcons, legHorizontalIcons, hairIcons } from "./pickers";
+import { VerticalAnglePicker, WearOptionPicker, IconGroupPicker, wearIcons, cubeIcons, faceIcons, lineIcons, sleepIcons, armVerticalIcons, legVerticalIcons, armHorizontalIcons, legHorizontalIcons, hairIcons, InputWithPopularSelection, HairTypePicker } from "./pickers";
 import TabHeaderGroup from "../parts/TabHeaderGroup";
 
 const personDataKeys = [
@@ -9,6 +9,7 @@ const personDataKeys = [
   'faceEmotion',
   'hairLength',
   'hairStyle',
+  'hairType',
   'leftArmHorizontal',
   'leftArmVertical',
   'rightArmHorizontal',
@@ -45,6 +46,7 @@ interface PersonData {
   faceEmotion: string;
   hairLength: string;
   hairStyle: string;
+  hairType: string;
   leftArmHorizontal: string;
   leftArmVertical: string;
   rightArmHorizontal: string;
@@ -85,7 +87,7 @@ const PersonEditor: React.FC<{
   onChange?: (data: PersonData, diff: { key: string; value: string; }) => void;
 }> = ({ initialData, onChange }) => {
   const states = personDataKeys.reduce((obj, key) => {
-    const fn = useState(key.endsWith('WearOptions') ? [] : personDataTextInputKeys.includes(key) ? '' : 'unknown');
+    const fn = useState((key.endsWith('WearOptions') || ['hairType'].includes(key)) ? [] : personDataTextInputKeys.includes(key) ? '' : 'unknown');
     obj[key] = { state: fn[0], setState: fn[1], };
     return obj;
   }, {});
@@ -150,9 +152,10 @@ const PersonEditor: React.FC<{
       <h3>髪の長さ</h3>
       <div className="searchpane__row">
         <IconGroupPicker icons={hairIcons} value={states['hairLength'].state} onChange={callbacks['hairLength']}/>
+        <HairTypePicker values={states['hairType'].state} onChangeValues={callbacks['hairType']}/>
       </div>
       <h3>髪型</h3>
-      <input type="text" data-key="hairStyle" value={states['hairStyle'].state} onChange={handleTextInputChange}/>
+      <InputWithPopularSelection value={states['hairStyle'].state} onChange={callbacks['hairStyle']} selection={['ストレート', 'ポニーテール', 'ツインテール']}/>
       <h3>胴体</h3>
       <div className="searchpane__row">
         <VerticalAnglePicker value={states['chestVertical'].state} onChange={callbacks['chestVertical']}/>

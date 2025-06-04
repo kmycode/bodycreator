@@ -9,7 +9,9 @@ declare global {
   }
 
   interface DbApi {
-    createDb: () => Promise<void>;
+    query: (sql: string) => Promise<void>;
+    queryToArray: <T> (sql: string) => Promise<T[]>;
+    queryToOneObject: <T> (sql: string) => Promise<T>;
   }
 
   interface Window {

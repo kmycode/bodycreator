@@ -10,9 +10,9 @@ const mainWindow = {
 
 // Custom APIs for renderer
 const db = {
-  createDb: async () => ipcRenderer.invoke('createDb'),    //データベース作成
-  selectAll: async () => ipcRenderer.invoke('selectAll'),  //SELECT *
-  insertData: async (memoText) => ipcRenderer.invoke('insertData', memoText), //データを挿入
+  query: async (sql) => ipcRenderer.invoke('database.query', sql),
+  queryToArray: async (sql) => ipcRenderer.invoke('database.queryToArray', sql),
+  queryToOneObject: async (sql) => ipcRenderer.invoke('database.queryToOneObject', sql),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

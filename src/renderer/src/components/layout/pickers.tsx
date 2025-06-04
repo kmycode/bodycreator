@@ -1,4 +1,4 @@
-import { ReactClickEvent } from "@renderer/models/types";
+import { ReactClickEvent, ReactTextChangeEvent as ReactInputChangeEvent } from "@renderer/models/types";
 import { useCallback } from "react";
 import classNames from "classnames";
 import FaceFrontIcon from '@renderer/assets/icons/picture/face-front.svg';
@@ -106,6 +106,43 @@ export const WearOptionPicker: React.FC<{
   );
 }
 
+export const HairTypePicker: React.FC<{
+  values?: string[],
+  onChangeValues?: (selectedType: string[]) => void,
+}> = ({ values, onChangeValues }) => {
+  const handleClick = useCallback((ev: ReactClickEvent) => {
+    if (!onChangeValues || !values) return;
+
+    const target = ev.currentTarget;
+    const className = Array.from(target.classList).find((name) => ['tidire', 'maki', 'saga'].includes(name) ? name : false) ?? 'unknown';
+
+    let newValues;
+    if (values.includes(className)) {
+      newValues = values.filter((v) => v !== className);
+    } else {
+      newValues = [...values];
+      newValues.push(className);
+    }
+
+    onChangeValues(newValues);
+  }, [
+    values,
+    onChangeValues,
+  ]);
+
+  return (
+    <>
+      <div className="verticalanglepicker wearoptionpicker">
+        <button className={classNames({ 'tidire': true, 'selected': values?.includes('tidire') })} onClick={handleClick}>ちぢれ</button>
+        <button className={classNames({ 'maki': true, 'selected': values?.includes('maki') })} onClick={handleClick}>巻き</button>
+      </div>
+      <div className="verticalanglepicker wearoptionpicker">
+        <button className={classNames({ 'saga': true, 'selected': values?.includes('saga') })} onClick={handleClick}>逆立ち</button>
+      </div>
+    </>
+  );
+}
+
 export interface IconItem {
   id: string;
   numId: number;
@@ -162,6 +199,43 @@ export const IconGroupPicker: React.FC<{
       ))}
     </div>
   );
+};
+
+export const InputWithPopularSelection: React.FC<{
+  value?: string;
+  selection?: string[];
+  onChange?: (value: string) => void;
+}> = ({ value, selection, onChange }) => {
+
+  const handleChange = useCallback((ev: ReactInputChangeEvent) => {
+    if (!onChange) return;
+
+    const target = ev.currentTarget;
+    const text = target.value;
+
+    onChange(text);
+  }, [onChange]);
+
+  const handleSelectionClick = useCallback((ev: ReactClickEvent) => {
+    if (!onChange) return;
+
+    const target = ev.currentTarget;
+    const text = target.dataset['key'];
+    if (!text) return;
+
+    onChange(text);
+  }, [onChange]);
+
+  return (
+    <div className="input-with-selection">
+      <input type="text" value={value ?? ''} onChange={handleChange}/>
+      <div>
+        {selection?.map((item) => (
+          <button key={item} data-key={item} onClick={handleSelectionClick}>{item}</button>
+        ))}
+      </div>
+    </div>
+  )
 };
 
 export const faceIcons = [
