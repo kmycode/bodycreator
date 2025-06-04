@@ -1,6 +1,6 @@
-import { ReactClickEvent, ReactTextChangeEvent as ReactInputChangeEvent } from "@renderer/models/types";
-import { useCallback } from "react";
-import classNames from "classnames";
+import { ReactClickEvent, ReactTextChangeEvent as ReactInputChangeEvent } from '@renderer/models/types';
+import { useCallback } from 'react';
+import classNames from 'classnames';
 import FaceFrontIcon from '@renderer/assets/icons/picture/face-front.svg';
 import FaceFrontDiagIcon from '@renderer/assets/icons/picture/face-front-d.svg';
 import FaceSideIcon from '@renderer/assets/icons/picture/face-side.svg';
@@ -51,97 +51,131 @@ import HairMiddleIcon from '@renderer/assets/icons/picture/hair-middle.svg';
 import HairLongIcon from '@renderer/assets/icons/picture/hair-long.svg';
 
 export const VerticalAnglePicker: React.FC<{
-  value?: string,
-  onChange?: (selectedType: string) => void,
+  value?: string;
+  onChange?: (selectedType: string) => void;
 }> = ({ value, onChange }) => {
-  const handleClick = useCallback((ev: ReactClickEvent) => {
-    if (!onChange) return;
+  const handleClick = useCallback(
+    (ev: ReactClickEvent) => {
+      if (!onChange) return;
 
-    const target = ev.currentTarget;
-    const className = Array.from(target.classList).find((name) => ['normal', 'high', 'low'].includes(name) ? name : false) ?? 'unknown';
+      const target = ev.currentTarget;
+      const className =
+        Array.from(target.classList).find((name) =>
+          ['normal', 'high', 'low'].includes(name) ? name : false,
+        ) ?? 'unknown';
 
-    onChange(className === value ? 'normal' : className);
-  }, [
-    value,
-    onChange,
-  ]);
+      onChange(className === value ? 'normal' : className);
+    },
+    [value, onChange],
+  );
 
   return (
     <div className="verticalanglepicker">
-      <button className={classNames({ 'high': true, 'selected': value === 'high' })} onClick={handleClick}>フカン</button>
-      <button className={classNames({ 'low': true, 'selected': value === 'low' })} onClick={handleClick}>アオリ</button>
+      <button className={classNames({ high: true, selected: value === 'high' })} onClick={handleClick}>
+        フカン
+      </button>
+      <button className={classNames({ low: true, selected: value === 'low' })} onClick={handleClick}>
+        アオリ
+      </button>
     </div>
   );
-}
+};
 
 export const WearOptionPicker: React.FC<{
-  values?: string[],
-  onChangeValues?: (selectedType: string[]) => void,
+  values?: string[];
+  onChangeValues?: (selectedType: string[]) => void;
 }> = ({ values, onChangeValues }) => {
-  const handleClick = useCallback((ev: ReactClickEvent) => {
-    if (!onChangeValues || !values) return;
+  const handleClick = useCallback(
+    (ev: ReactClickEvent) => {
+      if (!onChangeValues || !values) return;
 
-    const target = ev.currentTarget;
-    const className = Array.from(target.classList).find((name) => ['takeoff', 'wet'].includes(name) ? name : false) ?? 'unknown';
+      const target = ev.currentTarget;
+      const className =
+        Array.from(target.classList).find((name) => (['takeoff', 'wet'].includes(name) ? name : false)) ??
+        'unknown';
 
-    let newValues;
-    if (values.includes(className)) {
-      newValues = values.filter((v) => v !== className);
-    } else {
-      newValues = [...values];
-      newValues.push(className);
-    }
+      let newValues;
+      if (values.includes(className)) {
+        newValues = values.filter((v) => v !== className);
+      } else {
+        newValues = [...values];
+        newValues.push(className);
+      }
 
-    onChangeValues(newValues);
-  }, [
-    values,
-    onChangeValues,
-  ]);
+      onChangeValues(newValues);
+    },
+    [values, onChangeValues],
+  );
 
   return (
     <div className="verticalanglepicker wearoptionpicker">
-      <button className={classNames({ 'takeoff': true, 'selected': values?.includes('takeoff') })} onClick={handleClick}>脱ぐ</button>
-      <button className={classNames({ 'wet': true, 'selected': values?.includes('wet') })} onClick={handleClick}>濡れ</button>
+      <button
+        className={classNames({ takeoff: true, selected: values?.includes('takeoff') })}
+        onClick={handleClick}
+      >
+        脱ぐ
+      </button>
+      <button className={classNames({ wet: true, selected: values?.includes('wet') })} onClick={handleClick}>
+        濡れ
+      </button>
     </div>
   );
-}
+};
 
 export const HairTypePicker: React.FC<{
-  values?: string[],
-  onChangeValues?: (selectedType: string[]) => void,
+  values?: string[];
+  onChangeValues?: (selectedType: string[]) => void;
 }> = ({ values, onChangeValues }) => {
-  const handleClick = useCallback((ev: ReactClickEvent) => {
-    if (!onChangeValues || !values) return;
+  const handleClick = useCallback(
+    (ev: ReactClickEvent) => {
+      if (!onChangeValues || !values) return;
 
-    const target = ev.currentTarget;
-    const className = Array.from(target.classList).find((name) => ['tidire', 'maki', 'saga'].includes(name) ? name : false) ?? 'unknown';
+      const target = ev.currentTarget;
+      const className =
+        Array.from(target.classList).find((name) =>
+          ['tidire', 'maki', 'saga'].includes(name) ? name : false,
+        ) ?? 'unknown';
 
-    let newValues;
-    if (values.includes(className)) {
-      newValues = values.filter((v) => v !== className);
-    } else {
-      newValues = [...values];
-      newValues.push(className);
-    }
+      let newValues;
+      if (values.includes(className)) {
+        newValues = values.filter((v) => v !== className);
+      } else {
+        newValues = [...values];
+        newValues.push(className);
+      }
 
-    onChangeValues(newValues);
-  }, [
-    values,
-    onChangeValues,
-  ]);
+      onChangeValues(newValues);
+    },
+    [values, onChangeValues],
+  );
 
   return (
     <>
       <div className="verticalanglepicker wearoptionpicker">
-        <button className={classNames({ 'tidire': true, 'selected': values?.includes('tidire') })} onClick={handleClick}>ちぢれ</button>
-        <button className={classNames({ 'maki': true, 'selected': values?.includes('maki') })} onClick={handleClick}>巻き</button>
+        <button
+          className={classNames({ tidire: true, selected: values?.includes('tidire') })}
+          onClick={handleClick}
+        >
+          ちぢれ
+        </button>
+        <button
+          className={classNames({ maki: true, selected: values?.includes('maki') })}
+          onClick={handleClick}
+        >
+          巻き
+        </button>
       </div>
       <div className="verticalanglepicker wearoptionpicker">
-        <button className={classNames({ 'saga': true, 'selected': values?.includes('saga') })} onClick={handleClick}>逆立ち</button>
+        <button
+          className={classNames({ saga: true, selected: values?.includes('saga') })}
+          onClick={handleClick}
+        >
+          逆立ち
+        </button>
       </div>
     </>
   );
-}
+};
 
 export interface IconItem {
   id: string;
@@ -158,43 +192,46 @@ export const IconGroupPicker: React.FC<{
 }> = ({ icons, value, values, onChange, onChangeMultiple }) => {
   // const isMultiple = values || onChangeMultiple;
 
-  const handleChange = useCallback((ev: ReactClickEvent) => {
-    if (!onChange && !onChangeMultiple) return;
+  const handleChange = useCallback(
+    (ev: ReactClickEvent) => {
+      if (!onChange && !onChangeMultiple) return;
 
-    const target = ev.currentTarget;
-    const id = target.dataset['id'];
-    if (!id) return;
+      const target = ev.currentTarget;
+      const id = target.dataset['id'];
+      if (!id) return;
 
-    const isChecked = value === id;
+      const isChecked = value === id;
 
-    if (onChange) {
-      onChange(isChecked ? 'unknown' : id);
-    }
-
-    if (values) {
-      let newValues;
-
-      if (values.includes(id)) {
-        newValues = values.filter((v) => v !== id);
-      } else {
-        newValues = [...values];
-        newValues.push(id);
+      if (onChange) {
+        onChange(isChecked ? 'unknown' : id);
       }
 
-      if (onChangeMultiple) {
-        onChangeMultiple(newValues);
+      if (values) {
+        let newValues;
+
+        if (values.includes(id)) {
+          newValues = values.filter((v) => v !== id);
+        } else {
+          newValues = [...values];
+          newValues.push(id);
+        }
+
+        if (onChangeMultiple) {
+          onChangeMultiple(newValues);
+        }
       }
-    }
-  }, [
-    value,
-    onChange,
-  ]);
+    },
+    [value, onChange],
+  );
 
   return (
     <div className="icongrouppicker">
       {icons.map((icon) => (
         <button key={icon.id} data-id={icon.id} onClick={handleChange} className="svgbutton">
-          <img src={icon.svg} className={classNames({ 'svgicon': true, 'enabled': value === icon.id || values?.includes(icon.id), })}/>
+          <img
+            src={icon.svg}
+            className={classNames({ svgicon: true, enabled: value === icon.id || values?.includes(icon.id) })}
+          />
         </button>
       ))}
     </div>
@@ -206,112 +243,119 @@ export const InputWithPopularSelection: React.FC<{
   selection?: string[];
   onChange?: (value: string) => void;
 }> = ({ value, selection, onChange }) => {
+  const handleChange = useCallback(
+    (ev: ReactInputChangeEvent) => {
+      if (!onChange) return;
 
-  const handleChange = useCallback((ev: ReactInputChangeEvent) => {
-    if (!onChange) return;
+      const target = ev.currentTarget;
+      const text = target.value;
 
-    const target = ev.currentTarget;
-    const text = target.value;
+      onChange(text);
+    },
+    [onChange],
+  );
 
-    onChange(text);
-  }, [onChange]);
+  const handleSelectionClick = useCallback(
+    (ev: ReactClickEvent) => {
+      if (!onChange) return;
 
-  const handleSelectionClick = useCallback((ev: ReactClickEvent) => {
-    if (!onChange) return;
+      const target = ev.currentTarget;
+      const text = target.dataset['key'];
+      if (!text) return;
 
-    const target = ev.currentTarget;
-    const text = target.dataset['key'];
-    if (!text) return;
-
-    onChange(text);
-  }, [onChange]);
+      onChange(text);
+    },
+    [onChange],
+  );
 
   return (
     <div className="input-with-selection">
-      <input type="text" value={value ?? ''} onChange={handleChange}/>
+      <input type="text" value={value ?? ''} onChange={handleChange} />
       <div>
         {selection?.map((item) => (
-          <button key={item} data-key={item} onClick={handleSelectionClick}>{item}</button>
+          <button key={item} data-key={item} onClick={handleSelectionClick}>
+            {item}
+          </button>
         ))}
       </div>
     </div>
-  )
+  );
 };
 
 export const faceIcons = [
-  { id: 'face-front',   numId: 1, svg: FaceFrontIcon, },
-  { id: 'face-front-d', numId: 2, svg: FaceFrontDiagIcon, },
-  { id: 'face-side',    numId: 3, svg: FaceSideIcon, },
-  { id: 'face-back-d',  numId: 4, svg: FaceBackDiagIcon, },
-  { id: 'face-back',    numId: 5, svg: FaceBackIcon, },
+  { id: 'face-front', numId: 1, svg: FaceFrontIcon },
+  { id: 'face-front-d', numId: 2, svg: FaceFrontDiagIcon },
+  { id: 'face-side', numId: 3, svg: FaceSideIcon },
+  { id: 'face-back-d', numId: 4, svg: FaceBackDiagIcon },
+  { id: 'face-back', numId: 5, svg: FaceBackIcon },
 ];
 
 export const armHorizontalIcons = [
-  { id: 'arm-h-front',   numId: 1, svg: ArmHorizontalFrontIcon, },
-  { id: 'arm-h-front-d', numId: 2, svg: ArmHorizontalFrontDiagIcon, },
-  { id: 'arm-h-under',   numId: 3, svg: ArmHorizontalUnderIcon, },
-  { id: 'arm-h-under-d', numId: 4, svg: ArmHorizontalUnderDiagIcon, },
-  { id: 'arm-h-side',    numId: 5, svg: ArmHorizontalSideIcon, },
-  { id: 'arm-h-up-d',    numId: 6, svg: ArmHorizontalUpDiagIcon, },
-  { id: 'arm-h-up',      numId: 7, svg: ArmHorizontalUpIcon, },
+  { id: 'arm-h-front', numId: 1, svg: ArmHorizontalFrontIcon },
+  { id: 'arm-h-front-d', numId: 2, svg: ArmHorizontalFrontDiagIcon },
+  { id: 'arm-h-under', numId: 3, svg: ArmHorizontalUnderIcon },
+  { id: 'arm-h-under-d', numId: 4, svg: ArmHorizontalUnderDiagIcon },
+  { id: 'arm-h-side', numId: 5, svg: ArmHorizontalSideIcon },
+  { id: 'arm-h-up-d', numId: 6, svg: ArmHorizontalUpDiagIcon },
+  { id: 'arm-h-up', numId: 7, svg: ArmHorizontalUpIcon },
 ];
 
 export const armVerticalIcons = [
-  { id: 'arm-v-back-d',    numId: 1, svg: ArmVerticalBackDiagIcon, },
-  { id: 'arm-v-side',      numId: 2, svg: ArmVerticalSideIcon, },
-  { id: 'arm-v-front-u-d', numId: 3, svg: ArmVerticalFrontUnderDiagIcon, },
-  { id: 'arm-v-front',     numId: 4, svg: ArmVerticalFrontIcon, },
-  { id: 'arm-v-front-d',   numId: 5, svg: ArmVerticalFrontDiagIcon, },
-  { id: 'arm-v-up',        numId: 6, svg: ArmVerticalUpIcon, },
+  { id: 'arm-v-back-d', numId: 1, svg: ArmVerticalBackDiagIcon },
+  { id: 'arm-v-side', numId: 2, svg: ArmVerticalSideIcon },
+  { id: 'arm-v-front-u-d', numId: 3, svg: ArmVerticalFrontUnderDiagIcon },
+  { id: 'arm-v-front', numId: 4, svg: ArmVerticalFrontIcon },
+  { id: 'arm-v-front-d', numId: 5, svg: ArmVerticalFrontDiagIcon },
+  { id: 'arm-v-up', numId: 6, svg: ArmVerticalUpIcon },
 ];
 
 export const legHorizontalIcons = [
-  { id: 'leg-h-reverse-d', numId: 1, svg: LegHorizontalReverseDiagIcon, },
-  { id: 'leg-h-under',     numId: 2, svg: LegHorizontalUnderIcon, },
-  { id: 'leg-h-u-d',       numId: 3, svg: LegHorizontalUnderDiagIcon, },
-  { id: 'leg-h-side',      numId: 4, svg: LegHorizontalSideIcon, },
+  { id: 'leg-h-reverse-d', numId: 1, svg: LegHorizontalReverseDiagIcon },
+  { id: 'leg-h-under', numId: 2, svg: LegHorizontalUnderIcon },
+  { id: 'leg-h-u-d', numId: 3, svg: LegHorizontalUnderDiagIcon },
+  { id: 'leg-h-side', numId: 4, svg: LegHorizontalSideIcon },
 ];
 
 export const legVerticalIcons = [
-  { id: 'leg-v-under', numId: 1, svg: LegVerticalUnderIcon, },
-  { id: 'leg-v-u-d',   numId: 2, svg: LegVerticalUnderDiagIcon, },
-  { id: 'leg-v-side',  numId: 3, svg: LegVerticalSideIcon, },
-  { id: 'leg-v-t-d',   numId: 4, svg: LegVerticalTopDiagIcon, },
-  { id: 'leg-v-top',   numId: 5, svg: LegVerticalTopIcon, },
+  { id: 'leg-v-under', numId: 1, svg: LegVerticalUnderIcon },
+  { id: 'leg-v-u-d', numId: 2, svg: LegVerticalUnderDiagIcon },
+  { id: 'leg-v-side', numId: 3, svg: LegVerticalSideIcon },
+  { id: 'leg-v-t-d', numId: 4, svg: LegVerticalTopDiagIcon },
+  { id: 'leg-v-top', numId: 5, svg: LegVerticalTopIcon },
 ];
 
 export const sleepIcons = [
-  { id: 'sleep-top',   numId: 1, svg: SleepTopIcon, },
-  { id: 'sleep-side',  numId: 2, svg: SleepSideIcon, },
-  { id: 'sleep-under', numId: 3, svg: SleepUnderIcon, },
+  { id: 'sleep-top', numId: 1, svg: SleepTopIcon },
+  { id: 'sleep-side', numId: 2, svg: SleepSideIcon },
+  { id: 'sleep-under', numId: 3, svg: SleepUnderIcon },
 ];
 
 export const cubeIcons = [
-  { id: 'cube-front',   numId: 1, svg: CubeFrontIcon, },
-  { id: 'cube-front-d', numId: 2, svg: CubeFrontDiagIcon, },
-  { id: 'cube-side',    numId: 3, svg: CubeSideIcon, },
-  { id: 'cube-back-d',  numId: 4, svg: CubeBackDiagIcon, },
-  { id: 'cube-back',    numId: 5, svg: CubeBackIcon, },
+  { id: 'cube-front', numId: 1, svg: CubeFrontIcon },
+  { id: 'cube-front-d', numId: 2, svg: CubeFrontDiagIcon },
+  { id: 'cube-side', numId: 3, svg: CubeSideIcon },
+  { id: 'cube-back-d', numId: 4, svg: CubeBackDiagIcon },
+  { id: 'cube-back', numId: 5, svg: CubeBackIcon },
 ];
 
 export const lineIcons = [
-  { id: 'line-straight', numId: 1, svg: LineStraightIcon, },
-  { id: 'line-u-d',      numId: 2, svg: LineUnderDiagIcon, },
-  { id: 'line-side',     numId: 3, svg: LineSideIcon, },
-  { id: 'line-t-d',      numId: 4, svg: LineTopDiagIcon, },
-  { id: 'line-top',      numId: 5, svg: LineTopIcon, },
+  { id: 'line-straight', numId: 1, svg: LineStraightIcon },
+  { id: 'line-u-d', numId: 2, svg: LineUnderDiagIcon },
+  { id: 'line-side', numId: 3, svg: LineSideIcon },
+  { id: 'line-t-d', numId: 4, svg: LineTopDiagIcon },
+  { id: 'line-top', numId: 5, svg: LineTopIcon },
 ];
 
 export const wearIcons = [
-  { id: 'wear-none',   numId: 1, svg: WearNoneIcon, },
-  { id: 'wear-half-1', numId: 2, svg: WearHalf1Icon, },
-  { id: 'wear-half-2', numId: 3, svg: WearHalf2Icon, },
-  { id: 'wear-1',      numId: 4, svg: Wear1Icon, },
-  { id: 'wear-2',      numId: 5, svg: Wear2Icon, },
+  { id: 'wear-none', numId: 1, svg: WearNoneIcon },
+  { id: 'wear-half-1', numId: 2, svg: WearHalf1Icon },
+  { id: 'wear-half-2', numId: 3, svg: WearHalf2Icon },
+  { id: 'wear-1', numId: 4, svg: Wear1Icon },
+  { id: 'wear-2', numId: 5, svg: Wear2Icon },
 ];
 
 export const hairIcons = [
-  { id: 'hair-short',  numId: 1, svg: HairShortIcon, },
-  { id: 'hair-middle', numId: 2, svg: HairMiddleIcon, },
-  { id: 'hair-long',   numId: 3, svg: HairLongIcon, },
-]
+  { id: 'hair-short', numId: 1, svg: HairShortIcon },
+  { id: 'hair-middle', numId: 2, svg: HairMiddleIcon },
+  { id: 'hair-long', numId: 3, svg: HairLongIcon },
+];

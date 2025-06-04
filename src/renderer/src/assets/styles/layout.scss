@@ -87,7 +87,8 @@ body {
   height: calc(100% - 40px);
 }
 
-.searchpane, .editpane {
+.searchpane,
+.editpane {
   &__row {
     display: flex;
   }

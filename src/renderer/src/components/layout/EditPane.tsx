@@ -1,6 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
-import { VerticalAnglePicker, WearOptionPicker, IconGroupPicker, wearIcons, cubeIcons, faceIcons, lineIcons, sleepIcons, armVerticalIcons, legVerticalIcons, armHorizontalIcons, legHorizontalIcons, hairIcons, InputWithPopularSelection, HairTypePicker } from "./pickers";
-import TabHeaderGroup from "../parts/TabHeaderGroup";
+import { useCallback, useEffect, useState } from 'react';
+import {
+  VerticalAnglePicker,
+  WearOptionPicker,
+  IconGroupPicker,
+  wearIcons,
+  cubeIcons,
+  faceIcons,
+  lineIcons,
+  sleepIcons,
+  armVerticalIcons,
+  legVerticalIcons,
+  armHorizontalIcons,
+  legHorizontalIcons,
+  hairIcons,
+  InputWithPopularSelection,
+  HairTypePicker,
+} from './pickers';
+import TabHeaderGroup from '../parts/TabHeaderGroup';
 
 const personDataKeys = [
   'name',
@@ -76,39 +92,41 @@ interface PersonData {
   rightLegWearOptions: string[];
 }
 
-const personDataTextInputKeys = [
-  'name',
-  'faceEmotion',
-  'hairStyle',
-];
+const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle'];
 
 const PersonEditor: React.FC<{
   initialData?: Partial<PersonData>;
-  onChange?: (data: PersonData, diff: { key: string; value: string; }) => void;
+  onChange?: (data: PersonData, diff: { key: string; value: string }) => void;
 }> = ({ initialData, onChange }) => {
   const states = personDataKeys.reduce((obj, key) => {
-    const fn = useState((key.endsWith('WearOptions') || ['hairType'].includes(key)) ? [] : personDataTextInputKeys.includes(key) ? '' : 'unknown');
-    obj[key] = { state: fn[0], setState: fn[1], };
+    const fn = useState(
+      key.endsWith('WearOptions') || ['hairType'].includes(key)
+        ? []
+        : personDataTextInputKeys.includes(key)
+          ? ''
+          : 'unknown',
+    );
+    obj[key] = { state: fn[0], setState: fn[1] };
     return obj;
   }, {});
 
   const callbacks = personDataKeys.reduce((obj, key) => {
-    const state = states[key] as { state: any, setState: any, };
+    const state = states[key] as { state: any; setState: any };
     if (!state) return obj;
 
     obj[key] = (value: any) => {
       state.setState(value);
 
-      const data = Object.entries<{ state: any, setState: any }>(states).reduce((obj, entry) => {
+      const data = Object.entries<{ state: any; setState: any }>(states).reduce((obj, entry) => {
         const key = entry[0];
         const value = entry[1].state;
         obj[key] = value;
         return obj;
       }, {});
       data[key] = value;
-      
+
       if (onChange) {
-        onChange(data as PersonData, { key, value, });
+        onChange(data as PersonData, { key, value });
       }
     };
     return obj;
@@ -121,7 +139,7 @@ const PersonEditor: React.FC<{
       const state = states[key];
       const data = initialData[key];
 
-      if (!state || typeof(data) === 'undefined') continue;
+      if (!state || typeof data === 'undefined') continue;
 
       state.setState(data);
     }
@@ -141,117 +159,224 @@ const PersonEditor: React.FC<{
   return (
     <div>
       <h3>名前</h3>
-      <input type="text" data-key="name" value={states['name'].state} onChange={handleTextInputChange}/>
+      <input type="text" data-key="name" value={states['name'].state} onChange={handleTextInputChange} />
       <h3>顔</h3>
       <div className="searchpane__row">
-        <VerticalAnglePicker value={states['faceVertical'].state} onChange={callbacks['faceVertical']}/>
-        <IconGroupPicker icons={faceIcons} value={states['faceHorizontal'].state} onChange={callbacks['faceHorizontal']}/>
+        <VerticalAnglePicker value={states['faceVertical'].state} onChange={callbacks['faceVertical']} />
+        <IconGroupPicker
+          icons={faceIcons}
+          value={states['faceHorizontal'].state}
+          onChange={callbacks['faceHorizontal']}
+        />
       </div>
       <h3>表情</h3>
-      <input type="text" data-key="faceEmotion" value={states['faceEmotion'].state} onChange={handleTextInputChange}/>
+      <input
+        type="text"
+        data-key="faceEmotion"
+        value={states['faceEmotion'].state}
+        onChange={handleTextInputChange}
+      />
       <h3>髪の長さ</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={hairIcons} value={states['hairLength'].state} onChange={callbacks['hairLength']}/>
-        <HairTypePicker values={states['hairType'].state} onChangeValues={callbacks['hairType']}/>
+        <IconGroupPicker
+          icons={hairIcons}
+          value={states['hairLength'].state}
+          onChange={callbacks['hairLength']}
+        />
+        <HairTypePicker values={states['hairType'].state} onChangeValues={callbacks['hairType']} />
       </div>
       <h3>髪型</h3>
-      <InputWithPopularSelection value={states['hairStyle'].state} onChange={callbacks['hairStyle']} selection={['ストレート', 'ポニーテール', 'ツインテール']}/>
+      <InputWithPopularSelection
+        value={states['hairStyle'].state}
+        onChange={callbacks['hairStyle']}
+        selection={['ストレート', 'ポニーテール', 'ツインテール']}
+      />
       <h3>胴体</h3>
       <div className="searchpane__row">
-        <VerticalAnglePicker value={states['chestVertical'].state} onChange={callbacks['chestVertical']}/>
-        <IconGroupPicker icons={cubeIcons} value={states['chestHorizontal'].state} onChange={callbacks['chestHorizontal']}/>
+        <VerticalAnglePicker value={states['chestVertical'].state} onChange={callbacks['chestVertical']} />
+        <IconGroupPicker
+          icons={cubeIcons}
+          value={states['chestHorizontal'].state}
+          onChange={callbacks['chestHorizontal']}
+        />
       </div>
       <h3>胸</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={states['bodyWear'].state} onChange={callbacks['bodyWear']}/>
-        <WearOptionPicker values={states['bodyWearOptions'].state} onChangeValues={callbacks['bodyWearOptions']}/>
+        <IconGroupPicker
+          icons={wearIcons}
+          value={states['bodyWear'].state}
+          onChange={callbacks['bodyWear']}
+        />
+        <WearOptionPicker
+          values={states['bodyWearOptions'].state}
+          onChangeValues={callbacks['bodyWearOptions']}
+        />
       </div>
       <h3>腰</h3>
       <div className="searchpane__row">
-        <VerticalAnglePicker value={states['waistVertical'].state} onChange={callbacks['waistVertical']}/>
-        <IconGroupPicker icons={cubeIcons} value={states['waistHorizontal'].state} onChange={callbacks['waistHorizontal']}/>
+        <VerticalAnglePicker value={states['waistVertical'].state} onChange={callbacks['waistVertical']} />
+        <IconGroupPicker
+          icons={cubeIcons}
+          value={states['waistHorizontal'].state}
+          onChange={callbacks['waistHorizontal']}
+        />
       </div>
       <h3>左腕</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={armHorizontalIcons} value={states['leftArmHorizontal'].state} onChange={callbacks['leftArmHorizontal']}/>
+        <IconGroupPicker
+          icons={armHorizontalIcons}
+          value={states['leftArmHorizontal'].state}
+          onChange={callbacks['leftArmHorizontal']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={armVerticalIcons} value={states['leftArmVertical'].state} onChange={callbacks['leftArmVertical']}/>
+        <IconGroupPicker
+          icons={armVerticalIcons}
+          value={states['leftArmVertical'].state}
+          onChange={callbacks['leftArmVertical']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={states['leftElbow'].state} onChange={callbacks['leftElbow']}/>
+        <IconGroupPicker
+          icons={lineIcons}
+          value={states['leftElbow'].state}
+          onChange={callbacks['leftElbow']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={states['leftArmWear'].state} onChange={callbacks['leftArmWear']}/>
-        <WearOptionPicker values={states['leftArmWearOptions'].state} onChangeValues={callbacks['leftArmWearOptions']}/>
+        <IconGroupPicker
+          icons={wearIcons}
+          value={states['leftArmWear'].state}
+          onChange={callbacks['leftArmWear']}
+        />
+        <WearOptionPicker
+          values={states['leftArmWearOptions'].state}
+          onChangeValues={callbacks['leftArmWearOptions']}
+        />
       </div>
       <h3>右腕</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={armHorizontalIcons} value={states['rightArmHorizontal'].state} onChange={callbacks['rightArmHorizontal']}/>
+        <IconGroupPicker
+          icons={armHorizontalIcons}
+          value={states['rightArmHorizontal'].state}
+          onChange={callbacks['rightArmHorizontal']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={armVerticalIcons} value={states['rightArmVertical'].state} onChange={callbacks['rightArmVertical']}/>
+        <IconGroupPicker
+          icons={armVerticalIcons}
+          value={states['rightArmVertical'].state}
+          onChange={callbacks['rightArmVertical']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={states['rightElbow'].state} onChange={callbacks['rightElbow']}/>
+        <IconGroupPicker
+          icons={lineIcons}
+          value={states['rightElbow'].state}
+          onChange={callbacks['rightElbow']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={states['rightArmWear'].state} onChange={callbacks['rightArmWear']}/>
-        <WearOptionPicker values={states['rightArmWearOptions'].state} onChangeValues={callbacks['rightArmWearOptions']}/>
+        <IconGroupPicker
+          icons={wearIcons}
+          value={states['rightArmWear'].state}
+          onChange={callbacks['rightArmWear']}
+        />
+        <WearOptionPicker
+          values={states['rightArmWearOptions'].state}
+          onChangeValues={callbacks['rightArmWearOptions']}
+        />
       </div>
       <h3>左脚</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={legHorizontalIcons} value={states['leftLegHorizontal'].state} onChange={callbacks['leftLegHorizontal']}/>
+        <IconGroupPicker
+          icons={legHorizontalIcons}
+          value={states['leftLegHorizontal'].state}
+          onChange={callbacks['leftLegHorizontal']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={legVerticalIcons} value={states['leftLegVertical'].state} onChange={callbacks['leftLegVertical']}/>
+        <IconGroupPicker
+          icons={legVerticalIcons}
+          value={states['leftLegVertical'].state}
+          onChange={callbacks['leftLegVertical']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={states['leftLegWear'].state} onChange={callbacks['leftLegWear']}/>
-        <WearOptionPicker values={states['leftLegWearOptions'].state} onChangeValues={callbacks['leftLegWearOptions']}/>
+        <IconGroupPicker
+          icons={wearIcons}
+          value={states['leftLegWear'].state}
+          onChange={callbacks['leftLegWear']}
+        />
+        <WearOptionPicker
+          values={states['leftLegWearOptions'].state}
+          onChangeValues={callbacks['leftLegWearOptions']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={states['leftKnee'].state} onChange={callbacks['leftKnee']}/>
+        <IconGroupPicker
+          icons={lineIcons}
+          value={states['leftKnee'].state}
+          onChange={callbacks['leftKnee']}
+        />
       </div>
       <h3>右脚</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={legHorizontalIcons} value={states['rightLegHorizontal'].state} onChange={callbacks['rightLegHorizontal']}/>
+        <IconGroupPicker
+          icons={legHorizontalIcons}
+          value={states['rightLegHorizontal'].state}
+          onChange={callbacks['rightLegHorizontal']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={legVerticalIcons} value={states['rightLegVertical'].state} onChange={callbacks['rightLegVertical']}/>
+        <IconGroupPicker
+          icons={legVerticalIcons}
+          value={states['rightLegVertical'].state}
+          onChange={callbacks['rightLegVertical']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={states['rightLegWear'].state} onChange={callbacks['rightLegWear']}/>
-        <WearOptionPicker values={states['rightLegWearOptions'].state} onChangeValues={callbacks['rightLegWearOptions']}/>
+        <IconGroupPicker
+          icons={wearIcons}
+          value={states['rightLegWear'].state}
+          onChange={callbacks['rightLegWear']}
+        />
+        <WearOptionPicker
+          values={states['rightLegWearOptions'].state}
+          onChangeValues={callbacks['rightLegWearOptions']}
+        />
       </div>
       <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={states['rightKnee'].state} onChange={callbacks['rightKnee']}/>
+        <IconGroupPicker
+          icons={lineIcons}
+          value={states['rightKnee'].state}
+          onChange={callbacks['rightKnee']}
+        />
       </div>
       <h3>その他</h3>
       <div className="searchpane__row">
-        <IconGroupPicker icons={sleepIcons} value={states['sleep'].state} onChange={callbacks['sleep']}/>
+        <IconGroupPicker icons={sleepIcons} value={states['sleep'].state} onChange={callbacks['sleep']} />
       </div>
     </div>
   );
 };
 
 const initialTabs = [
-  { id: 'person-add', title: '＋', specialTabType: 'new', },
-  { id: 'information', title: '情報', },
+  { id: 'person-add', title: '＋', specialTabType: 'new' },
+  { id: 'information', title: '情報' },
 ];
 
-const EditPane: React.FC<{
-
-}> = ({  }) => {
-
-  const [personTabs, setPersonTabs] = useState([{ id: 'person-1', title: '人間', data: { name: '人間' } as Partial<PersonData> }]);
+const EditPane: React.FC<{}> = ({}) => {
+  const [personTabs, setPersonTabs] = useState([
+    { id: 'person-1', title: '人間', data: { name: '人間' } as Partial<PersonData> },
+  ]);
   const [selectedTabId, setSelectedTabId] = useState('information');
   const [currentTabPersonData, setCurrentTabPersonData] = useState({ name: '人間' } as Partial<PersonData>);
 
   const handleAddTab = useCallback(() => {
     const ids = personTabs
       .map((tab) => parseInt(tab.id.split('-')[1]))
-      .sort((a, b) => a > b ? -1 : a === b ? 0 : 1);
+      .sort((a, b) => (a > b ? -1 : a === b ? 0 : 1));
     const maxId = ids[0] ?? 0;
 
     const newTabs = [...personTabs];
@@ -274,39 +399,52 @@ const EditPane: React.FC<{
     setSelectedTabId(newTabs[0]?.id ?? 'information');
   }, [selectedTabId, setPersonTabs, personTabs, setSelectedTabId]);
 
-  const handleTabChange = useCallback((value: string) => {
-    if (value === 'person-add') {
-      handleAddTab();
-      return;
-    }
+  const handleTabChange = useCallback(
+    (value: string) => {
+      if (value === 'person-add') {
+        handleAddTab();
+        return;
+      }
 
-    if (selectedTabId.startsWith('person-')) {
-      const currentTab = personTabs.find((tab) => tab.id === selectedTabId);
-      if (currentTab) {
-        currentTab.data = currentTabPersonData;
+      if (selectedTabId.startsWith('person-')) {
+        const currentTab = personTabs.find((tab) => tab.id === selectedTabId);
+        if (currentTab) {
+          currentTab.data = currentTabPersonData;
+          setPersonTabs([...personTabs]);
+        }
+
+        const newTab = personTabs.find((tab) => tab.id === value);
+        if (newTab) {
+          setCurrentTabPersonData(newTab.data ?? {});
+        }
+      }
+
+      setSelectedTabId(value);
+    },
+    [
+      selectedTabId,
+      setSelectedTabId,
+      personTabs,
+      setPersonTabs,
+      currentTabPersonData,
+      setCurrentTabPersonData,
+    ],
+  );
+
+  const handlePersonChange = useCallback(
+    (value: PersonData, diff: { key: string; value: any }) => {
+      if (diff.key === 'name') {
+        const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
+        if (!activePersonTab) return;
+
+        activePersonTab.title = diff.value;
         setPersonTabs([...personTabs]);
       }
 
-      const newTab = personTabs.find((tab) => tab.id === value);
-      if (newTab) {
-        setCurrentTabPersonData(newTab.data ?? {});
-      }
-    }
-
-    setSelectedTabId(value);
-  }, [selectedTabId, setSelectedTabId, personTabs, setPersonTabs, currentTabPersonData, setCurrentTabPersonData]);
-
-  const handlePersonChange = useCallback((value: PersonData, diff: { key: string; value: any; }) => {
-    if (diff.key === 'name') {
-      const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
-      if (!activePersonTab) return;
-
-      activePersonTab.title = diff.value;
-      setPersonTabs([...personTabs]);
-    }
-
-    setCurrentTabPersonData(value);
-  }, [selectedTabId, personTabs, setPersonTabs, setCurrentTabPersonData]);
+      setCurrentTabPersonData(value);
+    },
+    [selectedTabId, personTabs, setPersonTabs, setCurrentTabPersonData],
+  );
 
   const tabs = [...personTabs, ...initialTabs];
 
@@ -314,23 +452,23 @@ const EditPane: React.FC<{
     <div className="editpane pane">
       <h2>編集</h2>
       <div className="pane-contents">
-        <TabHeaderGroup headers={tabs} selectedId={selectedTabId} onChange={handleTabChange}/>
+        <TabHeaderGroup headers={tabs} selectedId={selectedTabId} onChange={handleTabChange} />
         <div className="tab-contents">
           {selectedTabId.startsWith('person-') && (
             <>
               <button onClick={handleRemoveTab}>削除</button>
-              <PersonEditor onChange={handlePersonChange} initialData={currentTabPersonData}/>
+              <PersonEditor onChange={handlePersonChange} initialData={currentTabPersonData} />
             </>
           )}
           {selectedTabId === 'information' && (
             <div>
               <h3>評価</h3>
               <h3>作者名</h3>
-              <input type="text"/>
+              <input type="text" />
               <h3>URL</h3>
-              <input type="text"/>
+              <input type="text" />
               <h3>メモ</h3>
-              <textarea rows={4}/>
+              <textarea rows={4} />
             </div>
           )}
         </div>

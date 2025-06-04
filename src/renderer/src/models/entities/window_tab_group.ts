@@ -22,10 +22,7 @@ export const WindowTabGroupSlice = createSlice({
   name: 'windowTabGroup',
   initialState,
   reducers: {
-    addWindowTab: (
-      state,
-      action: PayloadAction<{ id: number, title: string }>
-    ) => {
+    addWindowTab: (state, action: PayloadAction<{ id: number; title: string }>) => {
       state.tabs.push({
         id: action.payload.id,
         title: action.payload.title,

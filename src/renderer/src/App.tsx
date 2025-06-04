@@ -9,16 +9,16 @@ function App(): React.JSX.Element {
   loadDatabase();
 
   return (
-    <div id='windowframe'>
-      <WindowHeader/>
-      <div id='app'>
-        <AppLogo/>
-        <SearchPane/>
-        <ImageListView/>
-        <EditPane/>
+    <div id="windowframe">
+      <WindowHeader />
+      <div id="app">
+        <AppLogo />
+        <SearchPane />
+        <ImageListView />
+        <EditPane />
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
