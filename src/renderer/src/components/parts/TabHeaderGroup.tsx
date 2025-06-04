@@ -1,0 +1,41 @@
+import { ReactClickEvent } from "@renderer/models/types";
+import classNames from "classnames";
+import { useCallback } from "react";
+
+export interface TabHeaderItem {
+  id: string;
+  title: string;
+  specialTabType?: string;
+}
+
+const TabHeaderGroup: React.FC<{
+  selectedId?: string;
+  headers: TabHeaderItem[];
+  onChange?: (id: string) => void;
+}> = ({ selectedId, headers, onChange }) => {
+
+  const handleClick = useCallback((ev: ReactClickEvent) => {
+    if (!onChange) return;
+
+    const target = ev.currentTarget;
+    const id = target.dataset['id'];
+
+    if (id && selectedId !== id) {
+      onChange(id);
+    }
+  }, [selectedId, onChange]);
+
+  return (
+    <div className="tabheader-group">
+      {headers.map((header) => (
+        <button key={header.id} data-id={header.id}
+                className={classNames({ 'tabheader-tab': true, 'selected': selectedId === header.id, 'tabheader-new': header.specialTabType === 'new', })}
+                onClick={handleClick}>
+          {header.title}
+        </button>
+      ))}
+    </div>
+  )
+};
+
+export default TabHeaderGroup;

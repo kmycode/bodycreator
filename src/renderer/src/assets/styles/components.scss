@@ -1,0 +1,75 @@
+.verticalanglepicker {
+  display: flex;
+  flex-direction: column;
+
+  button {
+    width: 60px;
+    height: 20px;
+    border: 0;
+
+    &.selected {
+      font-weight: bold;
+    }
+
+    &.normal.selected {
+      color: #44ee44;
+    }
+
+    &.high.selected {
+      color: #ee9999;
+    }
+
+    &.low.selected {
+      color: #88eeee;
+    }
+
+    &.takeoff.selected {
+      color: #ee6699;
+    }
+
+    &.wet.selected {
+      color: #88eeee;
+    }
+  }
+}
+
+.icongrouppicker {
+  display: inline-block;
+}
+
+.gesturable-image {
+  overflow: hidden;
+  user-select: none;
+}
+
+.tabheader-group {
+  display: flex;
+  overflow: hidden auto;
+  flex-wrap: wrap;
+  max-height: 300px;
+
+  .tabheader-tab {
+    height: 30px;
+    min-width: 72px;
+    line-height: 30px;
+    padding: 0 16px;
+    border: none;
+    margin-inline-end: 8px;
+    cursor: pointer;
+    background: #111111;
+    color: #cccccc;
+
+    &.selected {
+      background: #666666;
+    }
+
+    &.tabheader-new {
+      min-width: 40px;
+      text-align: center;
+    }
+  }
+}
+
+.tab-contents {
+  overflow: auto;
+}

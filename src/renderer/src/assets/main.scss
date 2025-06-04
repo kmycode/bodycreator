@@ -1,0 +1,47 @@
+@use './base.css';
+@use './styles/layout.scss';
+@use './styles/components.scss';
+
+img.logo {
+  display: none;
+}
+
+button {
+  background: transparent;
+  border: 0;
+  color: #777777;
+  cursor: pointer;
+
+  &:hover {
+    background: #555555;
+  }
+}
+
+.svgicon {
+  // https://codepen.io/sosuke/pen/Pjoqqp
+  filter: invert(36%) sepia(99%) saturate(0%) hue-rotate(300deg) brightness(88%) contrast(89%);
+  width: 40px;
+  height: 40px;
+
+  &.enabled {
+    filter: invert(93%) sepia(24%) saturate(535%) hue-rotate(3deg) brightness(93%) contrast(89%);
+  }
+}
+
+input[type=text] {
+  background: black;
+  color: white;
+  border: 1px solid #6666ff;
+  font-size: 18px;
+  width: 100%;
+  padding: 4px 8px;
+}
+
+textarea {
+  background: black;
+  color: white;
+  border: 1px solid #6666ff;
+  font-size: 18px;
+  width: 100%;
+  padding: 4px 8px;
+}

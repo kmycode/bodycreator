@@ -1,0 +1,106 @@
+body {
+  overflow: hidden;
+}
+
+#windowframe {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 40px);
+}
+
+#windowheader {
+  height: 40px;
+  background: #000000;
+  color: #dedede;
+  display: flex;
+  user-select: none;
+
+  &__tabs {
+    flex: 1;
+    app-region: drag;
+    padding: 6px 24px 0;
+    display: flex;
+
+    .windowheadertab {
+      width: 120px;
+      height: 34px;
+      background: #404040;
+      border-radius: 8px 8px 0 0;
+      font-size: 14px;
+      line-height: 34px;
+      padding: 0 8px;
+      color: #cccccc;
+      margin-inline-end: 6px;
+      cursor: pointer;
+      app-region: no-drag;
+
+      &.active {
+        background: #606060;
+      }
+    }
+  }
+
+  &__buttons button {
+    width: 60px;
+    height: 40px;
+    color: white;
+
+    &:last-child {
+      width: 80px;
+
+      &:hover {
+        background: #cc4444;
+      }
+    }
+  }
+}
+
+.imagelistview {
+  background: #020202;
+  flex: 1;
+  overflow: hidden;
+}
+
+.pane {
+  height: 100%;
+  background: #404040;
+
+  h2 {
+    font-weight: bold;
+    color: #f0f0f0;
+    height: 40px;
+    padding: 0 8px;
+  }
+}
+
+.pane-contents {
+  width: 20vw;
+  min-width: 400px;
+  padding: 16px 8px;
+  overflow: hidden auto;
+  height: calc(100% - 40px);
+}
+
+.searchpane, .editpane {
+  &__row {
+    display: flex;
+  }
+}
+
+.editpane .pane-contents {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .tab-contents {
+    overflow: auto;
+    flex: 1;
+    padding-block-start: 16px;
+  }
+}
