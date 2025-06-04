@@ -3,6 +3,10 @@ import {
   VerticalAnglePicker,
   WearOptionPicker,
   IconGroupPicker,
+  InputWithPopularSelection,
+  HairTypePicker,
+} from './pickers';
+import {
   wearIcons,
   cubeIcons,
   faceIcons,
@@ -13,9 +17,7 @@ import {
   armHorizontalIcons,
   legHorizontalIcons,
   hairIcons,
-  InputWithPopularSelection,
-  HairTypePicker,
-} from './pickers';
+} from './pickertypes';
 import TabHeaderGroup from '../parts/TabHeaderGroup';
 
 const personDataKeys = [
@@ -94,11 +96,15 @@ interface PersonData {
 
 const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle'];
 
+type StateType = string | unknown[];
+type SetStateType = React.Dispatch<React.SetStateAction<string | unknown[]>>;
+
 const PersonEditor: React.FC<{
   initialData?: Partial<PersonData>;
-  onChange?: (data: PersonData, diff: { key: string; value: string }) => void;
+  onChange?: (data: PersonData, diff: { key: string; value: StateType }) => void;
 }> = ({ initialData, onChange }) => {
   const states = personDataKeys.reduce((obj, key) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const fn = useState(
       key.endsWith('WearOptions') || ['hairType'].includes(key)
         ? []
@@ -111,18 +117,21 @@ const PersonEditor: React.FC<{
   }, {});
 
   const callbacks = personDataKeys.reduce((obj, key) => {
-    const state = states[key] as { state: any; setState: any };
+    const state = states[key] as { state: StateType; setState: SetStateType };
     if (!state) return obj;
 
-    obj[key] = (value: any) => {
+    obj[key] = (value: StateType) => {
       state.setState(value);
 
-      const data = Object.entries<{ state: any; setState: any }>(states).reduce((obj, entry) => {
-        const key = entry[0];
-        const value = entry[1].state;
-        obj[key] = value;
-        return obj;
-      }, {});
+      const data = Object.entries<{ state: StateType; setState: SetStateType }>(states).reduce(
+        (obj, entry) => {
+          const key = entry[0];
+          const value = entry[1].state;
+          obj[key] = value;
+          return obj;
+        },
+        {},
+      );
       data[key] = value;
 
       if (onChange) {
@@ -143,9 +152,9 @@ const PersonEditor: React.FC<{
 
       state.setState(data);
     }
-  }, [initialData]);
+  }, [initialData, states]);
 
-  const handleTextInputChange = (ev) => {
+  const handleTextInputChange = (ev): void => {
     const target = ev.currentTarget;
     const value = target.value;
     const key = target.dataset['key'];
@@ -366,7 +375,7 @@ const initialTabs = [
   { id: 'information', title: '情報' },
 ];
 
-const EditPane: React.FC<{}> = ({}) => {
+const EditPane: React.FC<object> = () => {
   const [personTabs, setPersonTabs] = useState([
     { id: 'person-1', title: '人間', data: { name: '人間' } as Partial<PersonData> },
   ]);
@@ -428,12 +437,13 @@ const EditPane: React.FC<{}> = ({}) => {
       setPersonTabs,
       currentTabPersonData,
       setCurrentTabPersonData,
+      handleAddTab,
     ],
   );
 
   const handlePersonChange = useCallback(
-    (value: PersonData, diff: { key: string; value: any }) => {
-      if (diff.key === 'name') {
+    (value: PersonData, diff: { key: string; value: StateType }) => {
+      if (diff.key === 'name' && typeof diff.value === 'string') {
         const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
         if (!activePersonTab) return;
 

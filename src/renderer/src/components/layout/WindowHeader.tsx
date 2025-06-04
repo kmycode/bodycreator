@@ -17,7 +17,7 @@ const Tab: FunctionComponent<{
 function WindowHeader(): React.JSX.Element {
   const tabGroup = useAppSelector((state) => state.windowTabGroup);
 
-  const handleClose = () => window.mainWindow.close();
+  const handleClose = (): Promise<void> => window.mainWindow.close();
 
   return (
     <div id="windowheader">

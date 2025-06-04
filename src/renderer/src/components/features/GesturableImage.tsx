@@ -49,13 +49,13 @@ const GesturableImage: React.FC<{
     setBaseScale((1 / s) * baseScale);
 
     springRef.set({ x: 0, y: 0, scale: 0 });
-  }, [setBaseX, baseX, setBaseY, baseY, setBaseScale, baseScale]);
+  }, [setBaseX, baseX, setBaseY, baseY, setBaseScale, baseScale, springRef]);
 
   useEffect(() => {
     if (!dragVersion) return;
 
     handleReset();
-  }, [dragVersion, fileName]);
+  }, [dragVersion, fileName, handleReset]);
 
   return (
     <div className="gesturable-image">

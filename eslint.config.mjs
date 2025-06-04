@@ -25,6 +25,8 @@ export default tseslint.config(
     rules: {
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactRefresh.configs.vite.rules,
+      'react/prop-types': 0,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
   eslintConfigPrettier,

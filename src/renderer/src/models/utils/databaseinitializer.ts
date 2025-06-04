@@ -1,4 +1,4 @@
-export const createDatabase = async () => {
+export const createDatabase = async (): Promise<void> => {
   const db = window.db;
 
   await db.query(
@@ -6,8 +6,8 @@ export const createDatabase = async () => {
   );
 };
 
-export const loadDatabase = async () => {
-  const db = window.db;
+export const loadDatabase = async (): Promise<void> => {
+  // const db = window.db;
 
   await createDatabase();
 };
