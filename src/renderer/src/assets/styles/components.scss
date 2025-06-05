@@ -86,3 +86,29 @@
     }
   }
 }
+
+.suggestable-text-input {
+  position: relative;
+
+  .suggestion {
+    position: absolute;
+    width: 100%;
+  }
+}
+
+.popup__suggestion {
+  background: #666666;
+  min-width: 100px;
+
+  & &__item {
+    padding: 4px 16px;
+    user-select: none;
+    cursor: pointer;
+    display: block;
+    
+    &.focused, &:hover {
+      background: #3355bb;
+      font-weight: bold;
+    }
+  }
+}

@@ -1,6 +1,7 @@
-import { ReactClickEvent, ReactTextChangeEvent as ReactInputChangeEvent } from '@renderer/models/types';
+import { ReactClickEvent } from '@renderer/models/types';
 import { useCallback } from 'react';
 import classNames from 'classnames';
+import { SuggestableTextInput, SuggestItem } from '../generic/SuggestableTextInput';
 
 export const VerticalAnglePicker: React.FC<{
   value?: string;
@@ -196,13 +197,11 @@ export const InputWithPopularSelection: React.FC<{
   onChange?: (value: string) => void;
 }> = ({ value, selection, onChange }) => {
   const handleChange = useCallback(
-    (ev: ReactInputChangeEvent) => {
+    (text: string, _bySuggestion: boolean, suggestionCallback: (selection: SuggestItem[]) => void) => {
       if (!onChange) return;
 
-      const target = ev.currentTarget;
-      const text = target.value;
-
       onChange(text);
+      suggestionCallback([{ title: 'あああ' }, { title: 'いいい' }]);
     },
     [onChange],
   );
@@ -222,7 +221,7 @@ export const InputWithPopularSelection: React.FC<{
 
   return (
     <div className="input-with-selection">
-      <input type="text" value={value ?? ''} onChange={handleChange} />
+      <SuggestableTextInput value={value ?? ''} onChange={handleChange} />
       <div>
         {selection?.map((item) => (
           <button key={item} data-key={item} onClick={handleSelectionClick}>
