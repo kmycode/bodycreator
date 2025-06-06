@@ -55,6 +55,28 @@
 
 .icongrouppicker {
   display: inline-block;
+
+  button:hover:not(.enabled) img {
+    filter: invert(67%) sepia(12%) saturate(8%) hue-rotate(36deg) brightness(90%) contrast(85%);
+  }
+}
+
+.evaluation-picker {
+  cursor: pointer;
+
+  img {
+    filter: invert(41%) sepia(38%) saturate(0%) hue-rotate(267deg) brightness(105%) contrast(91%);
+    width: 32px;
+    height: 32px;
+
+    &.fill {
+      filter: invert(84%) sepia(86%) saturate(460%) hue-rotate(360deg) brightness(88%) contrast(98%);
+    }
+  }
+
+  &:hover img:not(.fill) {
+    filter: invert(68%) sepia(20%) saturate(540%) hue-rotate(22deg) brightness(95%) contrast(84%);
+  }
 }
 
 .gesturable-image {

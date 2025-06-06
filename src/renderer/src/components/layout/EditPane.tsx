@@ -5,6 +5,7 @@ import {
   IconGroupPicker,
   InputWithPopularSelection,
   HairTypePicker,
+  EvaluationPicker,
 } from './pickers';
 import {
   wearIcons,
@@ -17,6 +18,7 @@ import {
   armHorizontalIcons,
   legHorizontalIcons,
   hairIcons,
+  oppaiIcons,
 } from './pickertypes';
 import TabHeaderGroup from '../parts/TabHeaderGroup';
 import { ReactTextChangeEvent } from '@renderer/models/types';
@@ -45,8 +47,11 @@ const personDataKeys = [
   'rightKnee',
   'chestVertical',
   'chestHorizontal',
+  'oppai',
+  'oppaiSize',
   'waistVertical',
   'waistHorizontal',
+  'bodyOthers',
   'sleep',
   'leftArmWear',
   'leftArmWearOptions',
@@ -70,7 +75,7 @@ interface PersonData {
   faceEmotion: string;
   hairLength: string;
   hairStyle: string;
-  hairType: string;
+  hairType: string[];
   leftArmHorizontal: string;
   leftArmVertical: string;
   rightArmHorizontal: string;
@@ -85,8 +90,11 @@ interface PersonData {
   rightKnee: string;
   chestVertical: string;
   chestHorizontal: string;
+  oppai: string;
+  oppaiSize: string;
   waistVertical: string;
   waistHorizontal: string;
+  bodyOthers: string[];
   sleep: string;
   leftArmWear: string;
   leftArmWearOptions: string[];
@@ -103,7 +111,7 @@ interface PersonData {
   others: string;
 }
 
-const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle', 'wears', 'poses', 'others'];
+const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle', 'oppai', 'wears', 'poses', 'others'];
 const personDataStringArrayKeys = [
   'leftArmWearOptions',
   'rightArmWearOptions',
@@ -111,9 +119,10 @@ const personDataStringArrayKeys = [
   'leftLegWearOptions',
   'rightLegWearOptions',
   'hairType',
+  'bodyOthers',
 ];
 
-type StateType = (string & string[]) | undefined;
+type StateType = (string & string[] & number) | undefined;
 type SetStateType = React.Dispatch<React.SetStateAction<StateType>>;
 type StatesObjectType = { [s: string]: { state: StateType; setState: SetStateType } };
 type CallbacksObjectType = { [s: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -121,15 +130,23 @@ type CallbacksObjectType = { [s: string]: any }; // eslint-disable-line @typescr
 interface KeyOptions {
   defaultEmptyStringKeys?: string[];
   stringArrayKeys?: string[];
+  numberKeys?: string[];
 }
 
 const generateStates = (keys: string[], keyOptions: KeyOptions): StatesObjectType => {
   const defaultEmptyStringKeys = keyOptions.defaultEmptyStringKeys ?? [];
   const stringArrayKeys = keyOptions.stringArrayKeys ?? [];
+  const numberKeys = keyOptions.numberKeys ?? [];
 
   return keys.reduce((obj, key) => {
     const fn = useState(
-      stringArrayKeys.includes(key) ? [] : defaultEmptyStringKeys.includes(key) ? '' : 'unknown',
+      stringArrayKeys.includes(key)
+        ? []
+        : numberKeys.includes(key)
+          ? 0
+          : defaultEmptyStringKeys.includes(key)
+            ? ''
+            : 'unknown',
     );
     obj[key] = { state: fn[0], setState: fn[1] };
     return obj;
@@ -174,13 +191,12 @@ const updateInitialData = (
   initialData: object | undefined,
 ): void => {
   if (!initialData) return;
-  console.dir(initialData);
 
   for (const key of keys) {
     const state = states[key];
-    const data = initialData[key] ?? '';
+    const data = initialData[key];
 
-    if (!state) continue;
+    if (!state || typeof data === 'undefined') continue;
 
     state.setState(data);
   }
@@ -276,6 +292,19 @@ const PersonEditor: React.FC<{
           onChangeValues={callbacks['bodyWearOptions']}
         />
       </div>
+      <h3>おっぱい</h3>
+      <div className="searchpane__row">
+        <IconGroupPicker
+          icons={oppaiIcons}
+          value={states['oppaiSize'].state}
+          onChange={callbacks['oppaiSize']}
+        />
+      </div>
+      <InputWithPopularSelection
+        value={states['oppai'].state}
+        onChange={callbacks['oppai']}
+        selection={['上げ', '潰し', '揉み', '自分揉み', '垂らし']}
+      />
       <h3>腰</h3>
       <div className="searchpane__row">
         <VerticalAnglePicker value={states['waistVertical'].state} onChange={callbacks['waistVertical']} />
@@ -421,11 +450,29 @@ const PersonEditor: React.FC<{
       <div className="searchpane__row">
         <IconGroupPicker icons={sleepIcons} value={states['sleep'].state} onChange={callbacks['sleep']} />
       </div>
+      <h3>その他の体のタグ</h3>
+      <InputWithPopularSelection
+        value={states['bodyOthers'].state}
+        onChange={callbacks['bodyOthers']}
+        selection={['膝の裏', '肩上げ']}
+        multiline
+      />
       <h3>衣装・アクセサリ</h3>
       <InputWithPopularSelection
         value={states['wears'].state}
         onChange={callbacks['wears']}
-        selection={['制服', 'カッターシャツ', 'フリル', 'スクール水着', '競泳水着', '複雑私服', '複雑水着']}
+        selection={[
+          'ちら見せ',
+          '制服',
+          'カッターシャツ',
+          'フリル',
+          'スクール水着',
+          '競泳水着',
+          '複雑私服',
+          '複雑水着',
+          'パンツ',
+          'ブラ',
+        ]}
         multiline
       />
       <h3>行動・ポーズ</h3>
@@ -446,16 +493,19 @@ const PersonEditor: React.FC<{
   );
 };
 
-const informationDataKeys = ['author', 'url', 'memo'];
+const informationDataKeys = ['author', 'url', 'memo', 'evaluation'];
 
 const informationDataTextInputKeys = ['author', 'url', 'memo'];
 
 const informationDataStringArrayKeys = [];
 
+const informationDataNumberKeys = ['evaluation'];
+
 interface InformationData {
   author: string;
   url: string;
   memo: string;
+  evaluation: number;
 }
 
 const InformationEditor: React.FC<{
@@ -465,6 +515,7 @@ const InformationEditor: React.FC<{
   const states = generateStates(informationDataKeys, {
     defaultEmptyStringKeys: informationDataTextInputKeys,
     stringArrayKeys: informationDataStringArrayKeys,
+    numberKeys: informationDataNumberKeys,
   });
 
   const callbacks = generateCallbacks(informationDataKeys, states, onChange);
@@ -483,6 +534,7 @@ const InformationEditor: React.FC<{
   return (
     <div>
       <h3>評価</h3>
+      <EvaluationPicker value={states['evaluation'].state} onChange={callbacks['evaluation']} />
       <h3>作者</h3>
       <InputWithPopularSelection
         value={states['author'].state}
@@ -510,6 +562,7 @@ const EditPane: React.FC<object> = () => {
   ]);
   const [selectedTabId, setSelectedTabId] = useState('information');
   const [currentTabPersonData, setCurrentTabPersonData] = useState({ name: '人間' } as Partial<PersonData>);
+  const [informationData, setInformationData] = useState({} as Partial<InformationData>);
 
   const handleAddTab = useCallback(() => {
     const ids = personTabs
@@ -569,8 +622,10 @@ const EditPane: React.FC<object> = () => {
         return;
       }
 
-      if (selectedTabId.startsWith('person-')) {
-        const currentTab = personTabs.find((tab) => tab.id === selectedTabId);
+      const beforeTabId = selectedTabId;
+
+      if (beforeTabId.startsWith('person-')) {
+        const currentTab = personTabs.find((tab) => tab.id === beforeTabId);
         if (currentTab) {
           currentTab.data = currentTabPersonData;
           setPersonTabs([...personTabs]);
@@ -610,6 +665,13 @@ const EditPane: React.FC<object> = () => {
     [selectedTabId, personTabs, setPersonTabs, setCurrentTabPersonData],
   );
 
+  const handleInformationChange = useCallback(
+    (value: InformationData) => {
+      setInformationData(value);
+    },
+    [setInformationData],
+  );
+
   const tabs = [...personTabs, ...initialTabs];
 
   return (
@@ -624,7 +686,9 @@ const EditPane: React.FC<object> = () => {
               <button onClick={handleRemoveTab}>この人物を削除する</button>
             </>
           )}
-          {selectedTabId === 'information' && <InformationEditor />}
+          {selectedTabId === 'information' && (
+            <InformationEditor onChange={handleInformationChange} initialData={informationData} />
+          )}
         </div>
       </div>
     </div>

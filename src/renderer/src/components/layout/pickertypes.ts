@@ -46,6 +46,10 @@ import WearHalf2Icon from '@renderer/assets/icons/picture/wear-half-2.svg';
 import HairShortIcon from '@renderer/assets/icons/picture/hair-short.svg';
 import HairMiddleIcon from '@renderer/assets/icons/picture/hair-middle.svg';
 import HairLongIcon from '@renderer/assets/icons/picture/hair-long.svg';
+import OppaiLargeIcon from '@renderer/assets/icons/picture/oppai-large.svg';
+import OppaiBigIcon from '@renderer/assets/icons/picture/oppai-big.svg';
+import OppaiNormalIcon from '@renderer/assets/icons/picture/oppai-normal.svg';
+import OppaiSmallIcon from '@renderer/assets/icons/picture/oppai-small.svg';
 
 export const faceIcons = [
   { id: 'face-front', numId: 1, svg: FaceFrontIcon },
@@ -53,6 +57,13 @@ export const faceIcons = [
   { id: 'face-side', numId: 3, svg: FaceSideIcon },
   { id: 'face-back-d', numId: 4, svg: FaceBackDiagIcon },
   { id: 'face-back', numId: 5, svg: FaceBackIcon },
+];
+
+export const oppaiIcons = [
+  { id: 'oppai-small', numId: 1, svg: OppaiSmallIcon },
+  { id: 'oppai-normal', numId: 2, svg: OppaiNormalIcon },
+  { id: 'oppai-big', numId: 3, svg: OppaiBigIcon },
+  { id: 'oppai-large', numId: 4, svg: OppaiLargeIcon },
 ];
 
 export const armHorizontalIcons = [

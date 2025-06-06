@@ -1,8 +1,10 @@
-import { ReactClickEvent } from '@renderer/models/types';
-import { useCallback, useRef } from 'react';
+import { ReactClickEvent, ReactMouseEvent } from '@renderer/models/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { SuggestableTextInput, SuggestItem, SuggestOnChangeData } from '../generic/SuggestableTextInput';
 import { replaceCarretLine } from '../utils/carrettextutils';
+import StarIcon from '@renderer/assets/icons/picture/star.svg';
+import StarFillIcon from '@renderer/assets/icons/picture/star-fill.svg';
 
 export const VerticalAnglePicker: React.FC<{
   value?: string;
@@ -255,6 +257,71 @@ export const InputWithPopularSelection: React.FC<{
           </button>
         ))}
       </div>
+    </div>
+  );
+};
+
+export const EvaluationPicker: React.FC<{
+  value?: number;
+  onChange: (value: number) => void;
+}> = ({ value, onChange }) => {
+  const [fillNum, setFillNum] = useState(value ?? 0);
+
+  useEffect(() => setFillNum(value ?? 0), [setFillNum, value]);
+
+  const handleMouseOver = useCallback(
+    (ev: ReactMouseEvent) => {
+      const {
+        currentTarget: { dataset },
+      } = ev;
+      const key = dataset['key'];
+      if (!key) return;
+
+      setFillNum(parseInt(key));
+    },
+    [setFillNum],
+  );
+
+  const handleMouseOut = useCallback(() => {
+    setFillNum(value ?? 0);
+  }, [setFillNum, value]);
+
+  const handleClick = useCallback(
+    (ev: ReactClickEvent) => {
+      if (!onChange) return;
+
+      const {
+        currentTarget: { dataset },
+      } = ev;
+      const key = dataset['key'];
+      if (!key) return;
+
+      const newValue = parseInt(key);
+      if (value === newValue) {
+        onChange(0);
+      } else {
+        onChange(newValue);
+      }
+    },
+    [onChange, value],
+  );
+
+  return (
+    <div className="evaluation-picker">
+      {[1, 2, 3, 4, 5].map((v) => {
+        const fill = v <= fillNum;
+        return (
+          <img
+            key={v}
+            data-key={v}
+            className={classNames({ fill })}
+            src={fill ? StarFillIcon : StarIcon}
+            onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}
+            onMouseDown={handleClick}
+          />
+        );
+      })}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 body {
   overflow: hidden;
+  background: #020202;
 }
 
 #windowframe {
@@ -12,6 +13,13 @@ body {
   display: flex;
   flex: 1;
   height: calc(100vh - 40px);
+}
+
+.image-preview-page {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  width: 100%;
 }
 
 #windowheader {
@@ -62,7 +70,6 @@ body {
 }
 
 .imagelistview {
-  background: #020202;
   flex: 1;
   overflow: hidden;
 }
