@@ -1,6 +1,7 @@
 import AppLogo from './components/generic/AppLogo';
 import EditPane from './components/layout/EditPane';
 import ImageListView from './components/layout/ImageListView';
+import { ModalRoot } from './components/layout/ModalRoot';
 import SearchPane from './components/layout/SearchPane';
 import WindowHeader from './components/layout/WindowHeader';
 import { loadDatabase } from './models/utils/databaseinitializer';
@@ -17,6 +18,7 @@ function App(): React.JSX.Element {
         <ImageListView />
         <EditPane />
       </div>
+      <ModalRoot />
     </div>
   );
 }

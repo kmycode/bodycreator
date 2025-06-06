@@ -30,6 +30,26 @@
     &.wet.selected {
       color: #88eeee;
     }
+
+    &.tidire.selected {
+      color: #88eeee;
+    }
+
+    &.maki.selected {
+      color: #ee6699;
+    }
+
+    &.saga.selected {
+      color: #cccc66;
+    }
+
+    &.mitsu.selected {
+      color: #44ee44;
+    }
+
+    &.osage.selected {
+      color: #f878f8;
+    }
   }
 }
 
@@ -77,12 +97,16 @@
 .input-with-selection {
   button {
     color: #cccccc;
-    font-size: 16px;
-    height: 32px;
+    font-size: 14px;
+    height: 28px;
     padding: 0 16px;
+    background: #555555;
+    margin: 2px 4px;
+    border-radius: 16px;
 
     &:hover {
       color: #f0f0f0;
+      background: #777777;
     }
   }
 }
@@ -99,6 +123,8 @@
 .popup__suggestion {
   background: #666666;
   min-width: 100px;
+  max-height: 400px;
+  overflow: auto;
 
   & &__item {
     padding: 4px 16px;

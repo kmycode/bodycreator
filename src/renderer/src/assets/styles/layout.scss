@@ -92,16 +92,94 @@ body {
   &__row {
     display: flex;
   }
+
+  .searchpane__row button {
+    color: #888888;
+    font-size: 12px;
+  }
 }
 
 .editpane .pane-contents {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding-left: 0;
+  padding-right: 0;
+
+  .tabheader-group {
+    margin: 0 8px;
+  }
 
   .tab-contents {
     overflow: auto;
     flex: 1;
     padding-block-start: 16px;
+    padding: 0 8px;
+  }
+}
+
+#modal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  &.hidden {
+    display: none;
+  }
+
+  &__film {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 9998;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  &__contents {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 9999;
+
+    & > * {
+      margin: auto;
+      background: #333333;
+      box-shadow: 0px 0px 15px #111111;
+    }
+  }
+}
+
+.modal {
+  &__confirm {
+    width: 600px;
+    height: 160px;
+    background: red;
+    padding: 24px 16px 16px;
+    display: flex;
+    flex-direction: column;
+
+    & &__message {
+      font-size: 20px;
+      flex: 1;
+    }
+
+    & &__buttons {
+      display: flex;
+      justify-content: flex-end;
+
+      button {
+        width: 80px;
+        height: 32px;
+        margin-inline-start: 16px;
+      }
+    }
   }
 }

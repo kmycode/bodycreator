@@ -1,7 +1,8 @@
 import { ReactClickEvent } from '@renderer/models/types';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import classNames from 'classnames';
-import { SuggestableTextInput, SuggestItem } from '../generic/SuggestableTextInput';
+import { SuggestableTextInput, SuggestItem, SuggestOnChangeData } from '../generic/SuggestableTextInput';
+import { replaceCarretLine } from '../utils/carrettextutils';
 
 export const VerticalAnglePicker: React.FC<{
   value?: string;
@@ -86,7 +87,7 @@ export const HairTypePicker: React.FC<{
       const target = ev.currentTarget;
       const className =
         Array.from(target.classList).find((name) =>
-          ['tidire', 'maki', 'saga'].includes(name) ? name : false,
+          ['tidire', 'maki', 'saga', 'mitsu', 'osage'].includes(name) ? name : false,
         ) ?? 'unknown';
 
       let newValues;
@@ -124,6 +125,20 @@ export const HairTypePicker: React.FC<{
           onClick={handleClick}
         >
           逆立ち
+        </button>
+        <button
+          className={classNames({ mitsu: true, selected: values?.includes('mitsu') })}
+          onClick={handleClick}
+        >
+          三つ編
+        </button>
+      </div>
+      <div className="verticalanglepicker wearoptionpicker">
+        <button
+          className={classNames({ osage: true, selected: values?.includes('osage') })}
+          onClick={handleClick}
+        >
+          おさげ
         </button>
       </div>
     </>
@@ -194,10 +209,14 @@ export const IconGroupPicker: React.FC<{
 export const InputWithPopularSelection: React.FC<{
   value?: string;
   selection?: string[];
+  multiline?: boolean;
   onChange?: (value: string) => void;
-}> = ({ value, selection, onChange }) => {
+}> = ({ value, selection, multiline, onChange }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const inputRef = useRef<any>(null);
+
   const handleChange = useCallback(
-    (text: string, _bySuggestion: boolean, suggestionCallback: (selection: SuggestItem[]) => void) => {
+    (text: string, _data: SuggestOnChangeData, suggestionCallback: (selection: SuggestItem[]) => void) => {
       if (!onChange) return;
 
       onChange(text);
@@ -208,20 +227,27 @@ export const InputWithPopularSelection: React.FC<{
 
   const handleSelectionClick = useCallback(
     (ev: ReactClickEvent) => {
-      if (!onChange) return;
+      if (!onChange || !inputRef.current) return;
 
-      const target = ev.currentTarget;
-      const text = target.dataset['key'];
+      const { value, selectionStart } = inputRef.current as HTMLInputElement | HTMLTextAreaElement;
+      const text = ev.currentTarget.dataset['key'];
       if (!text) return;
 
-      onChange(text);
+      const newText = replaceCarretLine(value, selectionStart, text);
+
+      onChange(newText);
     },
-    [onChange],
+    [onChange, inputRef],
   );
 
   return (
     <div className="input-with-selection">
-      <SuggestableTextInput value={value ?? ''} onChange={handleChange} />
+      <SuggestableTextInput
+        value={value ?? ''}
+        onChange={handleChange}
+        multiline={multiline}
+        inputRef={inputRef}
+      />
       <div>
         {selection?.map((item) => (
           <button key={item} data-key={item} onClick={handleSelectionClick}>

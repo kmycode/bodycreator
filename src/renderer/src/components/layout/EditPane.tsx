@@ -19,6 +19,9 @@ import {
   hairIcons,
 } from './pickertypes';
 import TabHeaderGroup from '../parts/TabHeaderGroup';
+import { ReactTextChangeEvent } from '@renderer/models/types';
+import { useAppDispatch, useAppSelector } from '@renderer/models/store';
+import { clearModalResult, openModal } from '@renderer/models/entities/modal_state';
 
 const personDataKeys = [
   'name',
@@ -55,6 +58,9 @@ const personDataKeys = [
   'leftLegWearOptions',
   'rightLegWear',
   'rightLegWearOptions',
+  'wears',
+  'poses',
+  'others',
 ];
 
 interface PersonData {
@@ -92,32 +98,52 @@ interface PersonData {
   leftLegWearOptions: string[];
   rightLegWear: string;
   rightLegWearOptions: string[];
+  wears: string;
+  poses: string;
+  others: string;
 }
 
-const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle'];
+const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle', 'wears', 'poses', 'others'];
+const personDataStringArrayKeys = [
+  'leftArmWearOptions',
+  'rightArmWearOptions',
+  'bodyWearOptions',
+  'leftLegWearOptions',
+  'rightLegWearOptions',
+  'hairType',
+];
 
-type StateType = string | unknown[];
-type SetStateType = React.Dispatch<React.SetStateAction<string | unknown[]>>;
+type StateType = (string & string[]) | undefined;
+type SetStateType = React.Dispatch<React.SetStateAction<StateType>>;
+type StatesObjectType = { [s: string]: { state: StateType; setState: SetStateType } };
+type CallbacksObjectType = { [s: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-const PersonEditor: React.FC<{
-  initialData?: Partial<PersonData>;
-  onChange?: (data: PersonData, diff: { key: string; value: StateType }) => void;
-}> = ({ initialData, onChange }) => {
-  const states = personDataKeys.reduce((obj, key) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+interface KeyOptions {
+  defaultEmptyStringKeys?: string[];
+  stringArrayKeys?: string[];
+}
+
+const generateStates = (keys: string[], keyOptions: KeyOptions): StatesObjectType => {
+  const defaultEmptyStringKeys = keyOptions.defaultEmptyStringKeys ?? [];
+  const stringArrayKeys = keyOptions.stringArrayKeys ?? [];
+
+  return keys.reduce((obj, key) => {
     const fn = useState(
-      key.endsWith('WearOptions') || ['hairType'].includes(key)
-        ? []
-        : personDataTextInputKeys.includes(key)
-          ? ''
-          : 'unknown',
+      stringArrayKeys.includes(key) ? [] : defaultEmptyStringKeys.includes(key) ? '' : 'unknown',
     );
     obj[key] = { state: fn[0], setState: fn[1] };
     return obj;
   }, {});
+};
 
-  const callbacks = personDataKeys.reduce((obj, key) => {
-    const state = states[key] as { state: StateType; setState: SetStateType };
+const generateCallbacks = (
+  keys: string[],
+  states: StatesObjectType,
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  onChange: ((data: any, diff: { key: string; value: StateType }) => void) | undefined,
+): CallbacksObjectType => {
+  return keys.reduce((obj, key) => {
+    const state = states[key];
     if (!state) return obj;
 
     obj[key] = (value: StateType) => {
@@ -135,35 +161,65 @@ const PersonEditor: React.FC<{
       data[key] = value;
 
       if (onChange) {
-        onChange(data as PersonData, { key, value });
+        onChange(data, { key, value });
       }
     };
     return obj;
   }, {});
+};
+
+const updateInitialData = (
+  keys: string[],
+  states: StatesObjectType,
+  initialData: object | undefined,
+): void => {
+  if (!initialData) return;
+  console.dir(initialData);
+
+  for (const key of keys) {
+    const state = states[key];
+    const data = initialData[key] ?? '';
+
+    if (!state) continue;
+
+    state.setState(data);
+  }
+};
+
+const handleGenericTextInputChange = (ev: ReactTextChangeEvent, callbacks: CallbacksObjectType): void => {
+  const {
+    currentTarget: { value, dataset },
+  } = ev;
+  const key = dataset['key'];
+  if (!key) return;
+
+  const callback = callbacks[key];
+  if (!callback) return;
+
+  callback(value);
+};
+
+const PersonEditor: React.FC<{
+  initialData?: Partial<PersonData>;
+  onChange?: (data: PersonData, diff: { key: string; value: StateType }) => void;
+}> = ({ initialData, onChange }) => {
+  const states = generateStates(personDataKeys, {
+    defaultEmptyStringKeys: personDataTextInputKeys,
+    stringArrayKeys: personDataStringArrayKeys,
+  });
+
+  const callbacks = generateCallbacks(personDataKeys, states, onChange);
 
   useEffect(() => {
-    if (!initialData) return;
-
-    for (const key of personDataKeys) {
-      const state = states[key];
-      const data = initialData[key];
-
-      if (!state || typeof data === 'undefined') continue;
-
-      state.setState(data);
-    }
+    updateInitialData(personDataKeys, states, initialData);
   }, [initialData, states]);
 
-  const handleTextInputChange = (ev): void => {
-    const target = ev.currentTarget;
-    const value = target.value;
-    const key = target.dataset['key'];
-    const callback = callbacks[key];
-
-    if (!callback) return;
-
-    callback(value);
-  };
+  const handleTextInputChange = useCallback(
+    (ev: ReactTextChangeEvent): void => {
+      handleGenericTextInputChange(ev, callbacks);
+    },
+    [callbacks],
+  );
 
   return (
     <div>
@@ -179,11 +235,10 @@ const PersonEditor: React.FC<{
         />
       </div>
       <h3>表情</h3>
-      <input
-        type="text"
-        data-key="faceEmotion"
+      <InputWithPopularSelection
         value={states['faceEmotion'].state}
-        onChange={handleTextInputChange}
+        onChange={callbacks['faceEmotion']}
+        selection={['真顔', 'ほほえみ', '笑い', '挑発', '感じる', '悲しい', '泣く', '怖い', '怒り']}
       />
       <h3>髪の長さ</h3>
       <div className="searchpane__row">
@@ -366,6 +421,78 @@ const PersonEditor: React.FC<{
       <div className="searchpane__row">
         <IconGroupPicker icons={sleepIcons} value={states['sleep'].state} onChange={callbacks['sleep']} />
       </div>
+      <h3>衣装・アクセサリ</h3>
+      <InputWithPopularSelection
+        value={states['wears'].state}
+        onChange={callbacks['wears']}
+        selection={['制服', 'カッターシャツ', 'フリル', 'スクール水着', '競泳水着', '複雑私服', '複雑水着']}
+        multiline
+      />
+      <h3>行動・ポーズ</h3>
+      <InputWithPopularSelection
+        value={states['poses'].state}
+        onChange={callbacks['poses']}
+        selection={['座る', '立つ', '歩く', '走る']}
+        multiline
+      />
+      <h3>その他</h3>
+      <InputWithPopularSelection
+        value={states['others'].state}
+        onChange={callbacks['others']}
+        selection={[]}
+        multiline
+      />
+    </div>
+  );
+};
+
+const informationDataKeys = ['author', 'url', 'memo'];
+
+const informationDataTextInputKeys = ['author', 'url', 'memo'];
+
+const informationDataStringArrayKeys = [];
+
+interface InformationData {
+  author: string;
+  url: string;
+  memo: string;
+}
+
+const InformationEditor: React.FC<{
+  initialData?: Partial<InformationData>;
+  onChange?: (data: InformationData, diff: { key: string; value: StateType }) => void;
+}> = ({ initialData, onChange }) => {
+  const states = generateStates(informationDataKeys, {
+    defaultEmptyStringKeys: informationDataTextInputKeys,
+    stringArrayKeys: informationDataStringArrayKeys,
+  });
+
+  const callbacks = generateCallbacks(informationDataKeys, states, onChange);
+
+  useEffect(() => {
+    updateInitialData(informationDataKeys, states, initialData);
+  }, [initialData, states]);
+
+  const handleTextInputChange = useCallback(
+    (ev: ReactTextChangeEvent): void => {
+      handleGenericTextInputChange(ev, callbacks);
+    },
+    [callbacks],
+  );
+
+  return (
+    <div>
+      <h3>評価</h3>
+      <h3>作者</h3>
+      <InputWithPopularSelection
+        value={states['author'].state}
+        onChange={callbacks['author']}
+        selection={['mignon', '宮瀬まひろ', 'むにんしき']}
+      />
+      <h3>URL</h3>
+      <input type="text" data-key="url" value={states['url'].state} onChange={handleTextInputChange} />
+      <h3>メモ</h3>
+      <textarea data-key="memo" rows={4} value={states['memo'].state} onChange={handleTextInputChange} />
     </div>
   );
 };
@@ -376,6 +503,8 @@ const initialTabs = [
 ];
 
 const EditPane: React.FC<object> = () => {
+  const dispatch = useAppDispatch();
+
   const [personTabs, setPersonTabs] = useState([
     { id: 'person-1', title: '人間', data: { name: '人間' } as Partial<PersonData> },
   ]);
@@ -396,17 +525,42 @@ const EditPane: React.FC<object> = () => {
     });
 
     setPersonTabs(newTabs);
-  }, [personTabs, setPersonTabs]);
+    setSelectedTabId(`person-${maxId + 1}`);
+  }, [personTabs, setPersonTabs, setSelectedTabId]);
 
   const handleRemoveTab = useCallback(() => {
     const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
-    if (!activePersonTab || !confirm('本当に削除しますか？')) return;
+    if (!activePersonTab) return;
+
+    dispatch(
+      openModal({
+        type: 'confirm',
+        parameter: {
+          id: 'editpane-remove-person-tab',
+          message: `本当に人間「${currentTabPersonData.name}」を削除しますか？`,
+          yesResult: {
+            type: 'remove-person-tab',
+          },
+        },
+      }),
+    );
+  }, [personTabs, selectedTabId, dispatch, currentTabPersonData.name]);
+
+  const modalState = useAppSelector((state) => state.modalState);
+  useEffect(() => {
+    if (
+      modalState.lastResultId !== 'editpane-remove-person-tab' ||
+      modalState.lastResult?.selection !== 'yes'
+    )
+      return;
 
     const newTabs = personTabs.filter((tab) => tab.id !== selectedTabId);
 
     setPersonTabs(newTabs);
     setSelectedTabId(newTabs[0]?.id ?? 'information');
-  }, [selectedTabId, setPersonTabs, personTabs, setSelectedTabId]);
+
+    dispatch(clearModalResult());
+  }, [modalState, selectedTabId, setPersonTabs, setSelectedTabId, dispatch, personTabs]);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -466,21 +620,11 @@ const EditPane: React.FC<object> = () => {
         <div className="tab-contents">
           {selectedTabId.startsWith('person-') && (
             <>
-              <button onClick={handleRemoveTab}>削除</button>
               <PersonEditor onChange={handlePersonChange} initialData={currentTabPersonData} />
+              <button onClick={handleRemoveTab}>この人物を削除する</button>
             </>
           )}
-          {selectedTabId === 'information' && (
-            <div>
-              <h3>評価</h3>
-              <h3>作者名</h3>
-              <input type="text" />
-              <h3>URL</h3>
-              <input type="text" />
-              <h3>メモ</h3>
-              <textarea rows={4} />
-            </div>
-          )}
+          {selectedTabId === 'information' && <InformationEditor />}
         </div>
       </div>
     </div>

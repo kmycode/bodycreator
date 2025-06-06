@@ -1,37 +1,63 @@
 import { ReactClickEvent, ReactKeyDownEvent, ReactTextChangeEvent } from '@renderer/models/types';
 import classNames from 'classnames';
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Overlay } from 'react-overlays';
+import { getCarretLineData, replaceCarretLine } from '../utils/carrettextutils';
 
 export interface SuggestItem {
   title: string;
+}
+
+export interface SuggestOnChangeData {
+  bySuggestion: boolean;
+  editingLine?: string;
+  editingLineNumber?: number;
+  editingLinePosition?: number;
 }
 
 export const SuggestableTextInput: React.FC<{
   value?: string;
   onChange?: (
     text: string,
-    bySuggestion: boolean,
+    data: SuggestOnChangeData,
     suggestionCallback: (selection: SuggestItem[]) => void,
   ) => SuggestItem[] | void;
   multiline?: boolean;
   itemFactory?: (item: SuggestItem) => ReactNode;
-}> = ({ value, onChange, multiline, itemFactory }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  inputRef?: React.RefObject<any>;
+}> = ({ value, onChange, multiline, itemFactory, inputRef }) => {
   const [suggestion, setSuggestion] = useState([] as SuggestItem[]);
   const [focusedItemIndex, setFocusedItemIndex] = useState(0);
   const [showSuggestion, setShowSuggestion] = useState(true);
+  const [placement, setPlacement] = useState('bottom' as 'bottom' | 'top');
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const inputRef = useRef<any>(null);
+  const updatePlacement = useMemo(
+    () => () => {
+      if (inputRef && inputRef.current) {
+        const inputElement = inputRef.current as HTMLElement;
+        const elementRect = inputElement.getBoundingClientRect();
+        const pageHeight = document.body.clientHeight;
+
+        if (pageHeight - elementRect.y < 350) {
+          setPlacement('top');
+        } else {
+          setPlacement('bottom');
+        }
+      }
+    },
+    [setPlacement, inputRef],
+  );
 
   const startSuggestion = useCallback(
     (force?: boolean) => {
-      if (suggestion.length === 0 || (!force && document.activeElement !== inputRef.current)) return;
+      if (suggestion.length === 0 || (!force && document.activeElement !== inputRef?.current)) return;
 
+      updatePlacement();
       setShowSuggestion(true);
-      setFocusedItemIndex(0);
+      setFocusedItemIndex(-1);
     },
-    [inputRef, suggestion, setFocusedItemIndex],
+    [inputRef, suggestion, setFocusedItemIndex, updatePlacement],
   );
 
   const suggestionCallback = useCallback(
@@ -44,12 +70,15 @@ export const SuggestableTextInput: React.FC<{
 
   const selectSuggection = useMemo(
     () => (text: string) => {
-      if (!onChange) return;
+      if (!onChange || !text || !inputRef || !inputRef.current) return;
 
-      onChange(text, true, () => {});
+      const { value, selectionStart } = inputRef.current;
+      const newValue = replaceCarretLine(value, selectionStart, text);
+      onChange(newValue, { bySuggestion: true }, () => {});
+
       setShowSuggestion(false);
     },
-    [onChange],
+    [onChange, inputRef],
   );
 
   const handleSuggestionClick = useCallback(
@@ -69,9 +98,10 @@ export const SuggestableTextInput: React.FC<{
     (ev: ReactTextChangeEvent) => {
       if (!onChange) return;
 
-      const { value: text } = ev.currentTarget;
+      const { value: text, selectionStart } = ev.currentTarget;
+      const editingLine = getCarretLineData(text, selectionStart);
 
-      onChange(text, false, suggestionCallback);
+      onChange(text, { bySuggestion: false, ...editingLine }, suggestionCallback);
     },
     [onChange, suggestionCallback],
   );
@@ -84,26 +114,59 @@ export const SuggestableTextInput: React.FC<{
     (ev: ReactKeyDownEvent) => {
       if (!showSuggestion) return;
 
+      const moveDown = (): void => {
+        if (showSuggestion && suggestion.length > 0) {
+          if (placement === 'bottom' && focusedItemIndex < 0 && (ev.ctrlKey || ev.shiftKey)) {
+            return;
+          }
+          if (placement === 'bottom') {
+            if (focusedItemIndex < suggestion.length - 1) {
+              setFocusedItemIndex(focusedItemIndex + 1);
+            }
+            ev.preventDefault();
+          } else {
+            if (focusedItemIndex >= 0 && focusedItemIndex < suggestion.length - 1) {
+              setFocusedItemIndex(focusedItemIndex + 1);
+              ev.preventDefault();
+            } else if (focusedItemIndex === suggestion.length - 1) {
+              setFocusedItemIndex(-1);
+              ev.preventDefault();
+            }
+          }
+        }
+      };
+
+      const moveUp = (): void => {
+        if (showSuggestion && suggestion.length > 0) {
+          if (placement === 'top' && focusedItemIndex < 0 && (ev.ctrlKey || ev.shiftKey)) {
+            return;
+          }
+          if (placement === 'bottom') {
+            if (focusedItemIndex >= 0) {
+              setFocusedItemIndex(focusedItemIndex - 1);
+              ev.preventDefault();
+            }
+          } else {
+            if (focusedItemIndex >= 1) {
+              setFocusedItemIndex(focusedItemIndex - 1);
+            } else if (focusedItemIndex < 0) {
+              setFocusedItemIndex(suggestion.length - 1);
+            }
+            ev.preventDefault();
+          }
+        }
+      };
+
       switch (ev.key) {
         case 'Escape':
           setShowSuggestion(false);
           ev.preventDefault();
           break;
         case 'ArrowDown':
-          if (showSuggestion && suggestion.length > 0) {
-            if (focusedItemIndex < suggestion.length - 1) {
-              setFocusedItemIndex(focusedItemIndex + 1);
-            }
-            ev.preventDefault();
-          }
+          moveDown();
           break;
         case 'ArrowUp':
-          if (showSuggestion && suggestion.length > 0) {
-            if (focusedItemIndex >= 0) {
-              setFocusedItemIndex(focusedItemIndex - 1);
-            }
-            ev.preventDefault();
-          }
+          moveUp();
           break;
         case 'Enter':
           {
@@ -116,7 +179,7 @@ export const SuggestableTextInput: React.FC<{
           break;
       }
     },
-    [showSuggestion, focusedItemIndex, suggestion, selectSuggection, setFocusedItemIndex],
+    [showSuggestion, focusedItemIndex, suggestion, selectSuggection, setFocusedItemIndex, placement],
   );
 
   useEffect(() => {
@@ -125,7 +188,7 @@ export const SuggestableTextInput: React.FC<{
 
   const inputProps = useMemo(() => {
     return {
-      ref: inputRef,
+      ref: inputRef ?? { current: undefined },
       className: 'input',
       value,
       onChange: handleTextChange,
@@ -135,22 +198,22 @@ export const SuggestableTextInput: React.FC<{
     };
   }, [value, inputRef, handleTextChange, handleBlur, handleInputKeyDown, handleFocus]);
 
-  const input = multiline ? <textarea {...inputProps} /> : <input type="text" {...inputProps} />;
+  const input = multiline ? <textarea rows={4} {...inputProps} /> : <input type="text" {...inputProps} />;
 
   return (
     <div className="suggestable-text-input">
       {input}
       <div className="suggestion">
         <Overlay
-          target={inputRef}
-          placement="bottom"
+          target={inputRef ?? { current: undefined }}
           show={showSuggestion && suggestion.length > 0}
           offset={[0, 0]}
           popperConfig={{ strategy: 'fixed' }}
+          placement={placement}
         >
           {({ props }) => (
             <div className="popup__suggestion" {...props}>
-              <div style={{ width: `${inputRef.current?.clientWidth ?? 100}px` }}>
+              <div style={{ width: `${inputRef?.current?.clientWidth ?? 100}px` }}>
                 {suggestion.map((item, index) => (
                   <div
                     key={item.title}

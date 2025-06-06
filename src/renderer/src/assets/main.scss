@@ -9,11 +9,20 @@ img.logo {
 button {
   background: transparent;
   border: 0;
-  color: #777777;
+  color: #cccccc;
   cursor: pointer;
+  font-size: 16px;
 
   &:hover {
     background: #555555;
+  }
+
+  &.primary {
+    background: #445588;
+
+    &:hover {
+      background: #5566aa;
+    }
   }
 }
 
