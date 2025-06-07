@@ -1,5 +1,9 @@
 import { useCallback, useState } from 'react';
-import { VerticalAnglePicker, WearOptionPicker, IconGroupPicker } from './pickers';
+import {
+  VerticalAnglePicker,
+  WearOptionPicker,
+  IconGroupPicker,
+} from '../pages/image-preview/components/pickers';
 import {
   wearIcons,
   cubeIcons,
@@ -10,7 +14,7 @@ import {
   legVerticalIcons,
   armHorizontalIcons,
   legHorizontalIcons,
-} from './pickertypes';
+} from '../pages/image-preview/components/pickertypes';
 
 function SearchPane(): React.JSX.Element {
   const [faceVertical, setFaceVertical] = useState('normal');

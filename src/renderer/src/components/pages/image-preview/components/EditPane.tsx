@@ -20,107 +20,24 @@ import {
   hairIcons,
   oppaiIcons,
 } from './pickertypes';
-import TabHeaderGroup from '../parts/TabHeaderGroup';
+import TabHeaderGroup from '../../../parts/TabHeaderGroup';
 import { ReactTextChangeEvent } from '@renderer/models/types';
 import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { clearModalResult, openModal } from '@renderer/models/entities/modal_state';
-
-const personDataKeys = [
-  'name',
-  'faceVertical',
-  'faceHorizontal',
-  'faceEmotion',
-  'hairLength',
-  'hairStyle',
-  'hairType',
-  'leftArmHorizontal',
-  'leftArmVertical',
-  'rightArmHorizontal',
-  'rightArmVertical',
-  'leftElbow',
-  'rightElbow',
-  'leftLegHorizontal',
-  'leftLegVertical',
-  'leftKnee',
-  'rightLegHorizontal',
-  'rightLegVertical',
-  'rightKnee',
-  'chestVertical',
-  'chestHorizontal',
-  'oppai',
-  'oppaiSize',
-  'waistVertical',
-  'waistHorizontal',
-  'bodyOthers',
-  'sleep',
-  'leftArmWear',
-  'leftArmWearOptions',
-  'rightArmWear',
-  'rightArmWearOptions',
-  'bodyWear',
-  'bodyWearOptions',
-  'leftLegWear',
-  'leftLegWearOptions',
-  'rightLegWear',
-  'rightLegWearOptions',
-  'wears',
-  'poses',
-  'others',
-];
-
-interface PersonData {
-  name: string;
-  faceVertical: string;
-  faceHorizontal: string;
-  faceEmotion: string;
-  hairLength: string;
-  hairStyle: string;
-  hairType: string[];
-  leftArmHorizontal: string;
-  leftArmVertical: string;
-  rightArmHorizontal: string;
-  rightArmVertical: string;
-  leftElbow: string;
-  rightElbow: string;
-  leftLegHorizontal: string;
-  leftLegVertical: string;
-  leftKnee: string;
-  rightLegHorizontal: string;
-  rightLegVertical: string;
-  rightKnee: string;
-  chestVertical: string;
-  chestHorizontal: string;
-  oppai: string;
-  oppaiSize: string;
-  waistVertical: string;
-  waistHorizontal: string;
-  bodyOthers: string[];
-  sleep: string;
-  leftArmWear: string;
-  leftArmWearOptions: string[];
-  rightArmWear: string;
-  rightArmWearOptions: string[];
-  bodyWear: string;
-  bodyWearOptions: string[];
-  leftLegWear: string;
-  leftLegWearOptions: string[];
-  rightLegWear: string;
-  rightLegWearOptions: string[];
-  wears: string;
-  poses: string;
-  others: string;
-}
-
-const personDataTextInputKeys = ['name', 'faceEmotion', 'hairStyle', 'oppai', 'wears', 'poses', 'others'];
-const personDataStringArrayKeys = [
-  'leftArmWearOptions',
-  'rightArmWearOptions',
-  'bodyWearOptions',
-  'leftLegWearOptions',
-  'rightLegWearOptions',
-  'hairType',
-  'bodyOthers',
-];
+import {
+  InformationData,
+  informationDataKeys,
+  informationDataNumberKeys,
+  informationDataStringArrayKeys,
+  informationDataTextInputKeys,
+  informationDataToEntity,
+  informationEntityToData,
+  PersonData,
+  personDataKeys,
+  personDataStringArrayKeys,
+  personDataTextInputKeys,
+} from '../utils/entity_data_converters';
+import { Image, saveCurrentImage, updateCurrentImage } from '@renderer/models/entities/image_list';
 
 type StateType = (string & string[] & number) | undefined;
 type SetStateType = React.Dispatch<React.SetStateAction<StateType>>;
@@ -493,21 +410,6 @@ const PersonEditor: React.FC<{
   );
 };
 
-const informationDataKeys = ['author', 'url', 'memo', 'evaluation'];
-
-const informationDataTextInputKeys = ['author', 'url', 'memo'];
-
-const informationDataStringArrayKeys = [];
-
-const informationDataNumberKeys = ['evaluation'];
-
-interface InformationData {
-  author: string;
-  url: string;
-  memo: string;
-  evaluation: number;
-}
-
 const InformationEditor: React.FC<{
   initialData?: Partial<InformationData>;
   onChange?: (data: InformationData, diff: { key: string; value: StateType }) => void;
@@ -554,15 +456,33 @@ const initialTabs = [
   { id: 'information', title: '情報' },
 ];
 
-const EditPane: React.FC<object> = () => {
+const EditPane: React.FC<{
+  imageId: number;
+}> = ({ imageId }) => {
+  const image = useAppSelector((state) => state.imageList.items.find((i) => i.id === imageId))!;
+  const { information: informationEntity } = image;
+
   const dispatch = useAppDispatch();
 
+  const [currentImageId, setCurrentImageId] = useState(0);
   const [personTabs, setPersonTabs] = useState([
     { id: 'person-1', title: '人間', data: { name: '人間' } as Partial<PersonData> },
   ]);
   const [selectedTabId, setSelectedTabId] = useState('information');
   const [currentTabPersonData, setCurrentTabPersonData] = useState({ name: '人間' } as Partial<PersonData>);
-  const [informationData, setInformationData] = useState({} as Partial<InformationData>);
+  const [informationData, setInformationData] = useState({} as InformationData);
+
+  useEffect(() => {
+    if (currentImageId !== imageId) {
+      setCurrentImageId(imageId);
+
+      // unmount
+      dispatch(saveCurrentImage());
+
+      // mount
+      setInformationData(informationEntityToData(informationEntity));
+    }
+  }, [currentImageId, setCurrentImageId, imageId, setInformationData, informationEntity, dispatch]);
 
   const handleAddTab = useCallback(() => {
     const ids = personTabs
@@ -650,12 +570,22 @@ const EditPane: React.FC<object> = () => {
     ],
   );
 
+  const handleCurrentImageUpdate = useCallback(
+    (diff: (newImage: Image) => void) => {
+      const newImage = { ...image };
+      newImage.information = informationDataToEntity(informationData, informationEntity);
+      diff(newImage);
+      dispatch(updateCurrentImage(newImage));
+    },
+    [informationData, dispatch, image, informationEntity],
+  );
+
   const handlePersonChange = useCallback(
     (value: PersonData, diff: { key: string; value: StateType }) => {
-      if (diff.key === 'name' && typeof diff.value === 'string') {
-        const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
-        if (!activePersonTab) return;
+      const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
+      if (!activePersonTab) return;
 
+      if (diff.key === 'name' && typeof diff.value === 'string') {
         activePersonTab.title = diff.value;
         setPersonTabs([...personTabs]);
       }
@@ -668,8 +598,11 @@ const EditPane: React.FC<object> = () => {
   const handleInformationChange = useCallback(
     (value: InformationData) => {
       setInformationData(value);
+      handleCurrentImageUpdate(
+        (newImage) => (newImage.information = informationDataToEntity(value, informationEntity)),
+      );
     },
-    [setInformationData],
+    [setInformationData, handleCurrentImageUpdate, informationEntity],
   );
 
   const tabs = [...personTabs, ...initialTabs];

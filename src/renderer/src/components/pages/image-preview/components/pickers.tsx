@@ -1,8 +1,12 @@
 import { ReactClickEvent, ReactMouseEvent } from '@renderer/models/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { SuggestableTextInput, SuggestItem, SuggestOnChangeData } from '../generic/SuggestableTextInput';
-import { replaceCarretLine } from '../utils/carrettextutils';
+import {
+  SuggestableTextInput,
+  SuggestItem,
+  SuggestOnChangeData,
+} from '../../../generic/SuggestableTextInput';
+import { replaceCarretLine } from '../../../utils/carrettextutils';
 import StarIcon from '@renderer/assets/icons/picture/star.svg';
 import StarFillIcon from '@renderer/assets/icons/picture/star-fill.svg';
 

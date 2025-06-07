@@ -1,18 +1,36 @@
 import { useSpring, animated } from '@react-spring/web';
+import { updateMatrix } from '@renderer/models/entities/image_preview_matrix';
+import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { useGesture } from '@use-gesture/react';
 import { useEffect, useRef } from 'react';
 
 const GesturableImage: React.FC<{
-  fileName: string;
-}> = ({ fileName }) => {
-  const imageWidth = 2480;
-  const imageHeight = 3508;
+  imageId: number;
+}> = ({ imageId }) => {
+  const image = useAppSelector((state) => state.imageList.items.find((i) => i.id === imageId))!;
+  const { fileName, width: imageWidth, height: imageHeight } = image;
 
-  const [style, springRef] = useSpring(() => ({
-    x: 0,
-    y: 0,
-    scale: 1,
-  }));
+  const {
+    scale: firstScale,
+    x: firstX,
+    y: firstY,
+  } = useAppSelector((state) => state.imagePreviewMatrixes.matrixes.find((m) => m.imageId === imageId)) ?? {
+    imageId,
+    x: undefined,
+    y: undefined,
+    scale: undefined,
+  };
+
+  const dispatch = useAppDispatch();
+
+  const [style, springRef] = useSpring(
+    () => ({
+      x: firstX ?? 0,
+      y: firstY ?? 0,
+      scale: firstScale ?? 1,
+    }),
+    [firstScale, firstX, firstY],
+  );
 
   const bind = useGesture(
     {
@@ -33,8 +51,9 @@ const GesturableImage: React.FC<{
         const currentWidth = imageWidth * currentScale;
         const targetWidth = currentWidth + (-ds / 100) * 120;
         const targetScale = targetWidth / imageWidth;
+        const scale = Math.max(minScale, targetScale);
 
-        void springRef.start({ scale: Math.max(minScale, targetScale) });
+        void springRef.start({ scale });
       },
     },
     {
@@ -49,13 +68,33 @@ const GesturableImage: React.FC<{
 
   /*
   const handleReset = useCallback(() => {
-    springRef.set({ x: 0, y: 0, scale: 0 });
+    springRef.set({ x: 0, y: 0, scale: 1 });
   }, [springRef]);
   */
+
+  useEffect(() => {
+    return () => {
+      const matrix = { x: style.x.get(), y: style.y.get(), scale: style.scale.get(), imageId };
+      dispatch(updateMatrix(matrix));
+    };
+  }, [imageId, style, dispatch]);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (canvasRef.current?.parentElement && !isNaN(imageWidth) && !isNaN(imageHeight)) {
+      if (
+        typeof firstX !== 'undefined' &&
+        typeof firstY !== 'undefined' &&
+        typeof firstScale !== 'undefined'
+      ) {
+        void springRef.set({
+          scale: firstScale,
+          x: firstX,
+          y: firstY,
+        });
+        return;
+      }
+
       const element = canvasRef.current.parentElement;
 
       const canvasRect = element.getBoundingClientRect();
@@ -63,18 +102,24 @@ const GesturableImage: React.FC<{
       const yScale = Math.min(1, canvasRect.height / imageHeight);
       const scale = Math.min(xScale, yScale);
 
-      springRef.set({
+      void springRef.set({
         scale,
         x: (imageWidth - imageWidth * scale) / -2,
         y: (imageHeight - imageHeight * scale) / -2,
       });
     }
-  }, [fileName, canvasRef, springRef, imageWidth, imageHeight]);
+  }, [fileName, firstX, firstY, firstScale, canvasRef, springRef, imageWidth, imageHeight]);
 
   return (
     <div className="gesturable-image" ref={canvasRef}>
       <div className="canvas" {...bind()} style={{ touchAction: 'none' }}>
-        <animated.img src={fileName} style={style} draggable={false} width={2480} height={3508} />
+        <animated.img
+          src={fileName}
+          style={style}
+          draggable={false}
+          width={imageWidth}
+          height={imageHeight}
+        />
       </div>
     </div>
   );

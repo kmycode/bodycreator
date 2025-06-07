@@ -1,10 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import SampleImage1 from '@renderer/assets/samples/images/sample1.png';
-import SampleImage2 from '@renderer/assets/samples/images/sample2.png';
-import SampleImage3 from '@renderer/assets/samples/images/sample3.png';
 
-interface ImagePreviewTabData {
-  fileName: string;
+export interface ImagePreviewTabData {
+  imageId: number;
 }
 
 export interface WindowTab {
@@ -22,9 +19,9 @@ export interface WindowTabGroup {
 const initialState: WindowTabGroup = {
   activeId: 2,
   tabs: [
-    { id: 2, type: 'image-preview', data: { fileName: SampleImage1 }, title: '画像1' },
-    { id: 3, type: 'image-preview', data: { fileName: SampleImage2 }, title: '画像2' },
-    { id: 4, type: 'image-preview', data: { fileName: SampleImage3 }, title: '画像3' },
+    { id: 2, type: 'image-preview', data: { imageId: 1 }, title: '画像1' },
+    { id: 3, type: 'image-preview', data: { imageId: 2 }, title: '画像2' },
+    { id: 4, type: 'image-preview', data: { imageId: 3 }, title: '画像3' },
   ],
 };
 
