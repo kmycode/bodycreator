@@ -64,17 +64,17 @@ export const faceIcons = [
 ];
 
 export const spineIcons = [
-  { id: 'body-rotate', numId: 1, svg: BodyRotateIcon },
-  { id: 'body-rotate-side', numId: 2, svg: BodyRotateSideIcon },
-  { id: 'body-lean-back', numId: 3, svg: BodyLeanBackIcon },
-  { id: 'body-lean-front', numId: 4, svg: BodyLeanFrontIcon },
+  { id: 'body-rotate', numId: 1, svg: BodyRotateIcon, title: '回旋' },
+  { id: 'body-rotate-side', numId: 2, svg: BodyRotateSideIcon, title: '側屈' },
+  { id: 'body-lean-back', numId: 3, svg: BodyLeanBackIcon, title: '後屈（背中反らし）' },
+  { id: 'body-lean-front', numId: 4, svg: BodyLeanFrontIcon, title: '前屈（前かがみ）' },
 ];
 
 export const oppaiIcons = [
-  { id: 'oppai-small', numId: 1, svg: OppaiSmallIcon },
-  { id: 'oppai-normal', numId: 2, svg: OppaiNormalIcon },
-  { id: 'oppai-big', numId: 3, svg: OppaiBigIcon },
-  { id: 'oppai-large', numId: 4, svg: OppaiLargeIcon },
+  { id: 'oppai-small', numId: 1, svg: OppaiSmallIcon, title: '貧乳・まな板' },
+  { id: 'oppai-normal', numId: 2, svg: OppaiNormalIcon, title: '普通' },
+  { id: 'oppai-big', numId: 3, svg: OppaiBigIcon, title: '巨乳' },
+  { id: 'oppai-large', numId: 4, svg: OppaiLargeIcon, title: '爆乳' },
 ];
 
 export const armHorizontalIcons = [
@@ -134,11 +134,11 @@ export const lineIcons = [
 ];
 
 export const wearIcons = [
-  { id: 'wear-none', numId: 1, svg: WearNoneIcon },
-  { id: 'wear-half-1', numId: 2, svg: WearHalf1Icon },
-  { id: 'wear-half-2', numId: 3, svg: WearHalf2Icon },
-  { id: 'wear-1', numId: 4, svg: Wear1Icon },
-  { id: 'wear-2', numId: 5, svg: Wear2Icon },
+  { id: 'wear-none', numId: 1, svg: WearNoneIcon, title: '裸' },
+  { id: 'wear-half-1', numId: 2, svg: WearHalf1Icon, title: '肌密着（一部裸）' },
+  { id: 'wear-half-2', numId: 3, svg: WearHalf2Icon, title: '服（一部裸）' },
+  { id: 'wear-1', numId: 4, svg: Wear1Icon, title: '肌密着' },
+  { id: 'wear-2', numId: 5, svg: Wear2Icon, title: '服' },
 ];
 
 export const hairIcons = [

@@ -156,6 +156,7 @@ export interface IconItem {
   numId: number;
   svg: string;
   reverse?: boolean;
+  title?: string;
 }
 
 export const IconGroupPicker: React.FC<{
@@ -202,7 +203,12 @@ export const IconGroupPicker: React.FC<{
   return (
     <div className="icongrouppicker">
       {icons.map((icon) => (
-        <button key={icon.id} data-id={icon.id} onClick={handleChange} className="svgbutton">
+        <button
+          key={icon.id}
+          className={classNames({ svgbutton: true, enabled: value === icon.id || values?.includes(icon.id) })}
+          data-id={icon.id}
+          onClick={handleChange}
+        >
           <img
             src={icon.svg}
             className={classNames({
@@ -211,6 +217,7 @@ export const IconGroupPicker: React.FC<{
               reverse: icon.reverse,
             })}
           />
+          <span className="icongrouppicker__title-tip">{icon.title}</span>
         </button>
       ))}
     </div>

@@ -60,6 +60,32 @@
     filter: invert(67%) sepia(12%) saturate(8%) hue-rotate(36deg) brightness(90%) contrast(85%);
   }
 
+  button {
+    position: relative;
+    cursor: pointer;
+  }
+
+  &__title-tip {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 14px;
+    text-align: center;
+    overflow: hidden;
+    color: #f0ff24;
+    pointer-events: none;
+
+    button:hover & {
+      display: block;
+    }
+
+    .enabled & {
+      color: #79ffe2;
+    }
+  }
+
   .reverse {
     transform: scaleX(-1);
   }
