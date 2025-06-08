@@ -6,6 +6,8 @@ import SampleImage3 from '@renderer/assets/samples/images/sample3.png';
 export interface ImagePersonEntity {
   id: number;
   imageId: number;
+  idOfImage: number;
+  name: string;
   faceHorizontal: string;
 }
 
@@ -37,6 +39,7 @@ export interface Image {
   fileName: string;
   width: number;
   height: number;
+  selectedTabId?: string;
   people: ImagePersonEntity[];
   information: ImageInformationEntity;
 }
@@ -115,9 +118,9 @@ export const ImageListSlice = createSlice({
       } = state;
       if (!current) return;
 
-      const exists = state.items.find((m) => m.id === current.id);
-      if (exists) {
-        cloneObject(current, exists);
+      const existsIndex = state.items.findIndex((m) => m.id === current.id);
+      if (existsIndex >= 0) {
+        state.items[existsIndex] = current;
       }
     },
   },

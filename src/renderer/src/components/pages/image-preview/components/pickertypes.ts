@@ -50,6 +50,10 @@ import OppaiLargeIcon from '@renderer/assets/icons/picture/oppai-large.svg';
 import OppaiBigIcon from '@renderer/assets/icons/picture/oppai-big.svg';
 import OppaiNormalIcon from '@renderer/assets/icons/picture/oppai-normal.svg';
 import OppaiSmallIcon from '@renderer/assets/icons/picture/oppai-small.svg';
+import BodyRotateIcon from '@renderer/assets/icons/picture/body-rotate.svg';
+import BodyRotateSideIcon from '@renderer/assets/icons/picture/body-rotate-side.svg';
+import BodyLeanBackIcon from '@renderer/assets/icons/picture/body-lean-back.svg';
+import BodyLeanFrontIcon from '@renderer/assets/icons/picture/body-lean-front.svg';
 
 export const faceIcons = [
   { id: 'face-front', numId: 1, svg: FaceFrontIcon },
@@ -57,6 +61,13 @@ export const faceIcons = [
   { id: 'face-side', numId: 3, svg: FaceSideIcon },
   { id: 'face-back-d', numId: 4, svg: FaceBackDiagIcon },
   { id: 'face-back', numId: 5, svg: FaceBackIcon },
+];
+
+export const spineIcons = [
+  { id: 'body-rotate', numId: 1, svg: BodyRotateIcon },
+  { id: 'body-rotate-side', numId: 2, svg: BodyRotateSideIcon },
+  { id: 'body-lean-back', numId: 3, svg: BodyLeanBackIcon },
+  { id: 'body-lean-front', numId: 4, svg: BodyLeanFrontIcon },
 ];
 
 export const oppaiIcons = [
@@ -77,12 +88,12 @@ export const armHorizontalIcons = [
 ];
 
 export const armVerticalIcons = [
-  { id: 'arm-v-back-d', numId: 1, svg: ArmVerticalBackDiagIcon },
-  { id: 'arm-v-side', numId: 2, svg: ArmVerticalSideIcon },
-  { id: 'arm-v-front-u-d', numId: 3, svg: ArmVerticalFrontUnderDiagIcon },
-  { id: 'arm-v-front', numId: 4, svg: ArmVerticalFrontIcon },
-  { id: 'arm-v-front-d', numId: 5, svg: ArmVerticalFrontDiagIcon },
-  { id: 'arm-v-up', numId: 6, svg: ArmVerticalUpIcon },
+  { reverse: true, id: 'arm-v-back-d', numId: 1, svg: ArmVerticalBackDiagIcon },
+  { reverse: true, id: 'arm-v-side', numId: 2, svg: ArmVerticalSideIcon },
+  { reverse: true, id: 'arm-v-front-u-d', numId: 3, svg: ArmVerticalFrontUnderDiagIcon },
+  { reverse: true, id: 'arm-v-front', numId: 4, svg: ArmVerticalFrontIcon },
+  { reverse: true, id: 'arm-v-front-d', numId: 5, svg: ArmVerticalFrontDiagIcon },
+  { reverse: true, id: 'arm-v-up', numId: 6, svg: ArmVerticalUpIcon },
 ];
 
 export const legHorizontalIcons = [

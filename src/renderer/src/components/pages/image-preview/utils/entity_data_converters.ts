@@ -24,6 +24,7 @@ export const personDataKeys = [
   'chestHorizontal',
   'oppai',
   'oppaiSize',
+  'bodySpine',
   'waistVertical',
   'waistHorizontal',
   'bodyOthers',
@@ -44,6 +45,7 @@ export const personDataKeys = [
 ];
 
 export interface PersonData {
+  idOfImage: number;
   name: string;
   faceVertical: string;
   faceHorizontal: string;
@@ -67,6 +69,7 @@ export interface PersonData {
   chestHorizontal: string;
   oppai: string;
   oppaiSize: string;
+  bodySpine: string[];
   waistVertical: string;
   waistHorizontal: string;
   bodyOthers: string[];
@@ -102,24 +105,33 @@ export const personDataStringArrayKeys = [
   'leftLegWearOptions',
   'rightLegWearOptions',
   'hairType',
+  'bodySpine',
   'bodyOthers',
 ];
 
 export const personEntityToData = (entity: ImagePersonEntity): PersonData => {
-  return personDataKeys.reduce((current, key) => {
-    current[key] = entity[key];
-    return current;
-  }, {}) as PersonData;
-};
-
-export const personDataToEntity = (data: PersonData, entityBase: ImagePersonEntity): ImagePersonEntity => {
   return personDataKeys.reduce(
     (current, key) => {
-      current[key] = data[key];
+      current[key] = entity[key];
       return current;
     },
-    { ...entityBase },
-  ) as ImagePersonEntity;
+    { idOfImage: entity.idOfImage },
+  ) as PersonData;
+};
+
+export const personDataToEntity = (
+  data: PersonData,
+  entityBase: ImagePersonEntity | { imageId: number; idOfImage: number; name: string },
+): ImagePersonEntity => {
+  const initialState = { ...entityBase };
+  if (data.idOfImage) {
+    initialState.idOfImage = data.idOfImage;
+  }
+
+  return personDataKeys.reduce((current, key) => {
+    current[key] = data[key];
+    return current;
+  }, initialState) as ImagePersonEntity;
 };
 
 export const informationDataKeys = ['author', 'url', 'memo', 'evaluation'];

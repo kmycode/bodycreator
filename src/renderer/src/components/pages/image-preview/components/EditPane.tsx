@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   VerticalAnglePicker,
   WearOptionPicker,
@@ -19,6 +19,7 @@ import {
   legHorizontalIcons,
   hairIcons,
   oppaiIcons,
+  spineIcons,
 } from './pickertypes';
 import TabHeaderGroup from '../../../parts/TabHeaderGroup';
 import { ReactTextChangeEvent } from '@renderer/models/types';
@@ -36,6 +37,8 @@ import {
   personDataKeys,
   personDataStringArrayKeys,
   personDataTextInputKeys,
+  personDataToEntity,
+  personEntityToData,
 } from '../utils/entity_data_converters';
 import { Image, saveCurrentImage, updateCurrentImage } from '@renderer/models/entities/image_list';
 
@@ -73,6 +76,7 @@ const generateStates = (keys: string[], keyOptions: KeyOptions): StatesObjectTyp
 const generateCallbacks = (
   keys: string[],
   states: StatesObjectType,
+  dataBase: object | undefined,
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   onChange: ((data: any, diff: { key: string; value: StateType }) => void) | undefined,
 ): CallbacksObjectType => {
@@ -90,7 +94,7 @@ const generateCallbacks = (
           obj[key] = value;
           return obj;
         },
-        {},
+        dataBase ?? {},
       );
       data[key] = value;
 
@@ -141,7 +145,12 @@ const PersonEditor: React.FC<{
     stringArrayKeys: personDataStringArrayKeys,
   });
 
-  const callbacks = generateCallbacks(personDataKeys, states, onChange);
+  const callbacks = generateCallbacks(
+    personDataKeys,
+    states,
+    { idOfImage: initialData?.idOfImage ?? -1 },
+    onChange,
+  );
 
   useEffect(() => {
     updateInitialData(personDataKeys, states, initialData);
@@ -195,6 +204,13 @@ const PersonEditor: React.FC<{
           icons={cubeIcons}
           value={states['chestHorizontal'].state}
           onChange={callbacks['chestHorizontal']}
+        />
+      </div>
+      <div className="searchpane__row">
+        <IconGroupPicker
+          icons={spineIcons}
+          values={states['bodySpine'].state}
+          onChangeMultiple={callbacks['bodySpine']}
         />
       </div>
       <h3>胸</h3>
@@ -420,7 +436,7 @@ const InformationEditor: React.FC<{
     numberKeys: informationDataNumberKeys,
   });
 
-  const callbacks = generateCallbacks(informationDataKeys, states, onChange);
+  const callbacks = generateCallbacks(informationDataKeys, states, {}, onChange);
 
   useEffect(() => {
     updateInitialData(informationDataKeys, states, initialData);
@@ -456,21 +472,75 @@ const initialTabs = [
   { id: 'information', title: '情報' },
 ];
 
+function makeStateToMutable<T>(from: T): T {
+  return { ...from };
+}
+
+interface PersonTab {
+  id: string;
+  title: string;
+  data: Partial<PersonData>;
+}
+
 const EditPane: React.FC<{
   imageId: number;
 }> = ({ imageId }) => {
   const image = useAppSelector((state) => state.imageList.items.find((i) => i.id === imageId))!;
-  const { information: informationEntity } = image;
+  const { information: informationEntity, people: personEntities } = image;
 
   const dispatch = useAppDispatch();
 
+  const mutableImage = useRef<Image>(makeStateToMutable(image));
   const [currentImageId, setCurrentImageId] = useState(0);
-  const [personTabs, setPersonTabs] = useState([
-    { id: 'person-1', title: '人間', data: { name: '人間' } as Partial<PersonData> },
-  ]);
+  const [personTabs, setPersonTabs] = useState([] as PersonTab[]);
   const [selectedTabId, setSelectedTabId] = useState('information');
   const [currentTabPersonData, setCurrentTabPersonData] = useState({ name: '人間' } as Partial<PersonData>);
   const [informationData, setInformationData] = useState({} as InformationData);
+
+  const handleCurrentImageUpdate = useCallback(
+    (diff: (mutableImage: Image) => void) => {
+      const newImage = makeStateToMutable(mutableImage.current);
+
+      diff(newImage);
+      dispatch(updateCurrentImage(newImage));
+
+      mutableImage.current = newImage;
+    },
+    [dispatch, mutableImage],
+  );
+
+  const handleTabChange = useCallback(
+    (value: string, newTabs?: PersonTab[]) => {
+      const tabs = newTabs ?? personTabs;
+
+      const beforeTabId = selectedTabId;
+
+      if (!newTabs && beforeTabId.startsWith('person-')) {
+        const currentTab = tabs.find((tab) => tab.id === beforeTabId);
+        if (currentTab) {
+          currentTab.data = currentTabPersonData;
+          setPersonTabs([...tabs]);
+        }
+      }
+
+      const newTab = tabs.find((tab) => tab.id === value);
+      if (newTab?.data) {
+        setCurrentTabPersonData(newTab.data);
+      }
+
+      setSelectedTabId(value);
+      handleCurrentImageUpdate((newImage) => (newImage.selectedTabId = value));
+    },
+    [
+      selectedTabId,
+      setSelectedTabId,
+      personTabs,
+      setPersonTabs,
+      currentTabPersonData,
+      setCurrentTabPersonData,
+      handleCurrentImageUpdate,
+    ],
+  );
 
   useEffect(() => {
     if (currentImageId !== imageId) {
@@ -480,26 +550,62 @@ const EditPane: React.FC<{
       dispatch(saveCurrentImage());
 
       // mount
+      mutableImage.current = makeStateToMutable(image);
+      const newTabs = personEntities.map((e) => ({
+        id: `person-${e.idOfImage}`,
+        title: e.name,
+        data: personEntityToData(e),
+      }));
+      setCurrentTabPersonData({});
+      setPersonTabs(newTabs);
       setInformationData(informationEntityToData(informationEntity));
+      handleTabChange(image.selectedTabId ?? 'information', newTabs);
     }
-  }, [currentImageId, setCurrentImageId, imageId, setInformationData, informationEntity, dispatch]);
+  }, [
+    image,
+    currentImageId,
+    setCurrentImageId,
+    imageId,
+    setInformationData,
+    informationEntity,
+    dispatch,
+    personEntities,
+    setPersonTabs,
+    setSelectedTabId,
+    setCurrentTabPersonData,
+    mutableImage,
+    handleTabChange,
+  ]);
 
-  const handleAddTab = useCallback(() => {
-    const ids = personTabs
-      .map((tab) => parseInt(tab.id.split('-')[1]))
-      .sort((a, b) => (a > b ? -1 : a === b ? 0 : 1));
-    const maxId = ids[0] ?? 0;
+  const handleAddTab = useCallback(
+    (id: string) => {
+      if (id !== 'person-add') return;
 
-    const newTabs = [...personTabs];
-    newTabs.push({
-      id: `person-${maxId + 1}`,
-      title: '人間',
-      data: { name: '人間' },
-    });
+      const ids = personTabs
+        .map((tab) => parseInt(tab.id.split('-')[1]))
+        .sort((a, b) => (a > b ? -1 : a === b ? 0 : 1));
+      const maxId = ids[0] ?? 0;
 
-    setPersonTabs(newTabs);
-    setSelectedTabId(`person-${maxId + 1}`);
-  }, [personTabs, setPersonTabs, setSelectedTabId]);
+      const newData = { idOfImage: maxId + 1, name: '人間' };
+
+      const newTabs = [...personTabs];
+      newTabs.push({
+        id: `person-${newData.idOfImage}`,
+        title: '人間',
+        data: newData,
+      });
+
+      setPersonTabs(newTabs);
+      handleCurrentImageUpdate(
+        (newImage) =>
+          (newImage.people = [
+            ...newImage.people,
+            personDataToEntity(newData as PersonData, { ...newData, imageId }),
+          ]),
+      );
+    },
+    [personTabs, setPersonTabs, handleCurrentImageUpdate, imageId],
+  );
 
   const handleRemoveTab = useCallback(() => {
     const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
@@ -535,51 +641,6 @@ const EditPane: React.FC<{
     dispatch(clearModalResult());
   }, [modalState, selectedTabId, setPersonTabs, setSelectedTabId, dispatch, personTabs]);
 
-  const handleTabChange = useCallback(
-    (value: string) => {
-      if (value === 'person-add') {
-        handleAddTab();
-        return;
-      }
-
-      const beforeTabId = selectedTabId;
-
-      if (beforeTabId.startsWith('person-')) {
-        const currentTab = personTabs.find((tab) => tab.id === beforeTabId);
-        if (currentTab) {
-          currentTab.data = currentTabPersonData;
-          setPersonTabs([...personTabs]);
-        }
-
-        const newTab = personTabs.find((tab) => tab.id === value);
-        if (newTab) {
-          setCurrentTabPersonData(newTab.data ?? {});
-        }
-      }
-
-      setSelectedTabId(value);
-    },
-    [
-      selectedTabId,
-      setSelectedTabId,
-      personTabs,
-      setPersonTabs,
-      currentTabPersonData,
-      setCurrentTabPersonData,
-      handleAddTab,
-    ],
-  );
-
-  const handleCurrentImageUpdate = useCallback(
-    (diff: (newImage: Image) => void) => {
-      const newImage = { ...image };
-      newImage.information = informationDataToEntity(informationData, informationEntity);
-      diff(newImage);
-      dispatch(updateCurrentImage(newImage));
-    },
-    [informationData, dispatch, image, informationEntity],
-  );
-
   const handlePersonChange = useCallback(
     (value: PersonData, diff: { key: string; value: StateType }) => {
       const activePersonTab = personTabs.find((tab) => tab.id === selectedTabId);
@@ -590,9 +651,22 @@ const EditPane: React.FC<{
         setPersonTabs([...personTabs]);
       }
 
+      if (diff.key === 'faceHorizontal') console.log(`handlePersonChange = ${diff.value}`);
+
       setCurrentTabPersonData(value);
+      handleCurrentImageUpdate((newImage) => {
+        const currentEntityIndex = newImage.people.findIndex((p) => p.idOfImage === value.idOfImage);
+        console.log(`handlePersonChange = idOfImage: ${value.idOfImage} / index: ${currentEntityIndex}`);
+        console.log(
+          `handlePersonChange = newImage.people.length: ${newImage.people.length}, idOfImage: ${newImage.people.map((p) => p.idOfImage).join(', ')}`,
+        );
+        if (currentEntityIndex < 0) return;
+
+        newImage.people = [...newImage.people];
+        newImage.people[currentEntityIndex] = personDataToEntity(value, newImage.people[currentEntityIndex]);
+      });
     },
-    [selectedTabId, personTabs, setPersonTabs, setCurrentTabPersonData],
+    [selectedTabId, personTabs, setPersonTabs, setCurrentTabPersonData, handleCurrentImageUpdate],
   );
 
   const handleInformationChange = useCallback(
@@ -611,7 +685,12 @@ const EditPane: React.FC<{
     <div className="editpane pane">
       <h2>編集</h2>
       <div className="pane-contents">
-        <TabHeaderGroup headers={tabs} selectedId={selectedTabId} onChange={handleTabChange} />
+        <TabHeaderGroup
+          headers={tabs}
+          selectedId={selectedTabId}
+          onChange={handleTabChange}
+          onNew={handleAddTab}
+        />
         <div className="tab-contents">
           {selectedTabId.startsWith('person-') && (
             <>
@@ -629,93 +708,3 @@ const EditPane: React.FC<{
 };
 
 export default EditPane;
-
-/*
-      <div className="searchpane__row">
-        <VerticalAnglePicker value={faceVertical} onChange={handleFaceVerticalChange}/>
-        <IconGroupPicker icons={faceIcons} value={faceHorizontal} onChange={handleFaceHorizontalChange}/>
-      </div>
-      <h3>表情</h3>
-      <input type="text"/>
-      <h3>髪の長さ</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={hairIcons} value={hairLength} onChange={handleHairLengthChange}/>
-      </div>
-      <h3>髪型</h3>
-      <input type="text"/>
-      <h3>胸</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={bodyWear} onChange={handleBodyWearChange}/>
-        <WearOptionPicker values={bodyWearOptions} onChangeValues={handleBodyWearOptionsChange}/>
-      </div>
-      <div className="searchpane__row">
-        <VerticalAnglePicker value={chestVertical} onChange={handleChestVerticalChange}/>
-        <IconGroupPicker icons={cubeIcons} value={chestHorizontal} onChange={handleChestHorizontalChange}/>
-      </div>
-      <h3>腰</h3>
-      <div className="searchpane__row">
-        <VerticalAnglePicker value={waistVertical} onChange={handleWaistVerticalChange}/>
-        <IconGroupPicker icons={cubeIcons} value={waistHorizontal} onChange={handleWaistHorizontalChange}/>
-      </div>
-      <h3>左腕</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={armHorizontalIcons} value={leftArmHorizontal} onChange={handleLeftArmHorizontalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={armVerticalIcons} value={leftArmVertical} onChange={handleLeftArmVerticalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={leftElbow} onChange={handleLeftElbowChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={leftArmWear} onChange={handleLeftArmWearChange}/>
-        <WearOptionPicker values={leftArmWearOptions} onChangeValues={handleLeftArmWearOptionsChange}/>
-      </div>
-      <h3>右腕</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={armHorizontalIcons} value={rightArmHorizontal} onChange={handleRightArmHorizontalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={armVerticalIcons} value={rightArmVertical} onChange={handleRightArmVerticalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={rightElbow} onChange={handleRightElbowChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={rightArmWear} onChange={handleRightArmWearChange}/>
-        <WearOptionPicker values={rightArmWearOptions} onChangeValues={handleRightArmWearOptionsChange}/>
-      </div>
-      <h3>左脚</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={legHorizontalIcons} value={leftLegHorizontal} onChange={handleLeftLegHorizontalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={legVerticalIcons} value={leftLegVertical} onChange={handleLeftLegVerticalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={leftLegWear} onChange={handleLeftLegWearChange}/>
-        <WearOptionPicker values={leftLegWearOptions} onChangeValues={handleLeftLegWearOptionsChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={leftKnee} onChange={handleLeftKneeChange}/>
-      </div>
-      <h3>右脚</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={legHorizontalIcons} value={rightLegHorizontal} onChange={handleRightLegHorizontalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={legVerticalIcons} value={rightLegVertical} onChange={handleRightLegVerticalChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={wearIcons} value={rightLegWear} onChange={handleRightLegWearChange}/>
-        <WearOptionPicker values={rightLegWearOptions} onChangeValues={handleRightLegWearOptionsChange}/>
-      </div>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={lineIcons} value={rightKnee} onChange={handleRightKneeChange}/>
-      </div>
-      <h3>その他</h3>
-      <div className="searchpane__row">
-        <IconGroupPicker icons={sleepIcons} value={sleep} onChange={handleSleepChange}/>
-      </div>
-
-*/

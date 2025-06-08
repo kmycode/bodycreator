@@ -12,7 +12,8 @@ const TabHeaderGroup: React.FC<{
   selectedId?: string;
   headers: TabHeaderItem[];
   onChange?: (id: string) => void;
-}> = ({ selectedId, headers, onChange }) => {
+  onNew?: (id: string) => void;
+}> = ({ selectedId, headers, onChange, onNew }) => {
   const handleClick = useCallback(
     (ev: ReactClickEvent) => {
       if (!onChange) return;
@@ -21,10 +22,15 @@ const TabHeaderGroup: React.FC<{
       const id = target.dataset['id'];
 
       if (id && selectedId !== id) {
+        const newTab = headers.find((h) => h.id === id);
+        if (newTab?.specialTabType === 'new' && onNew) {
+          onNew(id);
+          return;
+        }
         onChange(id);
       }
     },
-    [selectedId, onChange],
+    [selectedId, onChange, onNew, headers],
   );
 
   return (

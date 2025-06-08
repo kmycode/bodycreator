@@ -59,6 +59,10 @@
   button:hover:not(.enabled) img {
     filter: invert(67%) sepia(12%) saturate(8%) hue-rotate(36deg) brightness(90%) contrast(85%);
   }
+
+  .reverse {
+    transform: scaleX(-1);
+  }
 }
 
 .evaluation-picker {
