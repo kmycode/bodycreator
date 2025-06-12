@@ -10,11 +10,11 @@ import {
 import { generateInitialSettingEntity, setSettings, SettingEntity } from '../entities/system_setting';
 import { generateInitialTagEntity, setTags, TagEntity } from '../entities/tag_list';
 import { AppDispatch } from '../store';
-import SampleImage1 from '@renderer/assets/samples/images/sample1.png';
-import SampleImage2 from '@renderer/assets/samples/images/sample2.png';
-import SampleImage3 from '@renderer/assets/samples/images/sample3.png';
 import { generateSqlForInsertEntity } from './dbutil';
 import { databaseMigrations } from './databasemigrations';
+import SampleImage1 from '@renderer/assets/images/sample1.png';
+import SampleImage2 from '@renderer/assets/images/sample2.png';
+import SampleImage3 from '@renderer/assets/images/sample3.png';
 
 const createDatabase = async (): Promise<void> => {
   const db = window.db;
@@ -90,13 +90,13 @@ const setSampleData = async (): Promise<void> => {
   if (imageExists) return;
 
   await db.query(
-    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(1, '${SampleImage1}', 2480, 3508, 0, 0, 0)`,
+    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(1, '1.png', 2480, 3508, 0, 0, 0)`,
   );
   await db.query(
-    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(2, '${SampleImage2}', 2480, 3508, 0, 0, 0)`,
+    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(2, '2.png', 2480, 3508, 0, 0, 0)`,
   );
   await db.query(
-    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(3, '${SampleImage3}', 2480, 3508, 0, 0, 0)`,
+    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(3, '3.png', 2480, 3508, 0, 0, 0)`,
   );
 
   await db.query(
@@ -115,10 +115,33 @@ const resetDatabaseForDebug = async (): Promise<void> => {
   await window.file.delete('database.sqlite3');
 };
 
+const copySampleImages = async (): Promise<void> => {
+  const currentDirectory = await window.file.getCurrentDirectoryFullPath();
+
+  try {
+    await window.file.mkdir(`${currentDirectory}/app_repository/images`);
+    await window.file.copy(
+      `${currentDirectory}/src/renderer${SampleImage1}`,
+      `${currentDirectory}/app_repository/images/1.png`,
+    );
+    await window.file.copy(
+      `${currentDirectory}/src/renderer${SampleImage2}`,
+      `${currentDirectory}/app_repository/images/2.png`,
+    );
+    await window.file.copy(
+      `${currentDirectory}/src/renderer${SampleImage3}`,
+      `${currentDirectory}/app_repository/images/3.png`,
+    );
+  } catch (ex) {
+    console.error(ex);
+  }
+};
+
 export const loadDatabase = async (dispatch: AppDispatch): Promise<void> => {
   const db = window.db;
 
   //await resetDatabaseForDebug();
+  await copySampleImages();
   await createDatabase();
   await migrateDatabase();
   await setSampleData();

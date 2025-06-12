@@ -20,6 +20,9 @@ declare global {
 
   interface FileApi {
     delete: (path: string) => Promise<void>;
+    getCurrentDirectoryFullPath: () => Promise<string>;
+    copy: (from: string, to: string) => Promise<void>;
+    mkdir: (path: string) => Promise<void>;
   }
 
   interface Window {

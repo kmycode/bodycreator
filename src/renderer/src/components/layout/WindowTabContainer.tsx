@@ -1,5 +1,6 @@
 import { useAppSelector } from '@renderer/models/store';
 import { ImagePreviewPage } from '../pages/image-preview/ImagePreviewPage';
+import { ImageListPage } from '../pages/image-list/ImageListPage';
 
 export const WindowTabContainer: React.FC<object> = () => {
   const tabGroup = useAppSelector((state) => state.windowTabGroup);
@@ -11,6 +12,10 @@ export const WindowTabContainer: React.FC<object> = () => {
 
   if (activeTab.type === 'image-preview') {
     return <ImagePreviewPage tab={activeTab} />;
+  }
+
+  if (activeTab.type === 'image-list') {
+    return <ImageListPage tab={activeTab} />;
   }
 
   return undefined;

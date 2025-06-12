@@ -5,3 +5,4 @@ out
 .eslintcache
 *.log*
 *.sqlite3
+app_repository

@@ -19,6 +19,7 @@ function createWindow(): BrowserWindow {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
+      webSecurity: false,
     },
   });
 
@@ -100,6 +101,36 @@ app.whenReady().then(() => {
         } catch (ex) {
           reject(ex);
         }
+      }),
+  );
+
+  ipcMain.handle(
+    'file.getCurrentDirectoryFullPath',
+    () =>
+      new Promise((resolve) => {
+        resolve(process.cwd());
+      }),
+  );
+
+  ipcMain.handle(
+    'file.copy',
+    (_ev, from, to) =>
+      new Promise((resolve, reject) => {
+        fs.copyFile(from, to, (err) => {
+          if (err) reject(err);
+          resolve(undefined);
+        });
+      }),
+  );
+
+  ipcMain.handle(
+    'file.mkdir',
+    (_ev, path) =>
+      new Promise((resolve, reject) => {
+        fs.mkdir(path, { recursive: true }, (err) => {
+          if (err) reject(err);
+          resolve(undefined);
+        });
       }),
   );
 

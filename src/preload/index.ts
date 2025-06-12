@@ -17,6 +17,9 @@ const db = {
 
 const file = {
   delete: async (path) => ipcRenderer.invoke('file.delete', path),
+  getCurrentDirectoryFullPath: async () => ipcRenderer.invoke('file.getCurrentDirectoryFullPath'),
+  copy: async (from, to) => ipcRenderer.invoke('file.copy', from, to),
+  mkdir: async (path) => ipcRenderer.invoke('file.mkdir', path),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

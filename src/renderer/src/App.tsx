@@ -4,7 +4,7 @@ import { ModalRoot } from './components/layout/ModalRoot';
 //import SearchPane from './components/layout/SearchPane';
 import WindowHeader from './components/layout/WindowHeader';
 import { WindowTabContainer } from './components/layout/WindowTabContainer';
-import { setInitialLoadStatus } from './models/entities/app_system';
+import { setCurrentDirectory, setInitialLoadStatus } from './models/entities/app_system';
 import { useAppDispatch, useAppSelector } from './models/store';
 import { loadDatabase } from './models/utils/databaseinitializer';
 
@@ -14,6 +14,8 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     if (loadStatus === 'notyet') {
+      window.file.getCurrentDirectoryFullPath().then((path) => dispatch(setCurrentDirectory({ path })));
+
       dispatch(setInitialLoadStatus({ status: 'loading' }));
       loadDatabase(dispatch)
         .then(() => {

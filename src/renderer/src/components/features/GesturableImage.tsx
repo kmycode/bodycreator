@@ -9,6 +9,7 @@ const GesturableImage: React.FC<{
 }> = ({ imageId }) => {
   const image = useAppSelector((state) => state.imageList.items[imageId])!;
   const { fileName, width: imageWidth, height: imageHeight } = image;
+  const currentDirectory = useAppSelector((state) => state.system.currentDirectory);
 
   const {
     scale: firstScale,
@@ -114,7 +115,7 @@ const GesturableImage: React.FC<{
     <div className="gesturable-image" ref={canvasRef}>
       <div className="canvas" {...bind()} style={{ touchAction: 'none' }}>
         <animated.img
-          src={fileName}
+          src={`${currentDirectory}/app_repository/images/${fileName}`}
           style={style}
           draggable={false}
           width={imageWidth}
