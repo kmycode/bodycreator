@@ -77,7 +77,7 @@ export const saveImageToDatabase = async (
   return { imageId, peopleIds, backgroundIds };
 };
 
-const pickTagNames = (text: string): string => {
+const pickTagNames = (text: string): string[] => {
   return text
     .replaceAll('\r', '')
     .split('\n')
