@@ -19,6 +19,7 @@ import {
   generateInitialImageBackgroundEntity,
   generateInitialImagePersonEntity,
   Image,
+  saveCurrentImage,
   updateCurrentImage,
 } from '@renderer/models/entities/image_list';
 import { PersonEditor } from './PersonEditor';
@@ -124,9 +125,11 @@ const EditPane: React.FC<{
       setCurrentImageId(imageId);
 
       // unmount
+      dispatch(saveCurrentImage());
 
       // mount
       mutableImage.current = makeStateToMutable(image, { saveStatus: 'unchanged' });
+      dispatch(updateCurrentImage(mutableImage.current));
       const newTabs = personEntities
         .map(
           (e) =>

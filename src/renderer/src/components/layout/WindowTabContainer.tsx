@@ -25,11 +25,14 @@ export const WindowTabContainer: React.FC<object> = () => {
 
       // タブの終了処理
       if (prevTab.type === 'image-preview') {
-        const image = store.getState().imageList.current.image;
+        if (activeTab.type !== 'image-preview') {
+          dispatch(saveCurrentImage());
+        }
+        const image = store.getState().imageList.current.savingImage;
+
         if (image) {
           const process = async (): Promise<void> => {
             const imageId = image.id;
-            dispatch(saveCurrentImage());
 
             if (image.saveStatus === 'ready') {
               dispatch(startSavingImage({ imageId }));

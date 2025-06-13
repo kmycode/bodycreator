@@ -202,13 +202,14 @@ export type Image = ImageEntity & ImageAppData;
 
 export interface ImageList {
   items: { [id: number]: Image };
-  current: { image: Image | undefined };
+  current: { image: Image | null; savingImage: Image | null };
 }
 
 const initialState: ImageList = {
   items: {},
   current: {
-    image: undefined,
+    image: null,
+    savingImage: null,
   },
 };
 
@@ -247,6 +248,7 @@ export const ImageListSlice = createSlice({
       if (!current) return;
 
       state.items[current.id] = current;
+      state.current.savingImage = current;
     },
 
     setImageIds: (
@@ -290,6 +292,7 @@ export const ImageListSlice = createSlice({
       if (!image) return;
 
       image.saveStatus = 'saved';
+      state.current.savingImage = null;
     },
 
     setImageElements: (
