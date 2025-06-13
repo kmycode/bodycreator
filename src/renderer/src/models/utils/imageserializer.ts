@@ -123,8 +123,8 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
       const adds = newPairs.filter((np) => !currentPairs.some((cp) => cp.tag.name === np.name));
 
       for (const remove of removes) {
+        remove.tag = { ...remove.tag, usage: remove.tag.usage - 1 };
         removeTags.push(remove.tag);
-        remove.tag.usage--;
         await window.db.query(`DELETE FROM image_tags WHERE id = ${remove.imageTag.id}`);
       }
 
@@ -157,8 +157,12 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
     }
   }
 
-  for (const remove of removeTags.filter((rt) => rt.usage <= 0)) {
-    await window.db.query(`DELETE FROM tags WHERE id = ${remove.id}`);
+  for (const remove of removeTags) {
+    if (remove.usage <= 0) {
+      await window.db.query(`DELETE FROM tags WHERE id = ${remove.id}`);
+    } else {
+      await window.db.query(`UPDATE tags SET usage = ${remove.usage} WHERE id = ${remove.id}`);
+    }
   }
 
   dispatch(updateTags({ tags: addTags.concat(removeTags) }));
