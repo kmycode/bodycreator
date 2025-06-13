@@ -1,11 +1,52 @@
-import { useAppSelector } from '@renderer/models/store';
+import { store, useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { ImagePreviewPage } from '../pages/image-preview/ImagePreviewPage';
 import { ImageListPage } from '../pages/image-list/ImageListPage';
+import { useEffect, useRef } from 'react';
+import {
+  finishSavingImage,
+  saveCurrentImage,
+  setImageIds,
+  startSavingImage,
+} from '@renderer/models/entities/image_list';
+import { saveImageTagToDatabase, saveImageToDatabase } from '@renderer/models/utils/imageserializer';
 
 export const WindowTabContainer: React.FC<object> = () => {
-  const tabGroup = useAppSelector((state) => state.windowTabGroup);
+  const activeTabId = useAppSelector((state) => state.windowTabGroup.activeId);
+  const activeTab = useAppSelector((state) =>
+    state.windowTabGroup.tabs.find((tab) => tab.id === activeTabId),
+  );
 
-  const activeTab = tabGroup.tabs.find((tab) => tabGroup.activeId === tab.id);
+  const currentTab = useRef(activeTab);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (currentTab.current && activeTab && currentTab.current.id !== activeTab.id) {
+      const prevTab = currentTab.current;
+
+      // タブの終了処理
+      if (prevTab.type === 'image-preview') {
+        const image = store.getState().imageList.current.image;
+        if (image) {
+          const process = async (): Promise<void> => {
+            const imageId = image.id;
+            dispatch(saveCurrentImage());
+
+            if (image.saveStatus === 'ready') {
+              dispatch(startSavingImage({ imageId }));
+              const ids = await saveImageToDatabase(image);
+              dispatch(setImageIds(ids));
+              await saveImageTagToDatabase(dispatch, image);
+              dispatch(finishSavingImage({ imageId }));
+            }
+          };
+          process();
+        }
+      }
+
+      currentTab.current = activeTab;
+    }
+  }, [dispatch, activeTab, currentTab]);
+
   if (!activeTab) {
     return undefined;
   }

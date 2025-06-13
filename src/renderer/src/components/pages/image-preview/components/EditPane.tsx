@@ -16,19 +16,15 @@ import {
   StateType,
 } from '../utils/entity_data_converters';
 import {
-  finishSavingImage,
   generateInitialImageBackgroundEntity,
   generateInitialImagePersonEntity,
   Image,
-  saveCurrentImage,
-  setImageIds,
-  startSavingImage,
   updateCurrentImage,
 } from '@renderer/models/entities/image_list';
 import { PersonEditor } from './PersonEditor';
 import { BackgroundEditor } from './BackgroundEditor';
 import { InformationEditor } from './InformationEditor';
-import { loadImageElements, saveImageToDatabase } from '@renderer/models/utils/imageserializer';
+import { loadImageElements } from '@renderer/models/utils/imageserializer';
 
 const initialTabs = [{ id: 'information', title: '情報' }];
 
@@ -128,15 +124,6 @@ const EditPane: React.FC<{
       setCurrentImageId(imageId);
 
       // unmount
-      dispatch(saveCurrentImage());
-      if (mutableImage.current?.saveStatus === 'ready') {
-        console.log(`save ${mutableImage.current.id}`);
-        dispatch(startSavingImage({ imageId }));
-        saveImageToDatabase(mutableImage.current).then((ids) => {
-          dispatch(setImageIds(ids));
-          dispatch(finishSavingImage({ imageId }));
-        });
-      }
 
       // mount
       mutableImage.current = makeStateToMutable(image, { saveStatus: 'unchanged' });

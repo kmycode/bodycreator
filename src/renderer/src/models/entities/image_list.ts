@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface ImagePersonEntity {
   id: number;
@@ -69,7 +69,6 @@ export interface ImageInformationEntity {
 export interface ImageTagEntity {
   id: number;
   imageId: number;
-  elementType: 1 | 2; // Person = 1, Background = 2
   elementId: number;
   tagId: number;
 }
@@ -157,7 +156,6 @@ export const generateInitialImageTagEntity = (merge?: Partial<ImageTagEntity>): 
   return {
     id: 0,
     imageId: 0,
-    elementType: 1,
     elementId: 0,
     tagId: 0,
     ...merge,
@@ -312,6 +310,27 @@ export const ImageListSlice = createSlice({
       image.loadStatus = 'loaded';
     },
   },
+  selectors: {
+    getFilteredImages: createSelector(
+      [
+        (state: ImageList) => state.items,
+        (_: ImageList, filteredImageIds: number[] | null) => filteredImageIds,
+      ],
+      (items, filteredImageIds) => {
+        if (filteredImageIds) {
+          return filteredImageIds.reduce((obj, imageId) => {
+            const img = items[imageId];
+            if (img) {
+              obj.push(img);
+            }
+            return obj;
+          }, [] as Image[]);
+        } else {
+          return Object.values(items);
+        }
+      },
+    ),
+  },
 });
 export default ImageListSlice.reducer;
 export const {
@@ -326,3 +345,4 @@ export const {
   startSavingImage,
   finishSavingImage,
 } = ImageListSlice.actions;
+export const { getFilteredImages } = ImageListSlice.selectors;

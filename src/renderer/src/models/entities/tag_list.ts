@@ -3,25 +3,27 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface TagEntity {
   id: number;
   name: string;
-  imagesCount: number;
+  category: string;
+  usage: number;
 }
 
 export const generateInitialTagEntity = (): TagEntity => {
   return {
     id: 0,
     name: '',
-    imagesCount: 0,
+    category: '',
+    usage: 0,
   };
 };
 
+type TagListItemsType = { [category: string]: TagEntity[] };
+
 export interface TagList {
-  items: { [id: number]: TagEntity[] };
-  idOfNames: { [name: string]: number };
+  items: TagListItemsType;
 }
 
 const initialState: TagList = {
   items: {},
-  idOfNames: {},
 };
 
 export const TagListSlice = createSlice({
@@ -29,17 +31,32 @@ export const TagListSlice = createSlice({
   initialState,
   reducers: {
     setTags: (state, action: PayloadAction<{ tags: TagEntity[] }>) => {
-      state.items = action.payload.tags.reduce((obj, tag) => {
-        obj[tag.id] = tag;
-        return obj;
-      }, {});
+      const items: TagListItemsType = {};
+      for (const tag of action.payload.tags) {
+        (items[tag.category] ??= []).push(tag);
+      }
+      state.items = items;
+    },
 
-      state.idOfNames = action.payload.tags.reduce((obj, tag) => {
-        obj[tag.name] = tag.id;
-        return obj;
-      }, {});
+    updateTags: (state, action: PayloadAction<{ tags: TagEntity[] }>) => {
+      for (const tag of action.payload.tags) {
+        const existTags = (state.items[tag.category] ??= []);
+        const existIndex = existTags.findIndex((et) => et.id === tag.id);
+
+        if (tag.usage > 0) {
+          if (existIndex < 0) {
+            existTags.push(tag);
+          } else {
+            existTags[existIndex] = tag;
+          }
+        } else {
+          if (existIndex >= 0) {
+            existTags.splice(existIndex, 1);
+          }
+        }
+      }
     },
   },
 });
 export default TagListSlice.reducer;
-export const { setTags } = TagListSlice.actions;
+export const { setTags, updateTags } = TagListSlice.actions;

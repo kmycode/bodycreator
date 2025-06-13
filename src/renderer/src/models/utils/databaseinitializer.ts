@@ -43,6 +43,16 @@ const createDatabase = async (): Promise<void> => {
     return `CREATE TABLE IF NOT EXISTS ${tableName} (${columnsSql})`;
   };
 
+  const generateSqlForCreateIndex = (tableName: string, columnNames: string | string[]): string => {
+    if (typeof columnNames === 'string') {
+      const indexName = `i_${tableName}_${columnNames}`;
+      return `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${columnNames})`;
+    } else {
+      const indexName = `i_${tableName}_${columnNames.join('_')}`;
+      return `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${columnNames.join(', ')})`;
+    }
+  };
+
   await db.query(generateSqlForCreateTable('people', generateInitialImagePersonEntity()));
   await db.query(generateSqlForCreateTable('backgrounds', generateInitialImageBackgroundEntity()));
   await db.query(generateSqlForCreateTable('informations', generateInitialImageInformationEntity()));
@@ -53,6 +63,8 @@ const createDatabase = async (): Promise<void> => {
   await db.query(generateSqlForCreateTable('app_settings', generateInitialSettingEntity()), {
     destination: 'app',
   });
+
+  await db.query(generateSqlForCreateIndex('image_tags', 'imageId'));
 
   await db.query(
     generateSqlForInsertEntity('settings', {
