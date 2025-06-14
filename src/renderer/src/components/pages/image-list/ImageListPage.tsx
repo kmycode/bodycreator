@@ -34,6 +34,7 @@ export const ImageListPage: React.FC<{
             src={`${currentDirectory}/app_repository/images/${image.fileName}`}
             width={image.width * (200 / image.height)}
             height={200}
+            draggable={false}
           />
         </button>
       ))}

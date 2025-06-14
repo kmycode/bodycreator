@@ -1,4 +1,5 @@
 import {
+  addNewImage,
   errorLoadingImageElements,
   Image,
   ImageBackgroundEntity,
@@ -12,6 +13,7 @@ import {
 import { TagEntity, updateTags } from '../entities/tag_list';
 import { AppDispatch, store } from '../store';
 import { saveDatabaseEntity } from './dbutil';
+import { imageSize } from 'image-size';
 
 export const loadImageElements = async (dispatch: AppDispatch, imageId: number): Promise<void> => {
   const db = window.db;
@@ -167,4 +169,50 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
   }
 
   dispatch(updateTags({ tags: addTags.concat(removeTags) }));
+};
+
+export const createImageByBuffer = async (
+  dispatch: AppDispatch,
+  ext: string,
+  buffer: ArrayBuffer,
+): Promise<void> => {
+  if (!ext || !['png', 'jpg', 'jpeg', 'bmp', 'tiff', 'gif', 'webp'].includes(ext)) return;
+
+  const currentDirectory = store.getState().system.currentDirectory;
+
+  const tmpFileName = `${parseInt(`${Math.random() * 1000000}`)}.${ext}`;
+  const tmpPath = `${currentDirectory}/app_repository/tmp/${tmpFileName}`;
+  window.file.saveFromBuffer(tmpPath, buffer);
+
+  const size = imageSize(new Uint8Array(buffer));
+  if (!size.width || !size.height) return;
+
+  const image: ImageEntity = {
+    id: 0,
+    fileName: '',
+    width: size.width,
+    height: size.height,
+    peopleSize: 0,
+    backgroundsSize: 0,
+    evaluation: 0,
+  };
+  image.id = await saveDatabaseEntity('images', image);
+  image.fileName = `${image.id}.${ext}`;
+  const filePath = `${currentDirectory}/app_repository/images/${image.fileName}`;
+  await window.db.query(`UPDATE images SET fileName='${image.fileName}' WHERE id = ${image.id}`);
+
+  const information: ImageInformationEntity = {
+    id: 0,
+    imageId: image.id,
+    evaluation: 0,
+    author: '',
+    memo: '',
+    url: '',
+  };
+  information.id = await saveDatabaseEntity('informations', information);
+
+  dispatch(addNewImage({ image, information }));
+
+  await window.file.copy(tmpPath, filePath);
+  await window.file.delete(tmpPath);
 };

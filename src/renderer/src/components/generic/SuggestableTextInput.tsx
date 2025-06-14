@@ -33,6 +33,13 @@ export const SuggestableTextInput: React.FC<{
   const [placement, setPlacement] = useState('bottom' as 'bottom' | 'top');
   const [rowSize, setRowSize] = useState(1);
 
+  const updateRowSize = useCallback(
+    (text: string) => {
+      setRowSize(Math.min(4, text.replace('\r', '').split('\n').length));
+    },
+    [setRowSize],
+  );
+
   const updatePlacement = useMemo(
     () => () => {
       if (inputRef && inputRef.current) {
@@ -102,11 +109,9 @@ export const SuggestableTextInput: React.FC<{
       const { value: text, selectionStart } = ev.currentTarget;
       const editingLine = getCarretLineData(text, selectionStart);
 
-      setRowSize(Math.min(4, text.replace('\r', '').split('\n').length));
-
       onChange(text, { bySuggestion: false, ...editingLine }, suggestionCallback);
     },
-    [onChange, suggestionCallback, setRowSize],
+    [onChange, suggestionCallback],
   );
 
   const handleBlur = useCallback(() => setShowSuggestion(false), [setShowSuggestion]);
@@ -186,6 +191,10 @@ export const SuggestableTextInput: React.FC<{
   useEffect(() => {
     startSuggestion();
   }, [startSuggestion]);
+
+  useEffect(() => {
+    if (value) updateRowSize(value);
+  }, [value, updateRowSize]);
 
   const inputProps = useMemo(() => {
     return {
