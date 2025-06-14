@@ -18,6 +18,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       method: 'POST',
       body: JSON.stringify(request.data),
       headers: { 'Content-Type': 'application/json' },
+    }).catch((ex) => {
+      console.error(ex);
+      chrome.tabs.sendMessage(sender.tab.id, 'sendBufferError');
     });
   }
 });

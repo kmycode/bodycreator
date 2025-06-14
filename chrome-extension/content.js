@@ -42,5 +42,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         reader.readAsDataURL(buffer);
       }),
     );
+  } else if (request === 'sendBufferError') {
+    alert(
+      '高橋への送信に失敗しました。\n\n高橋は起動していますか？\n高橋のほうにエラーは出力されていませんか？',
+    );
   }
 });
