@@ -32,11 +32,7 @@ export interface WindowTabGroup {
 
 const initialState: WindowTabGroup = {
   activeId: 1,
-  tabs: [
-    { id: 1, type: 'image-list', data: { filteredImageIds: null }, title: '一覧' },
-    { id: 2, type: 'image-preview', data: { imageId: 1 }, title: '画像 1' },
-    { id: 3, type: 'image-preview', data: { imageId: 2 }, title: '画像 2' },
-  ],
+  tabs: [{ id: 1, type: 'image-list', data: { filteredImageIds: null }, title: '一覧' }],
 };
 
 export const WindowTabGroupSlice = createSlice({
