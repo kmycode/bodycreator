@@ -1,6 +1,10 @@
-# bodycreator
+# 高橋
 
-An Electron application with React and TypeScript
+高橋は、[あすか](https://kmy.blue/@askyq)専用の画像整理ソフトです。あすかの絵の練習とかおえかき時の資料検索とかのために使います。
+
+一般の人でも使えるようにするための自由度とか全く考慮していないので、他の人は使う前に自分で改造することをおすすめします。
+
+Electron+React+Redux+TypeScript+SCSSで開発しています。Google Chromeで動作する拡張機能が`chrome_extension`ディレクトリ内にあり、これを使用するとpixivなど外部サイトの画像を右クリックしてメニューを選択することで、高橋に取り込むことができます。
 
 ## Recommended IDE Setup
 
