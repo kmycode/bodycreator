@@ -12,19 +12,35 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request == 'getClickedImageBuffer') {
     if (!targetElement || targetElement.tagName?.toLowerCase() !== 'img') return;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = targetElement.width;
-    canvas.height = targetElement.height;
-    canvas.getContext('2d').drawImage(targetElement, 0, 0);
+    fetch(targetElement.src).then((data) =>
+      data.blob().then((buffer) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          // data:image/jpeg;base64,
+          const bufferData = reader.result.split('base64,');
+          const mimeType = bufferData[0].slice(5, -1);
+          const base64 = bufferData[1];
 
-    canvas.toBlob(
-      (b) => {
-        console.log(b);
-      },
-      'image/png',
-      1.0,
+          const supportTypes = {
+            'image/jpeg': 'jpg',
+            'image/jpg': 'jpg',
+            'image/png': 'png',
+            'image/gif': 'gif',
+            'image/bmp': 'bmp',
+            'image/tiff': 'tiff',
+            'image/webp': 'webp',
+          };
+          const ext = supportTypes[mimeType];
+          if (!ext) return;
+
+          chrome.runtime.sendMessage({
+            type: 'sendBuffer',
+            data: { buffer: base64, ext, title: document.title, url: document.URL },
+          });
+        };
+        reader.onerror = (err) => console.error(err);
+        reader.readAsDataURL(buffer);
+      }),
     );
-
-    sendResponse({ value: '' });
   }
 });

@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import fs from 'fs';
 import { Database } from 'sqlite3';
+import { launchServer } from './server';
 const db = new Database('./database.sqlite3');
 const appDb = new Database('./app.sqlite3');
 
@@ -42,6 +43,8 @@ function createWindow(): BrowserWindow {
 
   return mainWindow;
 }
+
+launchServer();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -138,7 +141,7 @@ app.whenReady().then(() => {
     'file.saveFromBuffer',
     (_ev, path, buffer) =>
       new Promise((resolve, reject) => {
-        fs.appendFile(path, Buffer.from(buffer), (err) => {
+        fs.writeFile(path, Buffer.from(buffer), (err) => {
           if (err) reject(err);
           resolve(undefined);
         });
