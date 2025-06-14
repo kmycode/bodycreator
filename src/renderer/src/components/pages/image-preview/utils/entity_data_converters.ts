@@ -9,6 +9,7 @@ import {
   armHorizontalIcons,
   armVerticalIcons,
   cubeIcons,
+  directionInfo,
   faceIcons,
   hairIcons,
   hairTypeInfo,
@@ -29,6 +30,7 @@ export const personDataKeys = [
   'name',
   'faceVertical',
   'faceHorizontal',
+  'faceDirection',
   'faceEmotion',
   'hairLength',
   'hairStyle',
@@ -47,11 +49,13 @@ export const personDataKeys = [
   'rightKnee',
   'chestVertical',
   'chestHorizontal',
+  'chestDirection',
   'oppai',
   'oppaiSize',
   'bodySpine',
   'waistVertical',
   'waistHorizontal',
+  'waistDirection',
   'bodyOthers',
   'sleep',
   'leftArmWear',
@@ -75,6 +79,7 @@ export interface PersonData {
   name: string;
   faceVertical: string;
   faceHorizontal: string;
+  faceDirection: string;
   faceEmotion: string;
   hairLength: string;
   hairStyle: string;
@@ -93,11 +98,13 @@ export interface PersonData {
   rightKnee: string;
   chestVertical: string;
   chestHorizontal: string;
+  chestDirection: string;
   oppai: string;
   oppaiSize: string;
   bodySpine: string[];
   waistVertical: string;
   waistHorizontal: string;
+  waistDirection: string;
   bodyOthers: string;
   sleep: string;
   leftArmWear: string;
@@ -140,6 +147,7 @@ export const personDataStringArrayKeys = [
 const personEntityDataConvertInfo: { [key: string]: EntityDataConvertInfo } = {
   faceHorizontal: { multiple: false, items: faceIcons },
   faceVertical: { multiple: false, items: verticalAngleInfo },
+  faceDirection: { multiple: false, items: directionInfo },
   hairType: { multiple: true, items: hairTypeInfo },
   hairLength: { multiple: false, items: hairIcons },
   leftArmHorizontal: { multiple: false, items: armHorizontalIcons },
@@ -156,9 +164,11 @@ const personEntityDataConvertInfo: { [key: string]: EntityDataConvertInfo } = {
   rightKnee: { multiple: false, items: lineIcons },
   chestVertical: { multiple: false, items: verticalAngleInfo },
   chestHorizontal: { multiple: false, items: cubeIcons },
+  chestDirection: { multiple: false, items: directionInfo },
   oppaiSize: { multiple: false, items: oppaiIcons },
   waistVertical: { multiple: false, items: verticalAngleInfo },
   waistHorizontal: { multiple: false, items: cubeIcons },
+  waistDirection: { multiple: false, items: directionInfo },
   sleep: { multiple: false, items: sleepIcons },
   leftArmWear: { multiple: false, items: wearIcons },
   rightArmWear: { multiple: false, items: wearIcons },

@@ -152,6 +152,11 @@ export const verticalAngleInfo = [
   { id: 'low', numId: 2, title: 'アオリ' },
 ];
 
+export const directionInfo = [
+  { id: 'left', numId: 1, title: '左向き' },
+  { id: 'right', numId: 2, title: '右向き' },
+];
+
 export const hairTypeInfo = [
   { id: 'tidire', numId: 1, title: '縮れ' },
   { id: 'maki', numId: 2, title: '巻き' },

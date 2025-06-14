@@ -16,6 +16,7 @@ import {
   verticalAngleInfo,
   hairTypeInfo,
   wearOptionsInfo,
+  directionInfo,
 } from './pickertypes';
 import { ReactTextChangeEvent } from '@renderer/models/types';
 import {
@@ -71,6 +72,11 @@ export const PersonEditor: React.FC<{
           value={states['faceVertical'].state}
           onChange={callbacks['faceVertical']}
         />
+        <SmallTextButtonGroupPicker
+          items={directionInfo}
+          value={states['faceDirection'].state}
+          onChange={callbacks['faceDirection']}
+        />
         <IconGroupPicker
           icons={faceIcons}
           value={states['faceHorizontal'].state}
@@ -115,6 +121,11 @@ export const PersonEditor: React.FC<{
           items={verticalAngleInfo}
           value={states['chestVertical'].state}
           onChange={callbacks['chestVertical']}
+        />
+        <SmallTextButtonGroupPicker
+          items={directionInfo}
+          value={states['chestDirection'].state}
+          onChange={callbacks['chestDirection']}
         />
         <IconGroupPicker
           icons={cubeIcons}
@@ -166,6 +177,11 @@ export const PersonEditor: React.FC<{
           items={verticalAngleInfo}
           value={states['waistVertical'].state}
           onChange={callbacks['waistVertical']}
+        />
+        <SmallTextButtonGroupPicker
+          items={directionInfo}
+          value={states['waistDirection'].state}
+          onChange={callbacks['waistDirection']}
         />
         <IconGroupPicker
           icons={cubeIcons}

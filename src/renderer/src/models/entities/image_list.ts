@@ -7,6 +7,7 @@ export interface ImagePersonEntity {
   name: string;
   faceVertical: number;
   faceHorizontal: number;
+  faceDirection: number;
   faceEmotion: string;
   hairLength: number;
   hairStyle: string;
@@ -25,11 +26,13 @@ export interface ImagePersonEntity {
   rightKnee: number;
   chestVertical: number;
   chestHorizontal: number;
+  chestDirection: number;
   oppai: string;
   oppaiSize: number;
   bodySpine: number;
   waistVertical: number;
   waistHorizontal: number;
+  waistDirection: number;
   bodyOthers: string;
   sleep: number;
   leftArmWear: number;
@@ -82,6 +85,7 @@ export const generateInitialImagePersonEntity = (merge?: Partial<ImagePersonEnti
     name: '人間',
     faceVertical: 0,
     faceHorizontal: 0,
+    faceDirection: 0,
     faceEmotion: '',
     hairLength: 0,
     hairStyle: '',
@@ -100,11 +104,13 @@ export const generateInitialImagePersonEntity = (merge?: Partial<ImagePersonEnti
     rightKnee: 0,
     chestVertical: 0,
     chestHorizontal: 0,
+    chestDirection: 0,
     oppai: '',
     oppaiSize: 0,
     bodySpine: 0,
     waistVertical: 0,
     waistHorizontal: 0,
+    waistDirection: 0,
     bodyOthers: '',
     sleep: 0,
     leftArmWear: 0,
