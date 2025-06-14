@@ -38,7 +38,7 @@ export const FileDropReceiver: React.FC<unknown> = () => {
 
         const buffer = await file.arrayBuffer();
 
-        await createImageByBuffer(dispatch, ext, buffer);
+        await createImageByBuffer(dispatch, ext, buffer, { memo: file.name });
       }
 
       ev.dataTransfer.clearData();
