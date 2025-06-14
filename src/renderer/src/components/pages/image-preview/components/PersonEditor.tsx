@@ -22,6 +22,7 @@ import {
   generateCallbacks,
   generateStates,
   handleGenericTextInputChange,
+  handleSuggestGeneric,
   PersonData,
   personDataKeys,
   personDataStringArrayKeys,
@@ -57,6 +58,8 @@ export const PersonEditor: React.FC<{
     [callbacks],
   );
 
+  const handleSuggest = handleSuggestGeneric;
+
   return (
     <div>
       <h3>名前</h3>
@@ -79,6 +82,9 @@ export const PersonEditor: React.FC<{
         value={states['faceEmotion'].state}
         onChange={callbacks['faceEmotion']}
         selection={['真顔', 'ほほえみ', '笑い', '挑発', '感じる', '悲しい', '泣く', '怖い', '怒り']}
+        name="faceEmotion"
+        onSuggest={handleSuggest}
+        multiline
       />
       <h3>髪の長さ</h3>
       <div className="searchpane__row">
@@ -99,6 +105,9 @@ export const PersonEditor: React.FC<{
         value={states['hairStyle'].state}
         onChange={callbacks['hairStyle']}
         selection={['ストレート', 'ポニーテール', 'ツインテール']}
+        name="hairStyle"
+        onSuggest={handleSuggest}
+        multiline
       />
       <h3>胴体</h3>
       <div className="searchpane__row">
@@ -147,6 +156,9 @@ export const PersonEditor: React.FC<{
         value={states['oppai'].state}
         onChange={callbacks['oppai']}
         selection={['上げ', '潰し', '揉み', '自分揉み', '垂らし']}
+        name="oppai"
+        onSuggest={handleSuggest}
+        multiline
       />
       <h3>腰</h3>
       <div className="searchpane__row">
@@ -329,6 +341,8 @@ export const PersonEditor: React.FC<{
           'パンツ',
           'ブラ',
         ]}
+        name="wears"
+        onSuggest={handleSuggest}
         multiline
       />
       <h3>行動・ポーズ</h3>
@@ -336,6 +350,17 @@ export const PersonEditor: React.FC<{
         value={states['poses'].state}
         onChange={callbacks['poses']}
         selection={['座る', '立つ', '歩く', '走る']}
+        name="poses"
+        onSuggest={handleSuggest}
+        multiline
+      />
+      <h3>小物</h3>
+      <InputWithPopularSelection
+        value={states['personItems'].state}
+        onChange={callbacks['personItems']}
+        selection={[]}
+        name="personItems"
+        onSuggest={handleSuggest}
         multiline
       />
       <h3>その他</h3>
@@ -343,6 +368,8 @@ export const PersonEditor: React.FC<{
         value={states['others'].state}
         onChange={callbacks['others']}
         selection={[]}
+        name="others"
+        onSuggest={handleSuggest}
         multiline
       />
     </div>

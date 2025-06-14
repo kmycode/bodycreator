@@ -7,6 +7,7 @@ import { WindowTabContainer } from './components/layout/WindowTabContainer';
 import { setCurrentDirectory, setInitialLoadStatus } from './models/entities/app_system';
 import { useAppDispatch, useAppSelector } from './models/store';
 import { loadDatabase } from './models/utils/databaseinitializer';
+import { FileDropReceiver } from './components/layout/FileDropReceiver';
 
 function App(): React.JSX.Element {
   const loadStatus = useAppSelector((state) => state.system.initialLoadStatus);
@@ -44,6 +45,7 @@ function App(): React.JSX.Element {
         <WindowTabContainer />
       </div>
       <ModalRoot />
+      <FileDropReceiver />
     </div>
   );
 }

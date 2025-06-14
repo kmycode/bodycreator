@@ -134,6 +134,17 @@ app.whenReady().then(() => {
       }),
   );
 
+  ipcMain.handle(
+    'file.saveFromBuffer',
+    (_ev, path, buffer) =>
+      new Promise((resolve, reject) => {
+        fs.appendFile(path, Buffer.from(buffer), (err) => {
+          if (err) reject(err);
+          resolve(undefined);
+        });
+      }),
+  );
+
   /*
     ipcMain.handle('selectAll', (eve) =>
     new Promise((resolev, reject) => {

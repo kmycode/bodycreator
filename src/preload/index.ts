@@ -20,6 +20,7 @@ const file = {
   getCurrentDirectoryFullPath: async () => ipcRenderer.invoke('file.getCurrentDirectoryFullPath'),
   copy: async (from, to) => ipcRenderer.invoke('file.copy', from, to),
   mkdir: async (path) => ipcRenderer.invoke('file.mkdir', path),
+  saveFromBuffer: async (path, buffer) => ipcRenderer.invoke('file.saveFromBuffer', path, buffer),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

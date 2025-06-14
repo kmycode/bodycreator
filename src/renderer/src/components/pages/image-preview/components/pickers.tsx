@@ -171,18 +171,23 @@ export const InputWithPopularSelection: React.FC<{
   selection?: string[];
   multiline?: boolean;
   onChange?: (value: string) => void;
-}> = ({ value, selection, multiline, onChange }) => {
+  name?: string;
+  onSuggest?: (name: string, data: SuggestOnChangeData) => SuggestItem[];
+}> = ({ value, selection, multiline, onChange, name, onSuggest }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const inputRef = useRef<any>(null);
 
   const handleChange = useCallback(
-    (text: string, _data: SuggestOnChangeData, suggestionCallback: (selection: SuggestItem[]) => void) => {
+    (text: string, data: SuggestOnChangeData, suggestionCallback: (selection: SuggestItem[]) => void) => {
       if (!onChange) return;
 
       onChange(text);
-      suggestionCallback([{ title: 'あああ' }, { title: 'いいい' }]);
+      if (name && onSuggest) {
+        const suggestion = onSuggest(name, data);
+        suggestionCallback(suggestion);
+      }
     },
-    [onChange],
+    [onChange, name, onSuggest],
   );
 
   const handleSelectionClick = useCallback(

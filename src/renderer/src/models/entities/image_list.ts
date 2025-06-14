@@ -43,6 +43,7 @@ export interface ImagePersonEntity {
   rightLegWear: number;
   rightLegWearOptions: number;
   wears: string;
+  personItems: string;
   poses: string;
   others: string;
 }
@@ -117,6 +118,7 @@ export const generateInitialImagePersonEntity = (merge?: Partial<ImagePersonEnti
     rightLegWear: 0,
     rightLegWearOptions: 0,
     wears: '',
+    personItems: '',
     poses: '',
     others: '',
     ...merge,
@@ -233,6 +235,23 @@ export const ImageListSlice = createSlice({
         }, {});
     },
 
+    addNewImage: (
+      state,
+      action: PayloadAction<{ image: ImageEntity; information: ImageInformationEntity }>,
+    ) => {
+      if (state.items[action.payload.image.id]) return;
+
+      state.items[action.payload.image.id] = {
+        people: [],
+        backgrounds: [],
+        tags: [],
+        information: action.payload.information,
+        loadStatus: 'loaded',
+        saveStatus: 'unchanged',
+        ...action.payload.image,
+      };
+    },
+
     updateImage: (state, action: PayloadAction<Image>) => {
       state.items[action.payload.id] = action.payload;
     },
@@ -338,6 +357,7 @@ export const ImageListSlice = createSlice({
 export default ImageListSlice.reducer;
 export const {
   setImages,
+  addNewImage,
   updateImage,
   updateCurrentImage,
   saveCurrentImage,

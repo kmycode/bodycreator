@@ -66,14 +66,17 @@ const createDatabase = async (): Promise<void> => {
 
   await db.query(generateSqlForCreateIndex('image_tags', 'imageId'));
 
-  await db.query(
-    generateSqlForInsertEntity('settings', {
-      key: 'databaseVersion',
-      stringValue: '',
-      numberValue: 1,
-      valueType: 1,
-    }),
-  );
+  const settingExists = await db.queryToOneObject('SELECT 1 FROM settings LIMIT 1');
+  if (!settingExists) {
+    await db.query(
+      generateSqlForInsertEntity('settings', {
+        key: 'databaseVersion',
+        stringValue: '',
+        numberValue: 2,
+        valueType: 1,
+      }),
+    );
+  }
 };
 
 const migrateDatabase = async (): Promise<void> => {
@@ -82,16 +85,24 @@ const migrateDatabase = async (): Promise<void> => {
   const versionSetting = (await db.queryToOneObject(
     "SELECT numberValue FROM settings WHERE key = 'databaseVersion'",
   )) as SettingEntity;
-  if (!versionSetting) {
+  if (!versionSetting?.numberValue) {
     return;
   }
 
-  for (const migration of databaseMigrations) {
-    if (migration.databaseVersion > versionSetting.numberValue) continue;
+  let maxValue = 0;
 
+  for (const migration of databaseMigrations.filter((m) => m.databaseVersion > versionSetting.numberValue)) {
     for (const process of migration.codes) {
       await process(db);
     }
+
+    if (maxValue < migration.databaseVersion) {
+      maxValue = migration.databaseVersion;
+    }
+  }
+
+  if (maxValue) {
+    await db.query(`UPDATE settings SET numberValue = ${maxValue} WHERE key = 'databaseVersion'`);
   }
 };
 
@@ -132,6 +143,7 @@ const copySampleImages = async (): Promise<void> => {
 
   try {
     await window.file.mkdir(`${currentDirectory}/app_repository/images`);
+    await window.file.mkdir(`${currentDirectory}/app_repository/tmp`);
     await window.file.copy(
       `${currentDirectory}/src/renderer${SampleImage1}`,
       `${currentDirectory}/app_repository/images/1.png`,

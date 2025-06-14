@@ -22,6 +22,8 @@ import {
   wearIcons,
   wearOptionsInfo,
 } from '../components/pickertypes';
+import { SuggestItem, SuggestOnChangeData } from '@renderer/components/generic/SuggestableTextInput';
+import { store } from '@renderer/models/store';
 
 export const personDataKeys = [
   'name',
@@ -64,6 +66,7 @@ export const personDataKeys = [
   'rightLegWearOptions',
   'wears',
   'poses',
+  'personItems',
   'others',
 ];
 
@@ -109,6 +112,7 @@ export interface PersonData {
   rightLegWearOptions: string[];
   wears: string;
   poses: string;
+  personItems: string;
   others: string;
 }
 
@@ -119,6 +123,7 @@ export const personDataTextInputKeys = [
   'oppai',
   'wears',
   'poses',
+  'personItems',
   'others',
   'bodyOthers',
 ];
@@ -386,4 +391,15 @@ export const handleGenericTextInputChange = (
   if (!callback) return;
 
   callback(value);
+};
+
+export const handleSuggestGeneric = (name: string, data: SuggestOnChangeData): SuggestItem[] => {
+  const category = store.getState().tagList.items[name];
+  if (!category || data.bySuggestion || !data.editingLine || data.editingLine.length <= 0) return [];
+
+  const tags = category.filter((tag) => tag.name.startsWith(data.editingLine!));
+  const sortedTags = tags.sort((a, b) => (a.usage < b.usage ? -1 : a.usage === b.usage ? 0 : 1));
+  sortedTags.slice(0, 6);
+
+  return sortedTags.map((tag) => ({ title: tag.name }));
 };

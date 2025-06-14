@@ -23,6 +23,7 @@ declare global {
     getCurrentDirectoryFullPath: () => Promise<string>;
     copy: (from: string, to: string) => Promise<void>;
     mkdir: (path: string) => Promise<void>;
+    saveFromBuffer: (path: string, buffer: ArrayBuffer) => Promise<void>;
   }
 
   interface Window {

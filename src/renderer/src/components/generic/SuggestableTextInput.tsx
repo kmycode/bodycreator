@@ -31,6 +31,7 @@ export const SuggestableTextInput: React.FC<{
   const [focusedItemIndex, setFocusedItemIndex] = useState(0);
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [placement, setPlacement] = useState('bottom' as 'bottom' | 'top');
+  const [rowSize, setRowSize] = useState(1);
 
   const updatePlacement = useMemo(
     () => () => {
@@ -101,14 +102,14 @@ export const SuggestableTextInput: React.FC<{
       const { value: text, selectionStart } = ev.currentTarget;
       const editingLine = getCarretLineData(text, selectionStart);
 
+      setRowSize(Math.min(4, text.replace('\r', '').split('\n').length));
+
       onChange(text, { bySuggestion: false, ...editingLine }, suggestionCallback);
     },
-    [onChange, suggestionCallback],
+    [onChange, suggestionCallback, setRowSize],
   );
 
   const handleBlur = useCallback(() => setShowSuggestion(false), [setShowSuggestion]);
-
-  const handleFocus = useCallback(() => startSuggestion(), [startSuggestion]);
 
   const handleInputKeyDown = useCallback(
     (ev: ReactKeyDownEvent) => {
@@ -193,12 +194,15 @@ export const SuggestableTextInput: React.FC<{
       value,
       onChange: handleTextChange,
       onBlur: handleBlur,
-      onFocus: handleFocus,
       onKeyDown: handleInputKeyDown,
     };
-  }, [value, inputRef, handleTextChange, handleBlur, handleInputKeyDown, handleFocus]);
+  }, [value, inputRef, handleTextChange, handleBlur, handleInputKeyDown]);
 
-  const input = multiline ? <textarea rows={4} {...inputProps} /> : <input type="text" {...inputProps} />;
+  const input = multiline ? (
+    <textarea rows={rowSize} {...inputProps} />
+  ) : (
+    <input type="text" {...inputProps} />
+  );
 
   return (
     <div className="suggestable-text-input">

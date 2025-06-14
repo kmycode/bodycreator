@@ -91,6 +91,7 @@ const peopleTagCategories = {
   bodyOthers: ['bodyOthers'],
   wears: ['wears'],
   poses: ['poses'],
+  personItems: ['personItems'],
   others: ['others'],
 };
 
