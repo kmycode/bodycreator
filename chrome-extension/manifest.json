@@ -1,0 +1,23 @@
+{
+  "name": "高橋 Chrome拡張",
+  "version": "1.0.0",
+  "author": {
+    "name": "KMY",
+    "email": "tt@kmycode.net"
+  },
+  "manifest_version": 3,
+  "description": "高橋 Chrome拡張とは、高橋とは特に関係ないChrome拡張です。",
+  "background" : {
+      "service_worker" : "background.js"
+  },
+  "content_scripts": [{
+    "matches": [
+      "https://*/*"
+    ],
+    "js": [
+      "/content.js"
+    ]
+  }],
+  "permissions": ["contextMenus", "activeTab", "clipboardWrite"],
+  "host_permissions": ["http://*/*", "https://*/*"]
+}
