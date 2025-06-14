@@ -47,6 +47,30 @@ export const WindowTabGroupSlice = createSlice({
       state.activeId = action.payload.id;
     },
 
+    removeTab: (state, action: PayloadAction<{ id: number }>) => {
+      const oldIndex = state.tabs.findIndex((t) => t.id === action.payload.id);
+      if (oldIndex < 0) return;
+
+      if (state.tabs.length > 1) {
+        const newTabs = state.tabs.filter((t) => t.id !== action.payload.id);
+        if (state.activeId === action.payload.id) {
+          const newIndex = Math.min(newTabs.length - 1, oldIndex);
+          state.activeId = newTabs[newIndex].id;
+        }
+        state.tabs = newTabs;
+      } else {
+        state.tabs = [
+          {
+            id: 1,
+            type: 'image-list',
+            data: { filteredImageIds: null },
+            title: '一覧',
+          },
+        ];
+        state.activeId = 1;
+      }
+    },
+
     openImagePreviewTab: (state, action: PayloadAction<{ imageId: number }>) => {
       const exists = state.tabs.find(
         (t) => t.type === 'image-preview' && t.data.imageId === action.payload.imageId,
@@ -67,4 +91,4 @@ export const WindowTabGroupSlice = createSlice({
   },
 });
 export default WindowTabGroupSlice.reducer;
-export const { switchTab, openImagePreviewTab } = WindowTabGroupSlice.actions;
+export const { switchTab, openImagePreviewTab, removeTab } = WindowTabGroupSlice.actions;
