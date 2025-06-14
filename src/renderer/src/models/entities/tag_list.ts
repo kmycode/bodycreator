@@ -20,10 +20,12 @@ type TagListItemsType = { [category: string]: TagEntity[] };
 
 export interface TagList {
   items: TagListItemsType;
+  itemsById: { [id: number]: TagEntity };
 }
 
 const initialState: TagList = {
   items: {},
+  itemsById: {},
 };
 
 export const TagListSlice = createSlice({
@@ -34,6 +36,7 @@ export const TagListSlice = createSlice({
       const items: TagListItemsType = {};
       for (const tag of action.payload.tags) {
         (items[tag.category] ??= []).push(tag);
+        state.itemsById[tag.id] = tag;
       }
       state.items = items;
     },
@@ -49,10 +52,12 @@ export const TagListSlice = createSlice({
           } else {
             existTags[existIndex] = tag;
           }
+          state.itemsById[tag.id] = tag;
         } else {
           if (existIndex >= 0) {
             existTags.splice(existIndex, 1);
           }
+          delete state.itemsById[tag.id];
         }
       }
     },

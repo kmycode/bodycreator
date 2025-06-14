@@ -87,7 +87,7 @@ const pickTagNames = (text: string): string[] => {
     .filter((t) => t.length > 0);
 };
 
-const peopleTagCategories = {
+const tagCategories = {
   faceEmotion: ['faceEmotion'],
   hairStyle: ['hairStyle'],
   oppai: ['oppai'],
@@ -96,6 +96,9 @@ const peopleTagCategories = {
   poses: ['poses'],
   personItem: ['personItem'],
   others: ['others'],
+  place: ['place'],
+  landscape: ['landscape'],
+  items: ['items'],
 };
 
 export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image): Promise<void> => {
@@ -105,10 +108,16 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
   const removeTags: TagEntity[] = [];
   const addTags: TagEntity[] = [];
   const allTags = store.getState().tagList.items;
+  const newTags: typeof allTags = {};
+  const entities = (data.people as { idOfImage: number }[]).concat(data.backgrounds);
 
-  for (const entity of (data.people as { idOfImage: number }[]).concat(data.backgrounds)) {
-    for (const [category, columns] of Object.entries(peopleTagCategories)) {
-      const categoryTags = allTags[category] ?? [];
+  for (const entity of entities) {
+    for (const [category, columns] of Object.entries(tagCategories)) {
+      const categoryTags = addTags
+        .concat(removeTags)
+        .filter((t) => t.category === category)
+        .concat(allTags[category] ?? [])
+        .concat(newTags[category] ?? []);
       const tagNames = pickTagNames(columns.map((c) => entity[c]).join('\n'));
 
       const currentPairs = existTags
@@ -128,7 +137,9 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
 
       for (const remove of removes) {
         remove.tag = { ...remove.tag, usage: remove.tag.usage - 1 };
-        removeTags.push(remove.tag);
+        if (!removeTags.some((t) => t.id === remove.tag.id)) {
+          removeTags.push(remove.tag);
+        }
         await window.db.query(`DELETE FROM image_tags WHERE id = ${remove.imageTag.id}`);
       }
 
@@ -142,6 +153,9 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
           };
           newTag.id = await saveDatabaseEntity('tags', newTag);
           add.tag = newTag;
+          if (!(newTags[category] ??= []).some((t) => t.id === newTag.id)) {
+            newTags[category].push(newTag);
+          }
         } else {
           add.tag = { ...add.tag, usage: add.tag.usage + 1 };
           await window.db.query(`UPDATE tags SET usage = ${add.tag.usage} WHERE id = ${add.tag.id}`);
@@ -156,9 +170,38 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
         newImageTag.id = await saveDatabaseEntity('image_tags', newImageTag);
         add.imageTag = newImageTag;
 
-        addTags.push(add.tag);
+        if (!addTags.some((t) => t.id === add.tag!.id)) {
+          addTags.push(add.tag);
+        }
       }
     }
+  }
+
+  // 要素を削除していた場合
+  const entityIds = entities.map((e) => e.idOfImage);
+  const itemsById = store.getState().tagList.itemsById;
+  const removeImageTags = existTags.filter((t) => !entityIds.includes(t.elementId));
+  for (const imageTag of removeImageTags) {
+    const tag = addTags.concat(removeTags).find((t) => t.id === imageTag.tagId) ?? itemsById[imageTag.tagId];
+    if (!tag) continue;
+
+    const addTagsIndex = addTags.findIndex((t) => t.id === imageTag.tagId);
+    const removeTagsIndex = removeTags.findIndex((t) => t.id === imageTag.tagId);
+
+    if (addTagsIndex >= 0) {
+      addTags.splice(addTagsIndex, 1);
+      removeTags.unshift({ ...tag, usage: tag.usage - 1 });
+    } else if (removeTagsIndex >= 0) {
+      removeTags[removeTagsIndex] = { ...tag, usage: tag.usage - 1 };
+    } else {
+      // itemsById[imageTag.tagId] に存在
+      removeTags.unshift({ ...tag, usage: tag.usage - 1 });
+    }
+  }
+  if (removeImageTags.length > 0) {
+    await window.db.query(
+      `DELETE FROM image_tags WHERE id IN (${removeImageTags.map((t) => t.id).join(', ')})`,
+    );
   }
 
   for (const remove of removeTags) {
