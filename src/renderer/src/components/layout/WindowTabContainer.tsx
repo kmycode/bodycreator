@@ -1,4 +1,4 @@
-import { store, useAppDispatch, useAppSelector } from '@renderer/models/store';
+import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { ImagePreviewPage } from '../pages/image-preview/ImagePreviewPage';
 import { ImageListPage } from '../pages/image-list/ImageListPage';
 import { useEffect, useRef } from 'react';
@@ -19,31 +19,33 @@ export const WindowTabContainer: React.FC<object> = () => {
   const currentTab = useRef(activeTab);
   const dispatch = useAppDispatch();
 
+  const savingImage = useAppSelector((state) => state.imageList.current.savingImage);
+
+  useEffect(() => {
+    // 画像の保存
+    if (savingImage && savingImage.saveStatus === 'ready') {
+      const image = savingImage;
+
+      const process = async (): Promise<void> => {
+        const imageId = image.id;
+
+        dispatch(startSavingImage({ imageId }));
+        const ids = await saveImageToDatabase(image);
+        dispatch(setImageIds(ids));
+        await saveImageTagToDatabase(dispatch, image);
+        dispatch(finishSavingImage({ imageId }));
+      };
+      process();
+    }
+  }, [savingImage, dispatch]);
+
   useEffect(() => {
     if (currentTab.current && activeTab && currentTab.current.id !== activeTab.id) {
       const prevTab = currentTab.current;
 
       // タブの終了処理
-      if (prevTab.type === 'image-preview') {
-        if (activeTab.type !== 'image-preview') {
-          dispatch(saveCurrentImage());
-        }
-        const image = store.getState().imageList.current.savingImage;
-
-        if (image) {
-          const process = async (): Promise<void> => {
-            const imageId = image.id;
-
-            if (image.saveStatus === 'ready') {
-              dispatch(startSavingImage({ imageId }));
-              const ids = await saveImageToDatabase(image);
-              dispatch(setImageIds(ids));
-              await saveImageTagToDatabase(dispatch, image);
-              dispatch(finishSavingImage({ imageId }));
-            }
-          };
-          process();
-        }
+      if (prevTab.type === 'image-preview' && activeTab.type !== 'image-preview') {
+        dispatch(saveCurrentImage());
       }
 
       currentTab.current = activeTab;

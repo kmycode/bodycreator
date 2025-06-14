@@ -57,10 +57,6 @@ const EditPane: React.FC<{
   const [informationData, setInformationData] = useState({} as InformationData);
 
   useEffect(() => {
-    console.log(`status: ${image.saveStatus}`);
-  }, [image.saveStatus]);
-
-  useEffect(() => {
     if (image.loadStatus === 'notyet') {
       loadImageElements(dispatch, imageId);
     }
