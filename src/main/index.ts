@@ -44,8 +44,6 @@ function createWindow(): BrowserWindow {
   return mainWindow;
 }
 
-launchServer();
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -177,6 +175,8 @@ app.whenReady().then(() => {
   ipcMain.handle('window.unmaximize', () => mainWindow.unmaximize());
   ipcMain.handle('window.minimize', () => mainWindow.minimize());
   ipcMain.handle('window.close', () => mainWindow.close());
+
+  launchServer((queue) => mainWindow.webContents.send('image-enqueue', queue));
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

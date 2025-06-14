@@ -5,11 +5,23 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { Provider } from 'react-redux';
 import { store } from './models/store';
+import { createImageByBuffer } from './models/utils/imageserializer';
+import { IpcRendererEvent } from 'electron';
 
 document.ondrop = document.ondragover = (ev: DragEvent) => {
   ev.preventDefault();
   return false;
 };
+
+window.electron.ipcRenderer.on('image-enqueue', (_: IpcRendererEvent, queue: ImageQueueItem) => {
+  console.dir(queue);
+
+  createImageByBuffer(store.dispatch, queue.ext, queue.buffer, {
+    memo: queue.title,
+    url: queue.url,
+    author: queue.author,
+  });
+});
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>

@@ -8,6 +8,12 @@ declare global {
     close: () => Promise<void>;
   }
 
+  type ImageQueueItem = { buffer: ArrayBuffer; title: string; author: string; url: string; ext: string };
+
+  interface AppApi {
+    getImageQueue: () => Promise<ImageQueueItem[]>;
+  }
+
   interface DbApiOptions {
     destination?: 'app' | 'db';
   }
@@ -29,6 +35,7 @@ declare global {
   interface Window {
     electron: ElectronAPI;
     mainWindow: MainWindowApi;
+    app: AppApi;
     db: DbApi;
     file: FileApi;
   }

@@ -175,6 +175,7 @@ export const createImageByBuffer = async (
   dispatch: AppDispatch,
   ext: string,
   buffer: ArrayBuffer,
+  informationTemplate?: Partial<ImageInformationEntity>,
 ): Promise<void> => {
   if (!ext || !['png', 'jpg', 'jpeg', 'bmp', 'tiff', 'gif', 'webp'].includes(ext)) return;
 
@@ -208,6 +209,7 @@ export const createImageByBuffer = async (
     author: '',
     memo: '',
     url: '',
+    ...informationTemplate,
   };
   information.id = await saveDatabaseEntity('informations', information);
 

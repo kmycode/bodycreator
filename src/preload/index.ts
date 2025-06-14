@@ -9,6 +9,10 @@ const mainWindow = {
 };
 
 // Custom APIs for renderer
+const appApi = {
+  getImageQueue: async () => ipcRenderer.invoke('app.getImageQueue'),
+};
+
 const db = {
   query: async (sql) => ipcRenderer.invoke('database.query', sql),
   queryToArray: async (sql) => ipcRenderer.invoke('database.queryToArray', sql),
@@ -32,6 +36,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('mainWindow', mainWindow);
     contextBridge.exposeInMainWorld('db', db);
     contextBridge.exposeInMainWorld('file', file);
+    contextBridge.exposeInMainWorld('app', appApi);
   } catch (error) {
     console.error(error);
   }
