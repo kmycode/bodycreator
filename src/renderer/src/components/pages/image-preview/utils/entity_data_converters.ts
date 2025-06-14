@@ -66,7 +66,7 @@ export const personDataKeys = [
   'rightLegWearOptions',
   'wears',
   'poses',
-  'personItems',
+  'personItem',
   'others',
 ];
 
@@ -112,7 +112,7 @@ export interface PersonData {
   rightLegWearOptions: string[];
   wears: string;
   poses: string;
-  personItems: string;
+  personItem: string;
   others: string;
 }
 
@@ -123,7 +123,7 @@ export const personDataTextInputKeys = [
   'oppai',
   'wears',
   'poses',
-  'personItems',
+  'personItem',
   'others',
   'bodyOthers',
 ];

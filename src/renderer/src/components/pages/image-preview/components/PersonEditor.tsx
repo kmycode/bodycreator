@@ -356,10 +356,10 @@ export const PersonEditor: React.FC<{
       />
       <h3>小物</h3>
       <InputWithPopularSelection
-        value={states['personItems'].state}
-        onChange={callbacks['personItems']}
+        value={states['personItem'].state}
+        onChange={callbacks['personItem']}
         selection={[]}
-        name="personItems"
+        name="personItem"
         onSuggest={handleSuggest}
         multiline
       />

@@ -10,6 +10,7 @@ import {
   generateCallbacks,
   generateStates,
   handleGenericTextInputChange,
+  handleSuggestGeneric,
   StateType,
   updateInitialData,
 } from '../utils/entity_data_converters';
@@ -42,6 +43,8 @@ export const BackgroundEditor: React.FC<{
     [callbacks],
   );
 
+  const handleSuggest = handleSuggestGeneric;
+
   return (
     <div>
       <h3>名前</h3>
@@ -51,6 +54,8 @@ export const BackgroundEditor: React.FC<{
         value={states['place'].state}
         onChange={callbacks['place']}
         selection={['学校', '海', 'プール']}
+        name="place"
+        onSuggest={handleSuggest}
         multiline
       />
       <h3>遠景</h3>
@@ -58,6 +63,8 @@ export const BackgroundEditor: React.FC<{
         value={states['landscape'].state}
         onChange={callbacks['landscape']}
         selection={['山', '雲']}
+        name="landscape"
+        onSuggest={handleSuggest}
         multiline
       />
       <h3>家具・小物</h3>
@@ -65,6 +72,8 @@ export const BackgroundEditor: React.FC<{
         value={states['items'].state}
         onChange={callbacks['items']}
         selection={['ベッド']}
+        name="items"
+        onSuggest={handleSuggest}
         multiline
       />
     </div>

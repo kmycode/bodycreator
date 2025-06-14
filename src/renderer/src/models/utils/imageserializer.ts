@@ -91,7 +91,7 @@ const peopleTagCategories = {
   bodyOthers: ['bodyOthers'],
   wears: ['wears'],
   poses: ['poses'],
-  personItems: ['personItems'],
+  personItem: ['personItem'],
   others: ['others'],
 };
 
@@ -141,7 +141,7 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
           add.tag = newTag;
         } else {
           add.tag = { ...add.tag, usage: add.tag.usage + 1 };
-          await saveDatabaseEntity('tags', add.tag);
+          await window.db.query(`UPDATE tags SET usage = ${add.tag.usage} WHERE id = ${add.tag.id}`);
         }
 
         const newImageTag: ImageTagEntity = {

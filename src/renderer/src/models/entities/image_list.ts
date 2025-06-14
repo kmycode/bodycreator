@@ -43,7 +43,7 @@ export interface ImagePersonEntity {
   rightLegWear: number;
   rightLegWearOptions: number;
   wears: string;
-  personItems: string;
+  personItem: string;
   poses: string;
   others: string;
 }
@@ -118,7 +118,7 @@ export const generateInitialImagePersonEntity = (merge?: Partial<ImagePersonEnti
     rightLegWear: 0,
     rightLegWearOptions: 0,
     wears: '',
-    personItems: '',
+    personItem: '',
     poses: '',
     others: '',
     ...merge,
