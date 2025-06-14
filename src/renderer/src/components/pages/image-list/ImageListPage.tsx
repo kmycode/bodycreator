@@ -1,4 +1,4 @@
-import { getFilteredImages, ImageList } from '@renderer/models/entities/image_list';
+import { getFilteredImages, Image, ImageList } from '@renderer/models/entities/image_list';
 import { openImagePreviewTab, WindowTab } from '@renderer/models/entities/window_tab_group';
 import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { ReactClickEvent } from '@renderer/models/types';
@@ -26,16 +26,21 @@ export const ImageListPage: React.FC<{
     [dispatch],
   );
 
+  const empty = useCallback((image: Image) => image.peopleSize + image.backgroundsSize <= 0, []);
+
   return (
     <div className="image-list-page">
       {images.map((image) => (
         <button key={image.id} data-id={image.id} onDoubleClick={handleOpenImagePreviewTab}>
-          <img
-            src={`${currentDirectory}/app_repository/images/${image.fileName}`}
-            width={image.width * (200 / image.height)}
-            height={200}
-            draggable={false}
-          />
+          <div className="image-list-page__item">
+            <img
+              src={`${currentDirectory}/app_repository/images/${image.fileName}`}
+              width={image.width * (200 / image.height)}
+              height={200}
+              draggable={false}
+            />
+            {empty(image) && <div className="empty-flag" />}
+          </div>
         </button>
       ))}
     </div>

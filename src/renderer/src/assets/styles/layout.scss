@@ -38,6 +38,22 @@ body {
 .image-list-page {
   overflow: hidden auto;
   background: transparent;
+  padding: 16px 4px;
+
+  &__item {
+    position: relative;
+    padding: 12px 8px 20px;
+
+    .empty-flag {
+      position: absolute;
+      bottom: 12px;
+      right: 0;
+      height: 8px;
+      border-color: transparent orange orange transparent;
+      border-width: 18px;
+      border-style: solid;
+    }
+  }
 }
 
 #windowheader {
@@ -239,5 +255,6 @@ body {
     text-align: center;
     color: #dedede;
     flex: 1;
+    pointer-events: none;
   }
 }
