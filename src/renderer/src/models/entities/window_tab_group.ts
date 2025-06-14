@@ -63,19 +63,29 @@ const removeTabById = (state: WindowTabGroup, id: number): void => {
   }
 };
 
+const getNewId = (state: WindowTabGroup): number => {
+  const maxId = state.tabs
+    .map((t) => t.id)
+    .sort()
+    .at(-1);
+  return maxId ? maxId + 1 : 1;
+};
+
 const addImagePreviewTab = (state: WindowTabGroup, imageId: number): void => {
   const exists = state.tabs.find((t) => t.type === 'image-preview' && t.data.imageId === imageId);
   if (exists) {
     state.activeId = exists.id;
   } else {
-    const maxId = state.tabs
-      .map((t) => t.id)
-      .sort()
-      .at(-1);
-    const newId = maxId ? maxId + 1 : 1;
+    const newId = getNewId(state);
     state.tabs.push({ id: newId, type: 'image-preview', data: { imageId }, title: `画像 ${imageId}` });
     state.activeId = newId;
   }
+};
+
+const addImageListTab = (state: WindowTabGroup): void => {
+  const newId = getNewId(state);
+  state.tabs.push({ id: newId, type: 'image-list', data: { filteredImageIds: null }, title: '一覧' });
+  state.activeId = newId;
 };
 
 export const WindowTabGroupSlice = createSlice({
@@ -105,12 +115,7 @@ export const WindowTabGroupSlice = createSlice({
         return;
       }
 
-      const maxId =
-        state.tabs
-          .map((t) => t.id)
-          .sort()
-          .at(-1) ?? 0;
-      const newId = maxId + 1;
+      const newId = getNewId(state);
       state.tabs.push({ ...latest, id: newId });
       state.activeId = newId;
     },
@@ -118,8 +123,18 @@ export const WindowTabGroupSlice = createSlice({
     openImagePreviewTab: (state, action: PayloadAction<{ imageId: number }>) => {
       addImagePreviewTab(state, action.payload.imageId);
     },
+
+    openImageListTab: (state) => {
+      addImageListTab(state);
+    },
   },
 });
 export default WindowTabGroupSlice.reducer;
-export const { switchTab, openImagePreviewTab, removeTab, removeCurrentTab, reviveLatestTab } =
-  WindowTabGroupSlice.actions;
+export const {
+  switchTab,
+  openImagePreviewTab,
+  removeTab,
+  removeCurrentTab,
+  reviveLatestTab,
+  openImageListTab,
+} = WindowTabGroupSlice.actions;

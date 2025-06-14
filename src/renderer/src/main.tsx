@@ -7,13 +7,14 @@ import { Provider } from 'react-redux';
 import { store } from './models/store';
 import { createImageByBuffer } from './models/utils/imageserializer';
 import { IpcRendererEvent } from 'electron';
-import { removeCurrentTab, reviveLatestTab } from './models/entities/window_tab_group';
+import { openImageListTab, removeCurrentTab, reviveLatestTab } from './models/entities/window_tab_group';
 
 document.ondrop = document.ondragover = (ev: DragEvent) => {
   ev.preventDefault();
   return false;
 };
 
+// application hot keys
 document.onkeydown = (ev: KeyboardEvent) => {
   if (ev.ctrlKey) {
     if (ev.key === 'w') {
@@ -21,9 +22,13 @@ document.onkeydown = (ev: KeyboardEvent) => {
       ev.preventDefault();
       store.dispatch(removeCurrentTab());
     } else if (ev.key === 'T') {
-      // Ctrl + shift + W
+      // Ctrl + Shift + T
       ev.preventDefault();
       store.dispatch(reviveLatestTab());
+    } else if (ev.key === 't') {
+      // Ctrl + T
+      ev.preventDefault();
+      store.dispatch(openImageListTab());
     }
   }
 };
