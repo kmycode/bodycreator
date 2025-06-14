@@ -32,13 +32,14 @@ export const FileDropReceiver: React.FC<unknown> = () => {
       ev.preventDefault();
       setOnDragging(false);
 
-      const file = ev.dataTransfer.files[0];
-      const ext = file.name.split('.').at(-1);
-      if (!ext) return;
+      for (const file of ev.dataTransfer.files) {
+        const ext = file.name.split('.').at(-1);
+        if (!ext) continue;
 
-      const buffer = await file.arrayBuffer();
+        const buffer = await file.arrayBuffer();
 
-      await createImageByBuffer(dispatch, ext, buffer);
+        await createImageByBuffer(dispatch, ext, buffer);
+      }
 
       ev.dataTransfer.clearData();
 
