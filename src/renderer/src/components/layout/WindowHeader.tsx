@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { removeTab, switchTab, WindowTab, WindowTabGroup } from '@renderer/models/entities/window_tab_group';
 import classNames from 'classnames';
 import { useCallback } from 'react';
-import { ReactMouseEvent } from '@renderer/models/types';
+import { ReactClickEvent, ReactMouseEvent } from '@renderer/models/types';
 
 const Tab: React.FC<{
   tabGroup: WindowTabGroup;
@@ -25,14 +25,25 @@ const Tab: React.FC<{
     [onMiddleClick, tab],
   );
 
+  const handleClose = useCallback(
+    (ev: ReactClickEvent) => {
+      ev.stopPropagation();
+      onMiddleClick?.(tab.id);
+    },
+    [onMiddleClick, tab],
+  );
+
   return (
-    <button
+    <div
       className={classNames({ windowheadertab: true, active: tabGroup.activeId === tab.id })}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
     >
-      {tab.title}
-    </button>
+      <div className="title">{tab.title}</div>
+      <button className="close" onClick={handleClose}>
+        ✕
+      </button>
+    </div>
   );
 };
 

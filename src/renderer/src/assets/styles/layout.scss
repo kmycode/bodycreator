@@ -81,6 +81,19 @@ body {
       margin-inline-end: 6px;
       cursor: pointer;
       app-region: no-drag;
+      display: flex;
+
+      .title {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-align: center;
+      }
+
+      .close {
+        margin-right: -6px;
+      }
 
       &.active {
         background: #606060;
