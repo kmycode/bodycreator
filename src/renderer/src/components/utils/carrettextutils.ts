@@ -11,9 +11,9 @@ export const getCarretLineData = (
   let editingLinePosition = 0;
   if (selectionStart) {
     let cursorPosition = 0;
-    for (const line of text.split('\n')) {
+    for (const line of text.replace('\r', '').split('\n')) {
       if (cursorPosition + line.length >= selectionStart) {
-        editingLine = line;
+        editingLine = line.trim();
         editingLinePosition = selectionStart - cursorPosition;
         break;
       }

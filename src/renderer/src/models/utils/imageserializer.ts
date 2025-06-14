@@ -83,6 +83,7 @@ const pickTagNames = (text: string): string[] => {
   return text
     .replaceAll('\r', '')
     .split('\n')
+    .map((t) => t.trim())
     .filter((t) => t.length > 0);
 };
 
