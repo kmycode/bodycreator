@@ -1,5 +1,5 @@
 import express from 'express';
-import fs from 'fs';
+import { loadEsm } from 'load-esm';
 
 export type ImageQueueItem = { buffer: ArrayBuffer; title: string; author: string; url: string; ext: string };
 
@@ -9,18 +9,40 @@ export const launchServer = (onSend: (item: ImageQueueItem) => void): void => {
   app.use(express.urlencoded({ extended: true, limit: '1gb' }));
   app.use(express.json({ limit: '1gb' }));
 
-  app.post('/', (req, res) => {
-    if (req.body) {
-      const body = req.body as { buffer?: string; title?: string; url?: string; ext?: string };
-      if (body.buffer && body.url && body.title) {
-        const binaryString = atob(body.buffer);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        const arrayBuffer = bytes.buffer;
+  const base64ToArrayBuffer = (base64: string): ArrayBuffer => {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const arrayBuffer = bytes.buffer;
+    return arrayBuffer;
+  };
 
-        console.dir({ title: body.title, url: body.url, ext: body.ext });
+  app.post('/', async (req, res) => {
+    if (req.body) {
+      const body = req.body as { buffer?: string; src?: string; title?: string; url?: string; ext?: string };
+      let arrayBuffer = body.buffer ? base64ToArrayBuffer(body.buffer) : null;
+      let ext = body.ext;
+
+      if (!arrayBuffer && body.src) {
+        const data = await fetch(body.src);
+        if (data) {
+          arrayBuffer = await data.arrayBuffer();
+
+          const fileType = await loadEsm<typeof import('file-type')>('file-type');
+          const type = await fileType.fileTypeFromBuffer(arrayBuffer);
+
+          ext = type?.ext;
+
+          if (!ext) {
+            arrayBuffer = null;
+          }
+        }
+      }
+
+      if (arrayBuffer && body.url && body.title) {
+        console.dir({ title: body.title, url: body.url, ext });
 
         let author = '';
         const url = new URL(body.url);
@@ -35,17 +57,12 @@ export const launchServer = (onSend: (item: ImageQueueItem) => void): void => {
           author = body.title.match(/(.[^:]*):/)?.[1] ?? '';
         }
 
-        const filePath = `C:\\users\\tt\\Downloads\\test.jpg`;
-        fs.writeFile(filePath, Buffer.from(arrayBuffer), (err) => {
-          if (err) console.error(err);
-        });
-
         onSend({
           buffer: arrayBuffer,
           title: body.title,
           author,
           url: body.url,
-          ext: body.ext ?? '',
+          ext: ext ?? '',
         });
       }
     }
