@@ -96,6 +96,28 @@ export const WindowTabGroupSlice = createSlice({
       state.activeId = action.payload.id;
     },
 
+    moveTab: (state, action: PayloadAction<{ id: number; nextId?: number; overId?: number }>) => {
+      const tab = state.tabs.find((t) => t.id === action.payload.id);
+      if (!tab) return;
+
+      const tabs = state.tabs.filter((t) => t.id !== action.payload.id);
+
+      if (action.payload.nextId) {
+        if (action.payload.nextId !== -1) {
+          const index = tabs.findIndex((t) => t.id === action.payload.nextId);
+          if (index < 0) return;
+          tabs.splice(index, 0, tab);
+        } else {
+          tabs.push(tab);
+        }
+      } else if (action.payload.overId) {
+        const overOldIndex = state.tabs.findIndex((t) => t.id === action.payload.overId);
+        tabs.splice(overOldIndex, 0, tab);
+      }
+
+      state.tabs = tabs;
+    },
+
     removeTab: (state, action: PayloadAction<{ id: number }>) => {
       removeTabById(state, action.payload.id);
     },
@@ -132,6 +154,7 @@ export const WindowTabGroupSlice = createSlice({
 export default WindowTabGroupSlice.reducer;
 export const {
   switchTab,
+  moveTab,
   openImagePreviewTab,
   removeTab,
   removeCurrentTab,
