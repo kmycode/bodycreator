@@ -86,11 +86,7 @@ function WindowHeader(): React.JSX.Element {
   const handleDragEnd = useCallback(
     (ev: DragEndEvent) => {
       if (ev.over?.id === ev.active.id) return;
-      if (
-        typeof ev.active.id !== 'number' ||
-        (typeof ev.over?.id !== 'undefined' && typeof ev.over?.id !== 'number')
-      )
-        return;
+      if (typeof ev.active.id !== 'number' || typeof ev.over?.id !== 'number') return;
 
       dispatch(moveTab({ id: ev.active.id as number, overId: ev.over?.id as number }));
     },
