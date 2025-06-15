@@ -209,7 +209,7 @@ interface ImageAppData {
 export type Image = ImageEntity & ImageAppData;
 
 export interface ImageList {
-  items: { [id: number]: Image };
+  items: { [id: number]: Image | undefined };
   current: { image: Image | null; savingImage: Image | null };
 }
 
@@ -271,6 +271,8 @@ export const ImageListSlice = createSlice({
         current: { image: current },
       } = state;
       if (!current) return;
+
+      if (current.id > 0 && !state.items[current.id]) return;
 
       state.items[current.id] = current;
       state.current.savingImage = current;
@@ -337,6 +339,13 @@ export const ImageListSlice = createSlice({
       image.information = action.payload.information;
       image.loadStatus = 'loaded';
     },
+
+    deleteImage: (state, action: PayloadAction<{ imageId: number }>) => {
+      const image = state.items[action.payload.imageId];
+      if (!image) return;
+
+      state.items[action.payload.imageId] = undefined;
+    },
   },
   selectors: {
     getFilteredImages: createSelector(
@@ -354,7 +363,7 @@ export const ImageListSlice = createSlice({
             return obj;
           }, [] as Image[]);
         } else {
-          return Object.values(items);
+          return Object.values(items).filter((img) => img);
         }
       },
     ),
@@ -373,5 +382,6 @@ export const {
   errorLoadingImageElements,
   startSavingImage,
   finishSavingImage,
+  deleteImage,
 } = ImageListSlice.actions;
 export const { getFilteredImages } = ImageListSlice.selectors;

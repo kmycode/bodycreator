@@ -15,6 +15,7 @@ import { databaseMigrations } from './databasemigrations';
 import SampleImage1 from '@renderer/assets/images/sample1.png';
 import SampleImage2 from '@renderer/assets/images/sample2.png';
 import SampleImage3 from '@renderer/assets/images/sample3.png';
+import { removeImagesFromDatabaseBeforeInitialization } from './imageserializer';
 
 const createDatabase = async (): Promise<void> => {
   const db = window.db;
@@ -72,7 +73,7 @@ const createDatabase = async (): Promise<void> => {
       generateSqlForInsertEntity('settings', {
         key: 'databaseVersion',
         stringValue: '',
-        numberValue: 2,
+        numberValue: 4,
         valueType: 1,
       }),
     );
@@ -169,6 +170,8 @@ export const loadDatabase = async (dispatch: AppDispatch): Promise<void> => {
   await createDatabase();
   await migrateDatabase();
   await setSampleData();
+
+  await removeImagesFromDatabaseBeforeInitialization();
 
   const images = (await db.queryToArray('SELECT * FROM images')) as ImageEntity[];
   const settings = (await db.queryToArray('SELECT * FROM settings')) as SettingEntity[];

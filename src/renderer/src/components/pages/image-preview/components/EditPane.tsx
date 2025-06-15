@@ -25,7 +25,7 @@ import {
 import { PersonEditor } from './PersonEditor';
 import { BackgroundEditor } from './BackgroundEditor';
 import { InformationEditor } from './InformationEditor';
-import { loadImageElements } from '@renderer/models/utils/imageserializer';
+import { loadImageElements, preremoveImageFromDatabase } from '@renderer/models/utils/imageserializer';
 
 const initialTabs = [{ id: 'information', title: '情報' }];
 
@@ -247,32 +247,51 @@ const EditPane: React.FC<{
     );
   }, [elementTabs, selectedTabId, dispatch, currentTabElementData.name]);
 
+  const handleDeleteImage = useCallback(() => {
+    dispatch(
+      openModal({
+        type: 'confirm',
+        parameter: {
+          id: 'remove-image',
+          message: '本当にこの画像を削除しますか？',
+          yesResult: {
+            type: 'remove-image',
+          },
+        },
+      }),
+    );
+  }, [dispatch]);
+
   const modalState = useAppSelector((state) => state.modalState);
 
   // タブ削除処理
   useEffect(() => {
-    if (
-      modalState.lastResultId !== 'editpane-remove-element-tab' ||
-      modalState.lastResult?.selection !== 'yes'
-    )
-      return;
+    if (modalState.lastResult?.selection !== 'yes') return;
 
-    const removeTab = elementTabs.find((tab) => tab.id === selectedTabId);
-    if (!removeTab) return;
+    if (modalState.lastResultId === 'editpane-remove-element-tab') {
+      const removeTab = elementTabs.find((tab) => tab.id === selectedTabId);
+      if (!removeTab) return;
 
-    const newTabs = elementTabs.filter((tab) => tab.id !== selectedTabId);
-    setElementTabs(newTabs);
+      const newTabs = elementTabs.filter((tab) => tab.id !== selectedTabId);
+      setElementTabs(newTabs);
 
-    handleCurrentImageUpdate((newImage) => {
-      newImage.people = newImage.people.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
-      newImage.backgrounds = newImage.backgrounds.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
-      newImage.peopleSize = newImage.people.length;
-      newImage.backgroundsSize = newImage.backgrounds.length;
-    });
+      handleCurrentImageUpdate((newImage) => {
+        newImage.people = newImage.people.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
+        newImage.backgrounds = newImage.backgrounds.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
+        newImage.peopleSize = newImage.people.length;
+        newImage.backgroundsSize = newImage.backgrounds.length;
+      });
 
-    setSelectedTabId(newTabs[0]?.id ?? 'information');
-    dispatch(clearModalResult());
+      setSelectedTabId(newTabs[0]?.id ?? 'information');
+      dispatch(clearModalResult());
+    }
+
+    if (modalState.lastResultId === 'remove-image') {
+      preremoveImageFromDatabase(dispatch, imageId);
+      dispatch(clearModalResult());
+    }
   }, [
+    imageId,
     modalState,
     selectedTabId,
     setElementTabs,
@@ -387,6 +406,8 @@ const EditPane: React.FC<{
               <button data-type="background" onClick={handleAddTab}>
                 背景を追加
               </button>
+              <h3>Dangerous Zone</h3>
+              <button onClick={handleDeleteImage}>この画像を削除</button>
             </>
           )}
         </div>

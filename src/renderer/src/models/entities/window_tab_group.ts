@@ -37,11 +37,13 @@ const initialState: WindowTabGroup = {
   tabHistories: [],
 };
 
-const removeTabById = (state: WindowTabGroup, id: number): void => {
+const removeTabById = (state: WindowTabGroup, id: number, withoutHistory?: boolean): void => {
   const oldIndex = state.tabs.findIndex((t) => t.id === id);
   if (oldIndex < 0) return;
 
-  state.tabHistories.push(state.tabs[oldIndex]);
+  if (!withoutHistory) {
+    state.tabHistories.push(state.tabs[oldIndex]);
+  }
 
   if (state.tabs.length > 1) {
     const newTabs = state.tabs.filter((t) => t.id !== id);
@@ -149,6 +151,15 @@ export const WindowTabGroupSlice = createSlice({
     openImageListTab: (state) => {
       addImageListTab(state);
     },
+
+    deleteImageTabs: (state, action: PayloadAction<{ imageId: number }>) => {
+      const removeTabIds = state.tabs
+        .filter((t) => t.type === 'image-preview' && t.data.imageId === action.payload.imageId)
+        .map((t) => t.id);
+      for (const id of removeTabIds) {
+        removeTabById(state, id, true);
+      }
+    },
   },
 });
 export default WindowTabGroupSlice.reducer;
@@ -160,4 +171,5 @@ export const {
   removeCurrentTab,
   reviveLatestTab,
   openImageListTab,
+  deleteImageTabs,
 } = WindowTabGroupSlice.actions;

@@ -1,5 +1,6 @@
 import {
   addNewImage,
+  deleteImage,
   errorLoadingImageElements,
   Image,
   ImageBackgroundEntity,
@@ -11,6 +12,7 @@ import {
   startLoadingImageElements,
 } from '../entities/image_list';
 import { TagEntity, updateTags } from '../entities/tag_list';
+import { deleteImageTabs } from '../entities/window_tab_group';
 import { AppDispatch, store } from '../store';
 import { saveDatabaseEntity } from './dbutil';
 import { imageSize } from 'image-size';
@@ -261,4 +263,60 @@ export const createImageByBuffer = async (
 
   await window.file.copy(tmpPath, filePath);
   await window.file.delete(tmpPath);
+};
+
+export const preremoveImageFromDatabase = async (dispatch: AppDispatch, imageId: number): Promise<void> => {
+  await window.db.query(`UPDATE images SET deleteFlag = 1 WHERE id = ${imageId}`);
+
+  dispatch(deleteImage({ imageId }));
+  dispatch(deleteImageTabs({ imageId }));
+};
+
+export const removeImagesFromDatabaseBeforeInitialization = async (): Promise<void> => {
+  const images: { id: number }[] = await window.db.queryToArray('SELECT id FROM images WHERE deleteFlag = 1');
+
+  for (const image of images) {
+    await removeImageFromDatabaseBeforeInitialization(image.id);
+  }
+};
+
+const removeImageFromDatabaseBeforeInitialization = async (imageId: number): Promise<void> => {
+  const db = window.db;
+
+  const image: { fileName: string } = await db.queryToOneObject(
+    `SELECT fileName FROM images WHERE id = ${imageId}`,
+  );
+
+  const imageTags: { tagId: number }[] = await db.queryToArray(
+    `SELECT tagId FROM image_tags WHERE imageId = ${imageId}`,
+  );
+  if (imageTags.length > 0) {
+    const tags: { id: number; usage: number }[] = await db.queryToArray(
+      `SELECT id, usage FROM tags WHERE id IN (${imageTags.map((t) => t.tagId).join(', ')})`,
+    );
+    const deleteTagIds: number[] = [];
+    for (const tag of tags) {
+      const removeSize = imageTags.filter((t) => t.tagId === tag.id).length;
+      const newUsage = tag.usage - removeSize;
+
+      if (newUsage <= 0) {
+        deleteTagIds.push(tag.id);
+      } else {
+        await db.query(`UPDATE tags SET usage = ${newUsage} WHERE id = ${tag.id}`);
+      }
+    }
+    if (deleteTagIds.length > 0) {
+      await db.query(`DELETE FROM tags WHERE id IN (${deleteTagIds.join(', ')})`);
+    }
+
+    await db.query(`DELETE FROM image_tags WHERE imageId = ${imageId}`);
+  }
+
+  await db.query(`DELETE FROM people WHERE imageId = ${imageId}`);
+  await db.query(`DELETE FROM backgrounds WHERE imageId = ${imageId}`);
+  await db.query(`DELETE FROM informations WHERE imageId = ${imageId}`);
+  await db.query(`DELETE FROM images WHERE id = ${imageId}`);
+
+  const currentDirectory = store.getState().system.currentDirectory;
+  window.file.delete(`${currentDirectory}/app_repository/images/${image.fileName}`);
 };

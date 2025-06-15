@@ -9,4 +9,8 @@ export const databaseMigrations: MigrationItem[] = [
       (db) => db.query('ALTER TABLE people ADD COLUMN waistDirection[integer] NOT NULL DEFAULT 0'),
     ],
   },
+  {
+    databaseVersion: 4,
+    codes: [(db) => db.query('ALTER TABLE images ADD COLUMN deleteFlag[integer] NOT NULL DEFAULT 0')],
+  },
 ];
