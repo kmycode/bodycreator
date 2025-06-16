@@ -125,6 +125,7 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
       const tagNames = pickTagNames(columns.map((c) => entity[c]).join('\n'));
 
       const currentPairs = existTags
+        .filter((t) => t.elementId === entity.idOfImage)
         .map((imageTag) => ({
           imageTag,
           tag: categoryTags.find((t) => t.id === imageTag.tagId)!,
@@ -138,6 +139,12 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
 
       const removes = currentPairs.filter((cp) => !newPairs.some((np) => np.name === cp.tag.name));
       const adds = newPairs.filter((np) => !currentPairs.some((cp) => cp.tag.name === np.name));
+      if (category === 'faceEmotion') {
+        console.log('removes');
+        console.dir(removes);
+        console.log('adds');
+        console.dir(adds);
+      }
 
       for (const remove of removes) {
         remove.tag = { ...remove.tag, usage: remove.tag.usage - 1 };
