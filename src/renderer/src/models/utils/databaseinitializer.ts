@@ -7,14 +7,16 @@ import {
   ImageEntity,
   setImages,
 } from '../entities/image_list';
-import { generateInitialSettingEntity, setSettings, SettingEntity } from '../entities/system_setting';
+import {
+  DEFAULT_FOLDER_NAME,
+  generateInitialSettingEntity,
+  setSettings,
+  SettingEntity,
+} from '../entities/system_setting';
 import { generateInitialTagEntity, setTags, TagEntity } from '../entities/tag_list';
 import { AppDispatch } from '../store';
 import { generateSqlForInsertEntity } from './dbutil';
 import { databaseMigrations } from './databasemigrations';
-import SampleImage1 from '@renderer/assets/images/sample1.png';
-import SampleImage2 from '@renderer/assets/images/sample2.png';
-import SampleImage3 from '@renderer/assets/images/sample3.png';
 import { removeImagesFromDatabaseBeforeInitialization } from './imageserializer';
 
 const createDatabase = async (): Promise<void> => {
@@ -77,6 +79,14 @@ const createDatabase = async (): Promise<void> => {
         valueType: 1,
       }),
     );
+    await db.query(
+      generateSqlForInsertEntity('settings', {
+        key: 'folderName',
+        stringValue: DEFAULT_FOLDER_NAME,
+        numberValue: 0,
+        valueType: 2,
+      }),
+    );
   }
 };
 
@@ -107,69 +117,18 @@ const migrateDatabase = async (): Promise<void> => {
   }
 };
 
-const setSampleData = async (): Promise<void> => {
-  const db = window.db;
-
-  const imageExists = await db.queryToOneObject('SELECT 1 FROM images LIMIT 1');
-  if (imageExists) return;
-
-  await db.query(
-    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(1, '1.png', 2480, 3508, 0, 0, 0)`,
-  );
-  await db.query(
-    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(2, '2.png', 2480, 3508, 0, 0, 0)`,
-  );
-  await db.query(
-    `INSERT INTO images(id, fileName, width, height, peopleSize, backgroundsSize, evaluation) VALUES(3, '3.png', 2480, 3508, 0, 0, 0)`,
-  );
-
-  await db.query(
-    "INSERT INTO informations(id, imageId, evaluation, author, url, memo) VALUES(1, 1, 0, '', '', '')",
-  );
-  await db.query(
-    "INSERT INTO informations(id, imageId, evaluation, author, url, memo) VALUES(2, 2, 0, '', '', '')",
-  );
-  await db.query(
-    "INSERT INTO informations(id, imageId, evaluation, author, url, memo) VALUES(3, 3, 0, '', '', '')",
-  );
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const resetDatabaseForDebug = async (): Promise<void> => {
-  await window.file.delete('database.sqlite3');
-};
-
-const copySampleImages = async (): Promise<void> => {
+const createRepository = async (folderName: string): Promise<void> => {
   const currentDirectory = await window.file.getCurrentDirectoryFullPath();
 
-  try {
-    await window.file.mkdir(`${currentDirectory}/app_repository/images`);
-    await window.file.mkdir(`${currentDirectory}/app_repository/tmp`);
-    await window.file.copy(
-      `${currentDirectory}/src/renderer${SampleImage1}`,
-      `${currentDirectory}/app_repository/images/1.png`,
-    );
-    await window.file.copy(
-      `${currentDirectory}/src/renderer${SampleImage2}`,
-      `${currentDirectory}/app_repository/images/2.png`,
-    );
-    await window.file.copy(
-      `${currentDirectory}/src/renderer${SampleImage3}`,
-      `${currentDirectory}/app_repository/images/3.png`,
-    );
-  } catch (ex) {
-    console.error(ex);
-  }
+  await window.file.mkdir(`${currentDirectory}/${folderName}/images`);
+  await window.file.mkdir(`${currentDirectory}/${folderName}/tmp`);
 };
 
 export const loadDatabase = async (dispatch: AppDispatch): Promise<void> => {
   const db = window.db;
 
-  //await resetDatabaseForDebug();
-  await copySampleImages();
   await createDatabase();
   await migrateDatabase();
-  await setSampleData();
 
   await removeImagesFromDatabaseBeforeInitialization();
 
@@ -180,7 +139,9 @@ export const loadDatabase = async (dispatch: AppDispatch): Promise<void> => {
   })) as SettingEntity[];
   const tags = (await db.queryToArray('SELECT * FROM tags')) as TagEntity[];
 
+  dispatch(setSettings({ database: settings, app: appSettings }));
+  await createRepository(settings.find((s) => s.key === 'folderName')?.stringValue ?? DEFAULT_FOLDER_NAME);
+
   dispatch(setImages({ images }));
   dispatch(setTags({ tags }));
-  dispatch(setSettings({ database: settings, app: appSettings }));
 };

@@ -14,6 +14,7 @@ export const ImageListPage: React.FC<{
     getFilteredImages(state as { imageList: ImageList }, filteredImageIds),
   );
   const currentDirectory = useAppSelector((state) => state.system.currentDirectory);
+  const folderName = useAppSelector((state) => state.systemSetting.databaseValues.folderName);
 
   const dispatch = useAppDispatch();
 
@@ -41,7 +42,7 @@ export const ImageListPage: React.FC<{
             <button key={image!.id} data-id={image!.id} onDoubleClick={handleOpenImagePreviewTab}>
               <div className="image-list-page__list__item">
                 <img
-                  src={`${currentDirectory}/app_repository/images/${image!.fileName}`}
+                  src={`${currentDirectory}/${folderName}/images/${image!.fileName}`}
                   width={image!.width * (200 / image!.height)}
                   height={200}
                   draggable={false}

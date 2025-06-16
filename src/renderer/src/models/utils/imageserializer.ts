@@ -59,6 +59,7 @@ export const saveImageToDatabase = async (
     peopleSize: data.people.length,
     backgroundsSize: data.backgrounds.length,
     evaluation: data.information?.evaluation ?? data.evaluation,
+    deleteFlag: 0,
   };
   const imageId = await saveDatabaseEntity('images', entity);
 
@@ -227,9 +228,10 @@ export const createImageByBuffer = async (
   if (!ext || !['png', 'jpg', 'jpeg', 'bmp', 'tiff', 'gif', 'webp'].includes(ext)) return;
 
   const currentDirectory = store.getState().system.currentDirectory;
+  const folderName = store.getState().systemSetting.databaseValues.folderName;
 
   const tmpFileName = `${parseInt(`${Math.random() * 1000000}`)}.${ext}`;
-  const tmpPath = `${currentDirectory}/app_repository/tmp/${tmpFileName}`;
+  const tmpPath = `${currentDirectory}/${folderName}/tmp/${tmpFileName}`;
   window.file.saveFromBuffer(tmpPath, buffer);
 
   const size = imageSize(new Uint8Array(buffer));
@@ -243,10 +245,11 @@ export const createImageByBuffer = async (
     peopleSize: 0,
     backgroundsSize: 0,
     evaluation: 0,
+    deleteFlag: 0,
   };
   image.id = await saveDatabaseEntity('images', image);
   image.fileName = `${image.id}.${ext}`;
-  const filePath = `${currentDirectory}/app_repository/images/${image.fileName}`;
+  const filePath = `${currentDirectory}/${folderName}/images/${image.fileName}`;
   await window.db.query(`UPDATE images SET fileName='${image.fileName}' WHERE id = ${image.id}`);
 
   const information: ImageInformationEntity = {
@@ -319,7 +322,8 @@ const removeImageFromDatabaseBeforeInitialization = async (imageId: number): Pro
   await db.query(`DELETE FROM images WHERE id = ${imageId}`);
 
   const currentDirectory = store.getState().system.currentDirectory;
-  window.file.delete(`${currentDirectory}/app_repository/images/${image.fileName}`);
+  const folderName = store.getState().systemSetting.databaseValues.folderName;
+  window.file.delete(`${currentDirectory}/${folderName}/images/${image.fileName}`);
 };
 
 /*

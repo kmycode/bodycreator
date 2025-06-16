@@ -6,3 +6,4 @@ out
 *.log*
 *.sqlite3
 app_repository
+app_repository_production

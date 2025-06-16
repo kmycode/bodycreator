@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export const DEFAULT_FOLDER_NAME = 'app_repository';
+
 export interface DatabaseSettings {
   databaseVersion: number;
+  folderName: string;
 }
 
 export interface AppSettings {}
@@ -41,6 +44,7 @@ export const generateInitialSettingEntity = (): SettingEntity => {
 const initialState: SystemSetting = {
   databaseValues: {
     databaseVersion: 1,
+    folderName: DEFAULT_FOLDER_NAME,
   },
   appValues: {},
 };
@@ -51,16 +55,18 @@ export const SystemSettingSlice = createSlice({
   reducers: {
     setSettings: (state, action: PayloadAction<{ database?: SettingEntity[]; app?: SettingEntity[] }>) => {
       if (action.payload.database) {
-        state.databaseValues = action.payload.database.reduce((obj, entity) => {
+        const setting = action.payload.database.reduce((obj, entity) => {
           obj[entity.key] = entity.valueType === 1 ? entity.numberValue : entity.stringValue;
           return obj;
         }, {}) as DatabaseSettings;
+        state.databaseValues = { ...state.databaseValues, ...setting };
       }
       if (action.payload.app) {
-        state.appValues = action.payload.app.reduce((obj, entity) => {
+        const setting = action.payload.app.reduce((obj, entity) => {
           obj[entity.key] = entity.valueType === 1 ? entity.numberValue : entity.stringValue;
           return obj;
         }, {}) as AppSettings;
+        state.appValues = { ...state.appValues, ...setting };
       }
     },
 

@@ -199,6 +199,7 @@ export const PersonEditor: React.FC<{
           icons={armHorizontalIcons}
           value={states['leftArmHorizontal'].state}
           onChange={callbacks['leftArmHorizontal']}
+          reverse
         />
       </div>
       <div className="searchpane__row">
@@ -236,7 +237,6 @@ export const PersonEditor: React.FC<{
           icons={armHorizontalIcons}
           value={states['rightArmHorizontal'].state}
           onChange={callbacks['rightArmHorizontal']}
-          reverse
         />
       </div>
       <div className="searchpane__row">
@@ -274,6 +274,7 @@ export const PersonEditor: React.FC<{
           icons={legHorizontalIcons}
           value={states['leftLegHorizontal'].state}
           onChange={callbacks['leftLegHorizontal']}
+          reverse
         />
       </div>
       <div className="searchpane__row">
@@ -311,7 +312,6 @@ export const PersonEditor: React.FC<{
           icons={legHorizontalIcons}
           value={states['rightLegHorizontal'].state}
           onChange={callbacks['rightLegHorizontal']}
-          reverse
         />
       </div>
       <div className="searchpane__row">

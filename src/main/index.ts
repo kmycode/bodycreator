@@ -5,7 +5,10 @@ import icon from '../../resources/icon.png?asset';
 import fs from 'fs';
 import { Database } from 'sqlite3';
 import { launchServer } from './server';
-const db = new Database('./database.sqlite3');
+
+const IS_DEVELOPMENT = true;
+
+const db = new Database(IS_DEVELOPMENT ? './database.sqlite3' : './database_production.sqlite3');
 const appDb = new Database('./app.sqlite3');
 
 function createWindow(): BrowserWindow {

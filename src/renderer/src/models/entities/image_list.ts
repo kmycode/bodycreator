@@ -179,6 +179,7 @@ export const generateInitialImageEntity = (merge?: Partial<ImageEntity>): ImageE
     peopleSize: 0,
     backgroundsSize: 0,
     evaluation: 0,
+    deleteFlag: 0,
     ...merge,
   };
 };
@@ -191,6 +192,7 @@ export interface ImageEntity {
   peopleSize: number;
   backgroundsSize: number;
   evaluation: number;
+  deleteFlag: number;
 }
 
 type ImageElementsLoadStatus = 'notyet' | 'loading' | 'loaded' | 'error';
