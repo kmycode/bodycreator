@@ -35,7 +35,7 @@ export const SuggestableTextInput: React.FC<{
 
   const updateRowSize = useCallback(
     (text: string) => {
-      setRowSize(Math.min(4, text.replace('\r', '').split('\n').length));
+      setRowSize(Math.min(4, text.replaceAll('\r', '').split('\n').length));
     },
     [setRowSize],
   );

@@ -36,22 +36,27 @@ body {
 }
 
 .image-list-page {
-  overflow: hidden auto;
-  background: transparent;
-  padding: 16px 4px;
+  display: flex;
 
-  &__item {
-    position: relative;
-    padding: 12px 8px 20px;
+  &__list {
+    overflow: hidden auto;
+    background: transparent;
+    padding: 16px 4px 16px 16px;
+    flex: 1;
 
-    .empty-flag {
-      position: absolute;
-      bottom: 12px;
-      right: 0;
-      height: 8px;
-      border-color: transparent orange orange transparent;
-      border-width: 18px;
-      border-style: solid;
+    &__item {
+      position: relative;
+      padding: 12px 8px 20px;
+
+      .empty-flag {
+        position: absolute;
+        bottom: 12px;
+        right: 0;
+        height: 8px;
+        border-color: transparent orange orange transparent;
+        border-width: 18px;
+        border-style: solid;
+      }
     }
   }
 }
@@ -180,6 +185,31 @@ body {
         right: 8px;
       }
     }
+  }
+}
+
+.searchpane {
+  display: flex;
+  flex-direction: column;
+
+  .pane-contents {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.searchpane .tab-contents {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  .search-query-input {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .search-action > button {
+    height: 40px;
+    width: 100%;
   }
 }
 

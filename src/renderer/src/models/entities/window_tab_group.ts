@@ -1,11 +1,42 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export interface ImageSearchPersonQueryData {
+  faceHorizontal: string[];
+  faceVertical: string[];
+  chestHorizontal: string[];
+  chestVertical: string[];
+  bodySpine: string[];
+  bodySpineOrAnd: string;
+  bodyWear: string[];
+  oppaiSize: string[];
+}
+
+export interface ImageSearchQueryData {
+  person: ImageSearchPersonQueryData;
+}
+
+export const generateImageSearchQueryData = (): ImageSearchQueryData => {
+  return {
+    person: {
+      faceHorizontal: [],
+      faceVertical: [],
+      chestHorizontal: [],
+      chestVertical: [],
+      bodySpine: [],
+      bodySpineOrAnd: 'unknown',
+      bodyWear: [],
+      oppaiSize: [],
+    },
+  };
+};
+
 interface ImagePreviewTabData {
   imageId: number;
 }
 
 interface ImageListTabData {
   filteredImageIds: number[] | null;
+  searchData: ImageSearchQueryData;
 }
 
 export interface WindowTabBase {
@@ -33,7 +64,14 @@ export interface WindowTabGroup {
 
 const initialState: WindowTabGroup = {
   activeId: 1,
-  tabs: [{ id: 1, type: 'image-list', data: { filteredImageIds: null }, title: '一覧' }],
+  tabs: [
+    {
+      id: 1,
+      type: 'image-list',
+      data: { filteredImageIds: null, searchData: generateImageSearchQueryData() },
+      title: '一覧',
+    },
+  ],
   tabHistories: [],
 };
 
@@ -57,7 +95,7 @@ const removeTabById = (state: WindowTabGroup, id: number, withoutHistory?: boole
       {
         id: 1,
         type: 'image-list',
-        data: { filteredImageIds: null },
+        data: { filteredImageIds: null, searchData: generateImageSearchQueryData() },
         title: '一覧',
       },
     ];
@@ -86,7 +124,12 @@ const addImagePreviewTab = (state: WindowTabGroup, imageId: number): void => {
 
 const addImageListTab = (state: WindowTabGroup): void => {
   const newId = getNewId(state);
-  state.tabs.push({ id: newId, type: 'image-list', data: { filteredImageIds: null }, title: '一覧' });
+  state.tabs.push({
+    id: newId,
+    type: 'image-list',
+    data: { filteredImageIds: null, searchData: generateImageSearchQueryData() },
+    title: '一覧',
+  });
   state.activeId = newId;
 };
 
@@ -160,6 +203,14 @@ export const WindowTabGroupSlice = createSlice({
         removeTabById(state, id, true);
       }
     },
+
+    updateTabData: (state, action: PayloadAction<{ tabId: number; data: object }>) => {
+      const tabIndex = state.tabs.findIndex((t) => t.id === action.payload.tabId);
+      if (tabIndex < 0) return;
+      const tab = state.tabs[tabIndex];
+
+      state.tabs[tabIndex] = { ...tab, data: { ...tab.data, ...(action.payload.data as any) } }; // eslint-disable-line @typescript-eslint/no-explicit-any
+    },
   },
 });
 export default WindowTabGroupSlice.reducer;
@@ -172,4 +223,5 @@ export const {
   reviveLatestTab,
   openImageListTab,
   deleteImageTabs,
+  updateTabData,
 } = WindowTabGroupSlice.actions;

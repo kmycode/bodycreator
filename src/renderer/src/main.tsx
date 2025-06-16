@@ -34,8 +34,6 @@ document.onkeydown = (ev: KeyboardEvent) => {
 };
 
 window.electron.ipcRenderer.on('image-enqueue', (_: IpcRendererEvent, queue: ImageQueueItem) => {
-  console.dir(queue);
-
   createImageByBuffer(store.dispatch, queue.ext, queue.buffer, {
     memo: queue.title,
     url: queue.url,

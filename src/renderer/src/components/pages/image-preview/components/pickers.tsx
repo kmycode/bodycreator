@@ -108,7 +108,8 @@ export const IconGroupPicker: React.FC<{
   onChange?: (selectedId: string) => void;
   onChangeMultiple?: (selectedIds: string[]) => void;
   multiple?: boolean;
-}> = ({ icons, value, values, onChange, onChangeMultiple, multiple }) => {
+  reverse?: boolean;
+}> = ({ icons, value, values, onChange, onChangeMultiple, multiple, reverse }) => {
   const handleChange = useCallback(
     (ev: ReactClickEvent) => {
       if (!onChange && !onChangeMultiple) return;
@@ -142,6 +143,16 @@ export const IconGroupPicker: React.FC<{
     [value, onChange, onChangeMultiple, values, multiple],
   );
 
+  const iconReverse = useCallback(
+    (icon: boolean | undefined): boolean => {
+      if ((reverse && icon) || (!reverse && !icon)) {
+        return false;
+      }
+      return true;
+    },
+    [reverse],
+  );
+
   return (
     <div className="icongrouppicker">
       {icons.map((icon) => (
@@ -156,7 +167,7 @@ export const IconGroupPicker: React.FC<{
             className={classNames({
               svgicon: true,
               enabled: value === icon.id || values?.includes(icon.id),
-              reverse: icon.reverse,
+              reverse: iconReverse(icon.reverse),
             })}
           />
           <span className="icongrouppicker__title-tip">{icon.title}</span>

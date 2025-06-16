@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import AppLogo from './components/generic/AppLogo';
 import { ModalRoot } from './components/layout/ModalRoot';
-//import SearchPane from './components/layout/SearchPane';
 import WindowHeader from './components/layout/WindowHeader';
 import { WindowTabContainer } from './components/layout/WindowTabContainer';
 import { setCurrentDirectory, setInitialLoadStatus } from './models/entities/app_system';
@@ -39,7 +38,6 @@ function App(): React.JSX.Element {
         (async () => {
           const clipboardContents = await navigator.clipboard.read();
           for (const item of clipboardContents) {
-            console.dir(item.types);
             if (item.types.includes('image/png')) {
               const blob = await item.getType('image/png');
               const buffer = await blob.arrayBuffer();

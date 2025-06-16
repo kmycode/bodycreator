@@ -11,6 +11,10 @@
       font-weight: bold;
     }
 
+    &.none.selected {
+      color: white;
+    }
+
     &.normal.selected {
       color: #44ee44;
     }
@@ -56,6 +60,14 @@
     }
 
     &.right.selected {
+      color: #88eeee;
+    }
+
+    &.and.selected {
+      color: #ee6699;
+    }
+
+    &.unknown.selected {
       color: #88eeee;
     }
   }

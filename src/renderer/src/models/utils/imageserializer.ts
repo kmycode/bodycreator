@@ -1,3 +1,4 @@
+import { ImageSearchQuery } from '@renderer/components/pages/image-list/SearchPane';
 import {
   addNewImage,
   deleteImage,
@@ -81,7 +82,7 @@ export const saveImageToDatabase = async (
   return { imageId, peopleIds, backgroundIds };
 };
 
-const pickTagNames = (text: string): string[] => {
+export const pickTagNames = (text: string): string[] => {
   return text
     .replaceAll('\r', '')
     .split('\n')
@@ -319,4 +320,62 @@ const removeImageFromDatabaseBeforeInitialization = async (imageId: number): Pro
 
   const currentDirectory = store.getState().system.currentDirectory;
   window.file.delete(`${currentDirectory}/app_repository/images/${image.fileName}`);
+};
+
+/*
+const distinct = (arr: number[]): number[] => {
+  return [...new Set(arr)];
+};
+*/
+
+export const searchImage = async (query: ImageSearchQuery): Promise<number[] | null> => {
+  const db = window.db;
+  let querySet = false;
+  let imageIds: number[] = [];
+
+  const personQuery = Object.entries(query.person)
+    .map((entry) => {
+      const [key, value] = entry;
+
+      if (
+        [
+          'faceHorizontal',
+          'faceVertical',
+          'chestHorizontal',
+          'chestVertical',
+          'bodyWear',
+          'oppaiSize',
+        ].includes(key)
+      ) {
+        if (Array.isArray(value) && value.length > 0) {
+          return `${key} IN (${value.join(', ')})`;
+        }
+      }
+
+      if (['bodySpine'].includes(key)) {
+        const and = query.person[`${key}OrAnd`] === 'and';
+
+        if (Array.isArray(value) && value.length > 0) {
+          const sum = value.reduce((r, v) => r + v, 0);
+          if (and) {
+            return `(${key} & ${sum}) = ${sum}`;
+          } else {
+            return `(${key} & ${sum})`;
+          }
+        }
+      }
+
+      return null;
+    })
+    .filter((q) => q)
+    .join(' AND ');
+  if (personQuery.length > 0) {
+    const people: { imageId: number }[] = await db.queryToArray(
+      `SELECT DISTINCT imageId FROM people WHERE ${personQuery}`,
+    );
+    imageIds = people.map((p) => p.imageId);
+    querySet = true;
+  }
+
+  return querySet ? imageIds : null;
 };

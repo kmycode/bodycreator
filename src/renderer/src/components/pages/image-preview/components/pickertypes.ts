@@ -66,8 +66,8 @@ export const faceIcons = [
 export const spineIcons = [
   { id: 'body-rotate', numId: 1, svg: BodyRotateIcon, title: '回旋' },
   { id: 'body-rotate-side', numId: 2, svg: BodyRotateSideIcon, title: '側屈' },
-  { id: 'body-lean-back', numId: 3, svg: BodyLeanBackIcon, title: '後屈（背中反らし）' },
-  { id: 'body-lean-front', numId: 4, svg: BodyLeanFrontIcon, title: '前屈（前かがみ）' },
+  { id: 'body-lean-back', numId: 4, svg: BodyLeanBackIcon, title: '後屈（背中反らし）' },
+  { id: 'body-lean-front', numId: 8, svg: BodyLeanFrontIcon, title: '前屈（前かがみ）' },
 ];
 
 export const oppaiIcons = [
@@ -152,6 +152,8 @@ export const verticalAngleInfo = [
   { id: 'low', numId: 2, title: 'アオリ' },
 ];
 
+export const verticalAngleInfoWithZero = [...verticalAngleInfo, { id: 'none', numId: 0, title: '指定なし' }];
+
 export const directionInfo = [
   { id: 'left', numId: 1, title: '左向き' },
   { id: 'right', numId: 2, title: '右向き' },
@@ -168,4 +170,9 @@ export const hairTypeInfo = [
 export const wearOptionsInfo = [
   { id: 'takeoff', numId: 1, title: '脱ぐ' },
   { id: 'wet', numId: 2, title: '濡れ' },
+];
+
+export const orAndInfo = [
+  { id: 'unknown', numId: 0, title: 'OR' },
+  { id: 'and', numId: 1, title: 'AND' },
 ];

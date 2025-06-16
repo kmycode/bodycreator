@@ -69,6 +69,7 @@ app.whenReady().then(() => {
       new Promise((resolve, reject) => {
         (options?.destination === 'app' ? appDb : db).all(sql, (ex, result) => {
           if (ex) {
+            console.log(sql);
             reject(ex);
             return;
           }
@@ -83,6 +84,7 @@ app.whenReady().then(() => {
       new Promise((resolve, reject) => {
         (options?.destination === 'app' ? appDb : db).get(sql, (ex, result) => {
           if (ex) {
+            console.log(sql);
             reject(ex);
             return;
           }

@@ -81,6 +81,7 @@ export const PersonEditor: React.FC<{
           icons={faceIcons}
           value={states['faceHorizontal'].state}
           onChange={callbacks['faceHorizontal']}
+          reverse={states['faceDirection'].state === 'right'}
         />
       </div>
       <h3>表情</h3>
@@ -131,6 +132,7 @@ export const PersonEditor: React.FC<{
           icons={cubeIcons}
           value={states['chestHorizontal'].state}
           onChange={callbacks['chestHorizontal']}
+          reverse={states['chestDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -138,6 +140,7 @@ export const PersonEditor: React.FC<{
           icons={spineIcons}
           values={states['bodySpine'].state}
           onChangeMultiple={callbacks['bodySpine']}
+          reverse={states['chestDirection'].state === 'right'}
           multiple
         />
       </div>
@@ -187,6 +190,7 @@ export const PersonEditor: React.FC<{
           icons={cubeIcons}
           value={states['waistHorizontal'].state}
           onChange={callbacks['waistHorizontal']}
+          reverse={states['waistDirection'].state === 'right'}
         />
       </div>
       <h3>左腕</h3>
@@ -202,6 +206,7 @@ export const PersonEditor: React.FC<{
           icons={armVerticalIcons}
           value={states['leftArmVertical'].state}
           onChange={callbacks['leftArmVertical']}
+          reverse={states['chestDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -209,6 +214,7 @@ export const PersonEditor: React.FC<{
           icons={lineIcons}
           value={states['leftElbow'].state}
           onChange={callbacks['leftElbow']}
+          reverse={states['chestDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -230,6 +236,7 @@ export const PersonEditor: React.FC<{
           icons={armHorizontalIcons}
           value={states['rightArmHorizontal'].state}
           onChange={callbacks['rightArmHorizontal']}
+          reverse
         />
       </div>
       <div className="searchpane__row">
@@ -237,6 +244,7 @@ export const PersonEditor: React.FC<{
           icons={armVerticalIcons}
           value={states['rightArmVertical'].state}
           onChange={callbacks['rightArmVertical']}
+          reverse={states['chestDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -244,6 +252,7 @@ export const PersonEditor: React.FC<{
           icons={lineIcons}
           value={states['rightElbow'].state}
           onChange={callbacks['rightElbow']}
+          reverse={states['chestDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -272,6 +281,7 @@ export const PersonEditor: React.FC<{
           icons={legVerticalIcons}
           value={states['leftLegVertical'].state}
           onChange={callbacks['leftLegVertical']}
+          reverse={states['waistDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -292,6 +302,7 @@ export const PersonEditor: React.FC<{
           icons={lineIcons}
           value={states['leftKnee'].state}
           onChange={callbacks['leftKnee']}
+          reverse={states['waistDirection'].state === 'right'}
         />
       </div>
       <h3>右脚</h3>
@@ -300,6 +311,7 @@ export const PersonEditor: React.FC<{
           icons={legHorizontalIcons}
           value={states['rightLegHorizontal'].state}
           onChange={callbacks['rightLegHorizontal']}
+          reverse
         />
       </div>
       <div className="searchpane__row">
@@ -307,6 +319,7 @@ export const PersonEditor: React.FC<{
           icons={legVerticalIcons}
           value={states['rightLegVertical'].state}
           onChange={callbacks['rightLegVertical']}
+          reverse={states['waistDirection'].state === 'right'}
         />
       </div>
       <div className="searchpane__row">
@@ -327,6 +340,7 @@ export const PersonEditor: React.FC<{
           icons={lineIcons}
           value={states['rightKnee'].state}
           onChange={callbacks['rightKnee']}
+          reverse={states['waistDirection'].state === 'right'}
         />
       </div>
       <h3>その他</h3>
