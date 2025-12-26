@@ -1,8 +1,8 @@
 import { getFilteredImages, Image, ImageList } from '@renderer/models/entities/image_list';
-import { openImagePreviewTab, WindowTab } from '@renderer/models/entities/window_tab_group';
+import { openImagePreviewTab, updateTabData, WindowTab } from '@renderer/models/entities/window_tab_group';
 import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { ReactClickEvent } from '@renderer/models/types';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { SearchPane } from './SearchPane';
 
@@ -30,12 +30,37 @@ export const ImageListPage: React.FC<{
 
   const empty = useCallback((image: Image) => image.peopleSize + image.backgroundsSize <= 0, []);
 
+  const listScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (tab?.type !== 'image-list' || !listScrollRef.current) return;
+
+    const targetElement = listScrollRef.current;
+    const { scrollLength } = tab.data;
+
+    // タブ切替時に自動スクロール
+    targetElement.scrollTo({ top: scrollLength, behavior: 'instant' });
+
+    // スクロール量を保存
+    const updateScrollLength = (ev: Event): void => {
+      const target = ev.target as HTMLDivElement;
+      if (!target) return;
+
+      const length = target.scrollTop;
+      dispatch(updateTabData({ tabId: tab.id, data: { scrollLength: length } }));
+    };
+    targetElement.addEventListener('scroll', updateScrollLength);
+
+    return () => {
+      targetElement.removeEventListener('scroll', updateScrollLength);
+    };
+  }, [tab, dispatch]);
+
   return (
     <div className="image-list-page">
       <div className="image-list-page__search">
         <SearchPane tab={tab} />
       </div>
-      <div className="image-list-page__list">
+      <div className="image-list-page__list" ref={listScrollRef}>
         {images
           .filter((image) => image)
           .map((image) => (

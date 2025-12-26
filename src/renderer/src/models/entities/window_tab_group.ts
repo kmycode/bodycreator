@@ -37,6 +37,7 @@ interface ImagePreviewTabData {
 interface ImageListTabData {
   filteredImageIds: number[] | null;
   searchData: ImageSearchQueryData;
+  scrollLength: number;
 }
 
 export interface WindowTabBase {
@@ -68,7 +69,11 @@ const initialState: WindowTabGroup = {
     {
       id: 1,
       type: 'image-list',
-      data: { filteredImageIds: null, searchData: generateImageSearchQueryData() },
+      data: {
+        filteredImageIds: null,
+        searchData: generateImageSearchQueryData(),
+        scrollLength: 0,
+      },
       title: '一覧',
     },
   ],
@@ -95,7 +100,11 @@ const removeTabById = (state: WindowTabGroup, id: number, withoutHistory?: boole
       {
         id: 1,
         type: 'image-list',
-        data: { filteredImageIds: null, searchData: generateImageSearchQueryData() },
+        data: {
+          filteredImageIds: null,
+          searchData: generateImageSearchQueryData(),
+          scrollLength: 0,
+        },
         title: '一覧',
       },
     ];
@@ -127,7 +136,11 @@ const addImageListTab = (state: WindowTabGroup): void => {
   state.tabs.push({
     id: newId,
     type: 'image-list',
-    data: { filteredImageIds: null, searchData: generateImageSearchQueryData() },
+    data: {
+      filteredImageIds: null,
+      searchData: generateImageSearchQueryData(),
+      scrollLength: 0,
+    },
     title: '一覧',
   });
   state.activeId = newId;
