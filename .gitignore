@@ -3,6 +3,7 @@ dist
 out
 .DS_Store
 .eslintcache
+debugstart.bat
 *.log*
 *.sqlite3
 app_repository
