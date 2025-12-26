@@ -11,7 +11,11 @@ import {
 import { store, useAppDispatch } from '@renderer/models/store';
 import TabHeaderGroup, { TabHeaderItem } from '@renderer/components/parts/TabHeaderGroup';
 import { useCallback, useEffect, useState } from 'react';
-import { IconGroupPicker, SmallTextButtonGroupPicker } from '../image-preview/components/pickers';
+import {
+  IconGroupPicker,
+  InputWithPopularSelection,
+  SmallTextButtonGroupPicker,
+} from '../image-preview/components/pickers';
 import {
   generateCallbacks,
   generateStates,
@@ -35,6 +39,7 @@ interface ImageSearchPersonQuery {
   bodyWear: number[];
   oppaiSize: number[];
   waistHorizontal: number[];
+  bodyOthers: number[];
 }
 
 export interface ImageSearchQuery {
@@ -52,7 +57,9 @@ const searchQueryConvertInfo = {
   waistHorizontal: cubeIcons,
 };
 
-const tagCategoriesOfSearchQuery: { [key: string]: string } = {};
+const tagCategoriesOfSearchQuery: { [key: string]: string } = {
+  bodyOthers: 'bodyOthers',
+};
 
 const searchDataToQuery = (data: ImageSearchQueryData): ImageSearchQuery => {
   const stringToNumber = (text: string, info: { id: string; numId: number }[]): number => {
@@ -115,9 +122,10 @@ const personSearchDataKeys = [
   'bodyWear',
   'oppaiSize',
   'waistHorizontal',
+  'bodyOthers',
 ];
 
-const personSearchDataTextInputKeys = [];
+const personSearchDataTextInputKeys = ['bodyOthers'];
 
 const personSearchDataStringArrayKeys = [
   'faceHorizontal',
@@ -217,6 +225,13 @@ const PersonSearchInput: React.FC<{
           multiple
         />
       </div>
+      <h3>その他の体のタグ</h3>
+      <InputWithPopularSelection
+        value={states['bodyOthers'].state}
+        onChange={callbacks['bodyOthers']}
+        selection={['膝の裏', '肩上げ']}
+        multiline
+      />
     </div>
   );
 };

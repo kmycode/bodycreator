@@ -381,10 +381,34 @@ export const searchImage = async (query: ImageSearchQuery): Promise<number[] | n
     })
     .filter((q) => q)
     .join(' AND ');
-  if (personQuery.length > 0) {
+
+  const personTagIds = Object.entries(query.person)
+    .map((entry) => {
+      const [key, value] = entry;
+
+      if (['bodyOthers'].includes(key)) {
+        return value;
+      }
+
+      return null;
+    })
+    .filter((q) => q)
+    .flat();
+  const personTagQuery = personTagIds.length > 0 ? `tags.tagId IN (${personTagIds.join(',')})` : '';
+  const whereQuery =
+    personQuery.length > 0 || personTagIds.length > 0
+      ? `WHERE ${[personQuery, personTagQuery].filter((q) => q).join(' AND ')}`
+      : '';
+  const imageTagsJoin =
+    personTagIds.length > 0
+      ? `JOIN image_tags AS tags ON tags.imageId = people.imageId AND tags.elementId = people.idOfImage`
+      : '';
+
+  if (personQuery.length > 0 || personTagIds.length > 0) {
     const people: { imageId: number }[] = await db.queryToArray(
-      `SELECT DISTINCT imageId FROM people WHERE ${personQuery}`,
+      `SELECT DISTINCT people.imageId FROM people ${imageTagsJoin} ${whereQuery}`,
     );
+    console.log(`SELECT DISTINCT people.imageId FROM people ${imageTagsJoin} ${whereQuery}`);
     imageIds = people.map((p) => p.imageId);
     querySet = true;
   }

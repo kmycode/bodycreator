@@ -10,6 +10,7 @@ export interface ImageSearchPersonQueryData {
   bodyWear: string[];
   oppaiSize: string[];
   waistHorizontal: string[];
+  bodyOthers: string;
 }
 
 export interface ImageSearchQueryData {
@@ -28,6 +29,7 @@ export const generateImageSearchQueryData = (): ImageSearchQueryData => {
       bodyWear: [],
       oppaiSize: [],
       waistHorizontal: [],
+      bodyOthers: '',
     },
   };
 };
