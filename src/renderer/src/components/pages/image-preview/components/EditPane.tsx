@@ -78,16 +78,18 @@ const EditPane: React.FC<{
   );
 
   const handleTabChange = useCallback(
-    (value: string, newTabs?: ElementTab[]) => {
-      const tabs = newTabs ?? elementTabs;
+    (value: string, options?: { newTabs?: ElementTab[]; withoutUpdate?: boolean }) => {
+      const tabs = options?.newTabs ?? elementTabs;
 
       const beforeTabId = selectedTabId;
 
       // 同じ画像内の別の要素タブに切り替える場合
-      if (!newTabs) {
+      if (!options?.newTabs) {
         if (['person-', 'background-'].some((s) => beforeTabId.startsWith(s))) {
           const currentTab = tabs.find((tab) => tab.id === beforeTabId);
-          if (currentTab) {
+
+          // タブの編集内容を記憶
+          if (currentTab && !options?.withoutUpdate) {
             currentTab.data = currentTabElementData;
             setElementTabs([...tabs]);
           }
@@ -149,7 +151,7 @@ const EditPane: React.FC<{
       setCurrentTabElementData({});
       setElementTabs(newTabs);
       setInformationData(informationEntityToData(informationEntity));
-      handleTabChange(image.selectedTabId ?? 'information', newTabs);
+      handleTabChange(image.selectedTabId ?? 'information', { newTabs });
     }
   }, [
     image,
@@ -274,6 +276,7 @@ const EditPane: React.FC<{
 
       const newTabs = elementTabs.filter((tab) => tab.id !== selectedTabId);
       setElementTabs(newTabs);
+      handleTabChange(newTabs[0]?.id ?? 'information', { withoutUpdate: true });
 
       handleCurrentImageUpdate((newImage) => {
         newImage.people = newImage.people.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
@@ -282,7 +285,6 @@ const EditPane: React.FC<{
         newImage.backgroundsSize = newImage.backgrounds.length;
       });
 
-      setSelectedTabId(newTabs[0]?.id ?? 'information');
       dispatch(clearModalResult());
     }
 
@@ -295,7 +297,7 @@ const EditPane: React.FC<{
     modalState,
     selectedTabId,
     setElementTabs,
-    setSelectedTabId,
+    handleTabChange,
     dispatch,
     elementTabs,
     handleCurrentImageUpdate,
