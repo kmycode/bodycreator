@@ -34,6 +34,7 @@ interface ImageSearchPersonQuery {
   bodySpine: number[];
   bodyWear: number[];
   oppaiSize: number[];
+  waistHorizontal: number[];
 }
 
 export interface ImageSearchQuery {
@@ -48,6 +49,7 @@ const searchQueryConvertInfo = {
   bodySpine: spineIcons,
   bodyWear: wearIcons,
   oppaiSize: oppaiIcons,
+  waistHorizontal: cubeIcons,
 };
 
 const tagCategoriesOfSearchQuery: { [key: string]: string } = {};
@@ -112,6 +114,7 @@ const personSearchDataKeys = [
   'bodySpineOrAnd',
   'bodyWear',
   'oppaiSize',
+  'waistHorizontal',
 ];
 
 const personSearchDataTextInputKeys = [];
@@ -124,6 +127,7 @@ const personSearchDataStringArrayKeys = [
   'bodySpine',
   'bodyWear',
   'oppaiSize',
+  'waistHorizontal',
 ];
 
 const PersonSearchInput: React.FC<{
@@ -201,6 +205,15 @@ const PersonSearchInput: React.FC<{
           icons={oppaiIcons}
           values={states['oppaiSize'].state}
           onChangeMultiple={callbacks['oppaiSize']}
+          multiple
+        />
+      </div>
+      <h3>腰</h3>
+      <div className="searchpane__row">
+        <IconGroupPicker
+          icons={cubeIcons}
+          values={states['waistHorizontal'].state}
+          onChangeMultiple={callbacks['waistHorizontal']}
           multiple
         />
       </div>

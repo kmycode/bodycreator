@@ -356,6 +356,7 @@ export const searchImage = async (query: ImageSearchQuery): Promise<number[] | n
           'chestVertical',
           'bodyWear',
           'oppaiSize',
+          'waistHorizontal',
         ].includes(key)
       ) {
         if (Array.isArray(value) && value.length > 0) {
