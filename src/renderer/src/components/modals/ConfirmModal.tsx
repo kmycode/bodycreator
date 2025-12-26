@@ -6,12 +6,12 @@ export interface ConfirmModalParameter {
   message: string;
   yesButtonLabel?: string;
   noButtonLabel?: string;
-  yesResult: unknown;
+  yesResult?: unknown;
 }
 
 interface ConfirmModalResultYes {
   selection: 'yes';
-  yesResult: unknown;
+  yesResult?: unknown;
 }
 
 interface ConfirmModalResultNo {

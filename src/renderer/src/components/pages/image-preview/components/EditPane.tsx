@@ -241,9 +241,6 @@ const EditPane: React.FC<{
         parameter: {
           id: 'editpane-remove-element-tab',
           message: `本当に${selectedTabId.startsWith('person-') ? '人間' : '背景'}「${currentTabElementData.name}」を削除しますか？`,
-          yesResult: {
-            type: 'remove-element-tab',
-          },
         },
       }),
     );
@@ -256,9 +253,6 @@ const EditPane: React.FC<{
         parameter: {
           id: 'remove-image',
           message: '本当にこの画像を削除しますか？',
-          yesResult: {
-            type: 'remove-image',
-          },
         },
       }),
     );
