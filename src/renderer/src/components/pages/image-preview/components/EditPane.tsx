@@ -403,7 +403,9 @@ const EditPane: React.FC<{
                 背景を追加
               </button>
               <h3>Dangerous Zone</h3>
-              <button onClick={handleDeleteImage}>この画像を削除</button>
+              <button className="dangerous" onClick={handleDeleteImage}>
+                この画像を削除
+              </button>
             </>
           )}
         </div>

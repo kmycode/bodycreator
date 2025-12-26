@@ -28,6 +28,10 @@ button {
       background: #5566aa;
     }
   }
+
+  &.dangerous {
+    color: #ffb5b5;
+  }
 }
 
 .svgicon {
