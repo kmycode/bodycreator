@@ -19,6 +19,7 @@ import {
 import {
   generateCallbacks,
   generateStates,
+  handleSuggestGeneric,
   StateType,
   updateInitialData,
 } from '../image-preview/utils/entity_data_converters';
@@ -153,6 +154,8 @@ const PersonSearchInput: React.FC<{
     updateInitialData(personSearchDataKeys, states, initialData);
   }, [initialData, states]);
 
+  const handleSuggest = handleSuggestGeneric;
+
   return (
     <div>
       <h3>顔</h3>
@@ -230,6 +233,8 @@ const PersonSearchInput: React.FC<{
         value={states['bodyOthers'].state}
         onChange={callbacks['bodyOthers']}
         selection={['膝の裏', '肩上げ']}
+        name="bodyOthers"
+        onSuggest={handleSuggest}
         multiline
       />
     </div>

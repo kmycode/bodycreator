@@ -352,6 +352,8 @@ export const PersonEditor: React.FC<{
         value={states['bodyOthers'].state}
         onChange={callbacks['bodyOthers']}
         selection={['膝の裏', '肩上げ']}
+        name="bodyOthers"
+        onSuggest={handleSuggest}
         multiline
       />
       <h3>衣装・アクセサリ</h3>
