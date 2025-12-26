@@ -61,6 +61,70 @@ body {
   }
 }
 
+.config-page {
+  height: 100%;
+  width: 100%;
+  background: #404040;
+  display: flex;
+
+  &__categories {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid gray;
+
+    &__item {
+      height: 60px;
+      cursor: pointer;
+      background: #111111;
+
+      &.selected {
+        background: #666666;
+      }
+    }
+  }
+
+  &__contents {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      padding-inline-start: 16px;
+      padding-block: 8px;
+
+      h2 {
+        font-weight: bold;
+        color: #f0f0f0;
+      }
+    }
+
+    .contents-container {
+      flex: 1;
+      overflow: auto;
+      margin-block-start: 16px;
+
+      .contents {
+        padding-inline: 16px;
+
+        label {
+          display: block;
+          height: 32px;
+          cursor: pointer;
+          margin-block: 4px;
+
+          span {
+            display: inline-block;
+            line-height: 32px;
+            margin-inline-start: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
 #windowheader {
   height: 40px;
   background: #000000;

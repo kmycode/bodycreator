@@ -9,6 +9,7 @@ export interface ImageSearchPersonQueryData {
   bodySpineOrAnd: string;
   bodyWear: string[];
   oppaiSize: string[];
+  waistHorizontal: string[];
 }
 
 export interface ImageSearchQueryData {
@@ -26,6 +27,7 @@ export const generateImageSearchQueryData = (): ImageSearchQueryData => {
       bodySpineOrAnd: 'unknown',
       bodyWear: [],
       oppaiSize: [],
+      waistHorizontal: [],
     },
   };
 };
@@ -54,6 +56,10 @@ export type WindowTab = WindowTabBase &
     | {
         type: 'image-list';
         data: ImageListTabData;
+      }
+    | {
+        type: 'config';
+        data: object;
       }
   );
 
@@ -146,6 +152,17 @@ const addImageListTab = (state: WindowTabGroup): void => {
   state.activeId = newId;
 };
 
+const addConfigTab = (state: WindowTabGroup): void => {
+  const newId = getNewId(state);
+  state.tabs.push({
+    id: newId,
+    type: 'config',
+    data: {},
+    title: '設定',
+  });
+  state.activeId = newId;
+};
+
 export const WindowTabGroupSlice = createSlice({
   name: 'windowTabGroup',
   initialState,
@@ -208,6 +225,15 @@ export const WindowTabGroupSlice = createSlice({
       addImageListTab(state);
     },
 
+    openConfigTab: (state) => {
+      const tab = state.tabs.find((t) => t.type === 'config');
+      if (tab) {
+        state.activeId = tab.id;
+      } else {
+        addConfigTab(state);
+      }
+    },
+
     deleteImageTabs: (state, action: PayloadAction<{ imageId: number }>) => {
       const removeTabIds = state.tabs
         .filter((t) => t.type === 'image-preview' && t.data.imageId === action.payload.imageId)
@@ -237,4 +263,5 @@ export const {
   openImageListTab,
   deleteImageTabs,
   updateTabData,
+  openConfigTab,
 } = WindowTabGroupSlice.actions;

@@ -5,6 +5,7 @@ export const DEFAULT_FOLDER_NAME = 'app_repository';
 export interface DatabaseSettings {
   databaseVersion: number;
   folderName: string;
+  sampleSetting: number;
 }
 
 export interface AppSettings {}
@@ -45,6 +46,7 @@ const initialState: SystemSetting = {
   databaseValues: {
     databaseVersion: 1,
     folderName: DEFAULT_FOLDER_NAME,
+    sampleSetting: 0,
   },
   appValues: {},
 };

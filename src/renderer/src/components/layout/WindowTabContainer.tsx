@@ -9,6 +9,7 @@ import {
   startSavingImage,
 } from '@renderer/models/entities/image_list';
 import { saveImageTagToDatabase, saveImageToDatabase } from '@renderer/models/utils/imageserializer';
+import { ConfigPage } from '../pages/config/ConfigPage';
 
 export const WindowTabContainer: React.FC<object> = () => {
   const activeTabId = useAppSelector((state) => state.windowTabGroup.activeId);
@@ -62,6 +63,10 @@ export const WindowTabContainer: React.FC<object> = () => {
 
   if (activeTab.type === 'image-list') {
     return <ImageListPage tab={activeTab} />;
+  }
+
+  if (activeTab.type === 'config') {
+    return <ConfigPage tab={activeTab} />;
   }
 
   return undefined;

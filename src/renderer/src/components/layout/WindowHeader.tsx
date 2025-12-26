@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import {
   moveTab,
+  openConfigTab,
   removeTab,
   switchTab,
   WindowTab,
@@ -83,6 +84,10 @@ function WindowHeader(): React.JSX.Element {
 
   const handleClose = (): Promise<void> => window.mainWindow.close();
 
+  const handleConfig = useCallback(() => {
+    dispatch(openConfigTab());
+  }, [dispatch]);
+
   const handleDragEnd = useCallback(
     (ev: DragEndEvent) => {
       if (ev.over?.id === ev.active.id) return;
@@ -112,6 +117,7 @@ function WindowHeader(): React.JSX.Element {
         </DndContext>
       </div>
       <div id="windowheader__buttons">
+        <button onClick={handleConfig}>設</button>
         <button onClick={handleClose}>終</button>
       </div>
     </div>
