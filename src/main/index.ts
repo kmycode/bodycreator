@@ -6,7 +6,7 @@ import fs from 'fs';
 import { Database } from 'sqlite3';
 import { launchServer } from './server';
 
-const IS_DEVELOPMENT = true;
+const IS_DEVELOPMENT = import.meta.env.DEV;
 
 const db = new Database(IS_DEVELOPMENT ? './database.sqlite3' : './database_production.sqlite3');
 const appDb = new Database('./app.sqlite3');
