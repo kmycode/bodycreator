@@ -5,6 +5,9 @@ export interface ImagePreviewMatrix {
   scale: number;
   x: number;
   y: number;
+  reverseHorizontal: boolean;
+  reverseVertical: boolean;
+  rotate: number;
 }
 
 export interface ImagePreviewMatrixes {

@@ -133,6 +133,26 @@
   overflow: hidden;
   user-select: none;
   flex: 1;
+
+  .canvas-image-rotation-wrapper {
+    transform-origin: 150% 50%;
+
+    .canvas-image {
+      transform-origin: top left;
+
+      &.reverse-horizontal {
+        transform: scaleX(-1) translateX(-100%);
+      }
+
+      &.reverse-vertical {
+        transform: scaleY(-1) translateY(-100%);
+      }
+
+      &.reverse-horizontal.reverse-vertical {
+        transform: scale(-1, -1) translate(-100% -100%);
+      }
+    }
+  }
 }
 
 .tabheader-group {

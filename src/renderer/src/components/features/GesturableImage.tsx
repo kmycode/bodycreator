@@ -2,6 +2,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { updateMatrix } from '@renderer/models/entities/image_preview_matrix';
 import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { useGesture } from '@use-gesture/react';
+import classNames from 'classnames';
 import { useEffect, useRef } from 'react';
 
 const GesturableImage: React.FC<{
@@ -16,11 +17,17 @@ const GesturableImage: React.FC<{
     scale: firstScale,
     x: firstX,
     y: firstY,
+    reverseHorizontal,
+    reverseVertical,
+    rotate,
   } = useAppSelector((state) => state.imagePreviewMatrixes.matrixes.find((m) => m.imageId === imageId)) ?? {
     imageId,
     x: undefined,
     y: undefined,
     scale: undefined,
+    reverseHorizontal: false,
+    reverseVertical: false,
+    rotate: 0,
   };
 
   const dispatch = useAppDispatch();
@@ -76,10 +83,18 @@ const GesturableImage: React.FC<{
 
   useEffect(() => {
     return () => {
-      const matrix = { x: style.x.get(), y: style.y.get(), scale: style.scale.get(), imageId };
+      const matrix = {
+        x: style.x.get(),
+        y: style.y.get(),
+        scale: style.scale.get(),
+        reverseHorizontal,
+        reverseVertical,
+        rotate,
+        imageId,
+      };
       dispatch(updateMatrix(matrix));
     };
-  }, [imageId, style, dispatch]);
+  }, [imageId, style, dispatch, reverseHorizontal, reverseVertical, rotate]);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -115,13 +130,31 @@ const GesturableImage: React.FC<{
   return (
     <div className="gesturable-image" ref={canvasRef}>
       <div className="canvas" {...bind()} style={{ touchAction: 'none' }}>
-        <animated.img
-          src={`${currentDirectory}/${folderName}/images/${fileName}`}
-          style={style}
+        <animated.div
+          style={{ ...style, width: `${imageWidth}px`, height: `${imageHeight}px` }}
           draggable={false}
-          width={imageWidth}
-          height={imageHeight}
-        />
+        >
+          <div
+            className="canvas-image-rotation-wrapper"
+            style={{
+              transform: `rotate(${rotate}deg)`,
+              width: `${imageWidth}px`,
+              height: `${imageHeight}px`,
+            }}
+          >
+            <img
+              src={`${currentDirectory}/${folderName}/images/${fileName}`}
+              className={classNames({
+                'canvas-image': true,
+                'reverse-horizontal': reverseHorizontal,
+                'reverse-vertical': reverseVertical,
+              })}
+              width={imageWidth}
+              height={imageHeight}
+              draggable={false}
+            />
+          </div>
+        </animated.div>
       </div>
     </div>
   );
