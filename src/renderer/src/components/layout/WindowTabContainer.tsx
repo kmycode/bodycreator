@@ -24,7 +24,7 @@ export const WindowTabContainer: React.FC<object> = () => {
 
   useEffect(() => {
     // 画像の保存
-    if (savingImage && savingImage.saveStatus === 'ready') {
+    if (savingImage?.saveStatus === 'ready') {
       const image = savingImage;
 
       const process = async (): Promise<void> => {

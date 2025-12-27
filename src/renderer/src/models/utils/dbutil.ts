@@ -47,5 +47,6 @@ export const saveDatabaseEntity = async (
     }
   }
 
-  return 0;
+  console.dir(entity);
+  throw new Error('Do not reach here!');
 };

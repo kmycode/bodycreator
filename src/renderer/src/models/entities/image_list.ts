@@ -321,6 +321,7 @@ export const ImageListSlice = createSlice({
       if (!image) return;
 
       image.saveStatus = 'saved';
+      state.current.image = image as Image | null; // レコードの追加時にID設定されたりするため
       state.current.savingImage = null;
     },
 

@@ -120,10 +120,10 @@ const EditPane: React.FC<{
     if (!informationEntity) return;
 
     if (currentImageId !== imageId) {
-      setCurrentImageId(imageId);
-
       // unmount
       dispatch(saveCurrentImage());
+
+      setCurrentImageId(imageId);
 
       // mount
       mutableImage.current = makeStateToMutable(image, { saveStatus: 'unchanged' });
