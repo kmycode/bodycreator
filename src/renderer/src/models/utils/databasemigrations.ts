@@ -1,3 +1,7 @@
+import { generateInitialImageTagEntity, ImageInformationEntity } from '../entities/image_list';
+import { generateInitialTagEntity } from '../entities/tag_list';
+import { generateSqlForInsertEntity } from './dbutil';
+
 type MigrationItem = { databaseVersion: number; codes: ((db: DbApi) => Promise<void>)[] };
 
 export const databaseMigrations: MigrationItem[] = [
@@ -21,6 +25,50 @@ export const databaseMigrations: MigrationItem[] = [
         await db.query('UPDATE people SET idOfImage = idOfImage + 1');
         await db.query('UPDATE backgrounds SET idOfImage = idOfImage + 1');
         await db.query('UPDATE image_tags SET elementId = elementId + 1');
+      },
+    ],
+  },
+  {
+    databaseVersion: 6,
+    codes: [
+      async (db) => {
+        // 画像のauthorをタグ化
+
+        const informations = (
+          await db.queryToArray<ImageInformationEntity>('SELECT * FROM informations')
+        ).filter((i) => i.author);
+
+        const uniqueAuthors = Array.from(
+          informations.map((i) => i.author).reduce((set, author) => set.add(author), new Set<string>()),
+        );
+        const authorTagIds = {};
+
+        // まずタグの実体を追加
+        for (const author of uniqueAuthors) {
+          const tag = generateInitialTagEntity();
+          tag.category = 'author';
+          tag.name = author;
+          tag.usage = informations.filter((i) => i.author === author).length;
+          await db.query(generateSqlForInsertEntity('tags', tag));
+
+          const last = (await db.queryToOneObject(
+            `SELECT id FROM tags WHERE ROWID = last_insert_rowid()`,
+          )) as { id: number };
+          if (last) {
+            authorTagIds[author] = last.id;
+          }
+        }
+
+        // 次にタグを関連付ける
+        for (const { imageId, idOfImage, author } of informations) {
+          const tagId = authorTagIds[author];
+          const imageTag = generateInitialImageTagEntity({
+            imageId,
+            elementId: idOfImage,
+            tagId,
+          });
+          await db.query(generateSqlForInsertEntity('image_tags', imageTag));
+        }
       },
     ],
   },

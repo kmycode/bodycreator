@@ -114,6 +114,7 @@ const tagCategories = {
   place: ['place'],
   landscape: ['landscape'],
   items: ['items'],
+  author: ['author'],
 };
 
 export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image): Promise<void> => {

@@ -5,6 +5,7 @@ import {
   generateCallbacks,
   generateStates,
   handleGenericTextInputChange,
+  handleSuggestGeneric,
   InformationData,
   informationDataKeys,
   informationDataNumberKeys,
@@ -37,6 +38,8 @@ export const InformationEditor: React.FC<{
     [callbacks],
   );
 
+  const handleSuggest = handleSuggestGeneric;
+
   return (
     <div>
       <h3>評価</h3>
@@ -46,6 +49,9 @@ export const InformationEditor: React.FC<{
         value={states['author'].state}
         onChange={callbacks['author']}
         selection={['A', 'B', 'C', 'D']}
+        name="author"
+        onSuggest={handleSuggest}
+        multiline
       />
       <h3>URL</h3>
       <input type="text" data-key="url" value={states['url'].state} onChange={handleTextInputChange} />
