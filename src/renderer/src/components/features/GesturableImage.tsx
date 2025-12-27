@@ -128,34 +128,38 @@ const GesturableImage: React.FC<{
   }, [fileName, firstX, firstY, firstScale, canvasRef, springRef, imageWidth, imageHeight]);
 
   return (
-    <div className="gesturable-image" ref={canvasRef}>
-      <div className="canvas" {...bind()} style={{ touchAction: 'none' }}>
-        <animated.div
-          style={{ ...style, width: `${imageWidth}px`, height: `${imageHeight}px` }}
-          draggable={false}
-        >
-          <div
-            className="canvas-image-rotation-wrapper"
-            style={{
-              transform: `rotate(${rotate}deg)`,
-              width: `${imageWidth}px`,
-              height: `${imageHeight}px`,
-            }}
+    <div className="gesturable-image">
+      <div className="canvas-wrapper">
+        <div className="canvas" {...bind()} style={{ touchAction: 'none' }} ref={canvasRef}>
+          <animated.div
+            style={{ ...style, width: `${imageWidth}px`, height: `${imageHeight}px` }}
+            draggable={false}
           >
-            <img
-              src={`${currentDirectory}/${folderName}/images/${fileName}`}
-              className={classNames({
-                'canvas-image': true,
-                'reverse-horizontal': reverseHorizontal,
-                'reverse-vertical': reverseVertical,
-              })}
-              width={imageWidth}
-              height={imageHeight}
-              draggable={false}
-            />
-          </div>
-        </animated.div>
+            <div
+              className="canvas-image-rotation-wrapper"
+              style={{
+                transform: `rotate(${rotate}deg)`,
+                width: `${imageWidth}px`,
+                height: `${imageHeight}px`,
+              }}
+            >
+              <img
+                src={`${currentDirectory}/${folderName}/images/${fileName}`}
+                className={classNames({
+                  'canvas-image': true,
+                  'reverse-horizontal': reverseHorizontal,
+                  'reverse-vertical': reverseVertical,
+                })}
+                width={imageWidth}
+                height={imageHeight}
+                draggable={false}
+              />
+            </div>
+          </animated.div>
+        </div>
       </div>
+
+      <div className="commands-bar"></div>
     </div>
   );
 };
