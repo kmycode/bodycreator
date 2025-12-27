@@ -75,7 +75,7 @@ const createDatabase = async (): Promise<void> => {
       generateSqlForInsertEntity('settings', {
         key: 'databaseVersion',
         stringValue: '',
-        numberValue: 4,
+        numberValue: databaseMigrations[databaseMigrations.length - 1].databaseVersion,
         valueType: 1,
       }),
     );

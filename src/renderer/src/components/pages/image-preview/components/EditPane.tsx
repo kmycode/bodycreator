@@ -178,6 +178,7 @@ const EditPane: React.FC<{
 
       const ids = elementTabs
         .map((tab) => parseInt(tab.id.split('-')[1]))
+        .concat([1]) // informationのID（予約済）
         .sort((a, b) => (a > b ? -1 : a === b ? 0 : 1));
       const maxId = ids[0] ?? 0;
 

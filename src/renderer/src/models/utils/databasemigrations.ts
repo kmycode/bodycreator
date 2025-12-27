@@ -13,4 +13,15 @@ export const databaseMigrations: MigrationItem[] = [
     databaseVersion: 4,
     codes: [(db) => db.query('ALTER TABLE images ADD COLUMN deleteFlag[integer] NOT NULL DEFAULT 0')],
   },
+  {
+    databaseVersion: 5,
+    codes: [
+      async (db) => {
+        await db.query('ALTER TABLE informations ADD COLUMN idOfImage[integer] NOT NULL DEFAULT 1');
+        await db.query('UPDATE people SET idOfImage = idOfImage + 1');
+        await db.query('UPDATE backgrounds SET idOfImage = idOfImage + 1');
+        await db.query('UPDATE image_tags SET elementId = elementId + 1');
+      },
+    ],
+  },
 ];

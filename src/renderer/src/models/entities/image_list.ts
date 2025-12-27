@@ -64,6 +64,7 @@ export interface ImageBackgroundEntity {
 export interface ImageInformationEntity {
   id: number;
   imageId: number;
+  idOfImage: number;
   evaluation: number;
   author: string;
   url: string;
@@ -152,6 +153,7 @@ export const generateInitialImageInformationEntity = (
   return {
     id: 0,
     imageId: 0,
+    idOfImage: 1,
     evaluation: 0,
     author: '',
     url: '',

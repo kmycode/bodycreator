@@ -124,7 +124,9 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
   const addTags: TagEntity[] = [];
   const allTags = store.getState().tagList.items;
   const newTags: typeof allTags = {};
-  const entities = (data.people as { idOfImage: number }[]).concat(data.backgrounds);
+  const entities = (data.people as { idOfImage: number }[])
+    .concat(data.backgrounds)
+    .concat([data.information].filter((i) => i !== undefined));
 
   for (const entity of entities) {
     for (const [category, columns] of Object.entries(tagCategories)) {
@@ -273,6 +275,7 @@ export const createImageByBuffer = async (
   const information: ImageInformationEntity = {
     id: 0,
     imageId: image.id,
+    idOfImage: 1,
     evaluation: 0,
     author: '',
     memo: '',
