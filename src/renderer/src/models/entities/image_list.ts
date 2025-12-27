@@ -203,6 +203,8 @@ interface ImageAppData {
   people: ImagePersonEntity[];
   backgrounds: ImageBackgroundEntity[];
   tags: ImageTagEntity[];
+  deletedPeople: ImagePersonEntity[];
+  deletedBackgrounds: ImageBackgroundEntity[];
   information?: ImageInformationEntity;
   loadStatus: ImageElementsLoadStatus;
   saveStatus: ImageElementsSaveStatus;
@@ -253,6 +255,8 @@ export const ImageListSlice = createSlice({
         people: [],
         backgrounds: [],
         tags: [],
+        deletedPeople: [],
+        deletedBackgrounds: [],
         information: action.payload.information,
         loadStatus: 'loaded',
         saveStatus: 'unchanged',
@@ -321,6 +325,8 @@ export const ImageListSlice = createSlice({
       if (!image) return;
 
       image.saveStatus = 'saved';
+      image.deletedBackgrounds = [];
+      image.deletedPeople = [];
       state.current.image = image as Image | null; // レコードの追加時にID設定されたりするため
       state.current.savingImage = null;
     },
@@ -340,6 +346,8 @@ export const ImageListSlice = createSlice({
       image.people = action.payload.people;
       image.backgrounds = action.payload.backgrounds;
       image.information = action.payload.information;
+      image.deletedPeople = [];
+      image.deletedBackgrounds = [];
       image.loadStatus = 'loaded';
     },
 

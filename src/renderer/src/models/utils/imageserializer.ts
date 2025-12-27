@@ -80,6 +80,17 @@ export const saveImageToDatabase = async (
     backgroundIds.push(id);
   }
 
+  if (data.deletedPeople.length > 0) {
+    await window.db.query(
+      `DELETE FROM people WHERE id IN (${data.deletedPeople.map((p) => p.id).join(',')})`,
+    );
+  }
+  if (data.deletedBackgrounds.length > 0) {
+    await window.db.query(
+      `DELETE FROM backgrounds WHERE id IN (${data.deletedBackgrounds.map((p) => p.id).join(',')})`,
+    );
+  }
+
   return { imageId, peopleIds, backgroundIds };
 };
 

@@ -273,10 +273,23 @@ const EditPane: React.FC<{
       handleTabChange(newTabs[0]?.id ?? 'information', { withoutUpdate: true });
 
       handleCurrentImageUpdate((newImage) => {
-        newImage.people = newImage.people.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
-        newImage.backgrounds = newImage.backgrounds.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
-        newImage.peopleSize = newImage.people.length;
-        newImage.backgroundsSize = newImage.backgrounds.length;
+        const deletedPerson = newImage.people.find((p) => p.idOfImage === removeTab.data.idOfImage);
+        const deletedBackground = newImage.backgrounds.find((p) => p.idOfImage === removeTab.data.idOfImage);
+
+        if (deletedPerson) {
+          newImage.people = newImage.people.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
+          if (deletedPerson.id) {
+            newImage.deletedPeople = newImage.deletedPeople.concat(deletedPerson);
+          }
+          newImage.peopleSize = newImage.people.length;
+        }
+        if (deletedBackground) {
+          newImage.backgrounds = newImage.backgrounds.filter((p) => p.idOfImage !== removeTab.data.idOfImage);
+          if (deletedBackground.id) {
+            newImage.deletedBackgrounds = newImage.deletedBackgrounds.concat(deletedBackground);
+          }
+          newImage.backgroundsSize = newImage.backgrounds.length;
+        }
       });
 
       dispatch(clearModalResult());
