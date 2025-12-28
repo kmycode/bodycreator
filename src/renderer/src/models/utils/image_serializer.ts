@@ -3,6 +3,7 @@ import {
   addNewImage,
   deleteImage,
   errorLoadingImageElements,
+  generateInitialImageInformationEntity,
   Image,
   ImageBackgroundEntity,
   ImageEntity,
@@ -116,6 +117,7 @@ const tagCategories = {
   landscape: ['landscape'],
   items: ['items'],
   author: ['author'],
+  category: ['category'],
 };
 
 export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image): Promise<void> => {
@@ -268,16 +270,12 @@ export const createImageByBuffer = async (
   const filePath = `${currentDirectory}/${folderName}/images/${image.fileName}`;
   await window.db.query(`UPDATE images SET fileName='${image.fileName}' WHERE id = ${image.id}`);
 
-  const information: ImageInformationEntity = {
+  const information: ImageInformationEntity = generateInitialImageInformationEntity({
     id: 0,
     imageId: image.id,
     idOfImage: 1,
-    evaluation: 0,
-    author: '',
-    memo: '',
-    url: '',
     ...informationTemplate,
-  };
+  });
   information.id = await saveDatabaseEntity('informations', information);
 
   dispatch(addNewImage({ image, information }));

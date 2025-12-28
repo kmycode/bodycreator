@@ -67,6 +67,7 @@ export interface ImageInformationEntity {
   idOfImage: number;
   evaluation: number;
   author: string;
+  category: string;
   url: string;
   memo: string;
 }
@@ -156,6 +157,7 @@ export const generateInitialImageInformationEntity = (
     idOfImage: 1,
     evaluation: 0,
     author: '',
+    category: '',
     url: '',
     memo: '',
     ...merge,

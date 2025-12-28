@@ -268,13 +268,14 @@ export const backgroundDataToEntity = (
   }, initialState) as ImageBackgroundEntity;
 };
 
-export const informationDataKeys = ['author', 'url', 'memo', 'evaluation'];
-export const informationDataTextInputKeys = ['author', 'url', 'memo'];
+export const informationDataKeys = ['author', 'url', 'memo', 'evaluation', 'category'];
+export const informationDataTextInputKeys = ['author', 'url', 'memo', 'category'];
 export const informationDataStringArrayKeys = [];
 export const informationDataNumberKeys = ['evaluation'];
 
 export interface InformationData {
   author: string;
+  category: string;
   url: string;
   memo: string;
   evaluation: number;

@@ -53,6 +53,15 @@ export const InformationEditor: React.FC<{
         onSuggest={handleSuggest}
         multiline
       />
+      <h3>カテゴリ</h3>
+      <InputWithPopularSelection
+        value={states['category'].state}
+        onChange={callbacks['category']}
+        selection={['イラスト', '漫画']}
+        name="category"
+        onSuggest={handleSuggest}
+        multiline
+      />
       <h3>URL</h3>
       <input type="text" data-key="url" value={states['url'].state} onChange={handleTextInputChange} />
       <h3>メモ</h3>
