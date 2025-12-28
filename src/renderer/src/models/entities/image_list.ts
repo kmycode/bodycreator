@@ -288,10 +288,19 @@ export const ImageListSlice = createSlice({
 
     setImageIds: (
       state,
-      action: PayloadAction<{ imageId: number; peopleIds: number[]; backgroundIds: number[] }>,
+      action: PayloadAction<{
+        imageId: number;
+        informationId: number;
+        peopleIds: number[];
+        backgroundIds: number[];
+      }>,
     ) => {
       const image = state.items[action.payload.imageId];
       if (!image) return;
+
+      if (image.information && action.payload.informationId > 0) {
+        image.information.id = action.payload.informationId;
+      }
 
       for (let i = 0; i < image.people.length; i++) {
         image.people[i].id = action.payload.peopleIds[i] ?? 0;

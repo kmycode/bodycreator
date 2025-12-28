@@ -50,7 +50,7 @@ export const loadImageElements = async (dispatch: AppDispatch, imageId: number):
 
 export const saveImageToDatabase = async (
   data: Image,
-): Promise<{ imageId: number; peopleIds: number[]; backgroundIds: number[] }> => {
+): Promise<{ imageId: number; informationId: number; peopleIds: number[]; backgroundIds: number[] }> => {
   const entity: ImageEntity = {
     id: data.id,
     fileName: data.fileName,
@@ -62,9 +62,10 @@ export const saveImageToDatabase = async (
     deleteFlag: 0,
   };
   const imageId = await saveDatabaseEntity('images', entity);
+  let informationId = 0;
 
   if (data.information) {
-    await saveDatabaseEntity('informations', { ...data.information, imageId });
+    informationId = await saveDatabaseEntity('informations', { ...data.information, imageId });
   }
 
   const peopleIds = [] as number[];
@@ -91,7 +92,7 @@ export const saveImageToDatabase = async (
     );
   }
 
-  return { imageId, peopleIds, backgroundIds };
+  return { imageId, informationId, peopleIds, backgroundIds };
 };
 
 export const pickTagNames = (text: string): string[] => {
@@ -153,12 +154,6 @@ export const saveImageTagToDatabase = async (dispatch: AppDispatch, data: Image)
 
       const removes = currentPairs.filter((cp) => !newPairs.some((np) => np.name === cp.tag.name));
       const adds = newPairs.filter((np) => !currentPairs.some((cp) => cp.tag.name === np.name));
-      if (category === 'faceEmotion') {
-        console.log('removes');
-        console.dir(removes);
-        console.log('adds');
-        console.dir(adds);
-      }
 
       for (const remove of removes) {
         remove.tag = { ...remove.tag, usage: remove.tag.usage - 1 };
@@ -286,6 +281,13 @@ export const createImageByBuffer = async (
   information.id = await saveDatabaseEntity('informations', information);
 
   dispatch(addNewImage({ image, information }));
+
+  const imageData = store.getState().imageList.items[image.id];
+  if (!imageData) {
+    throw new Error('画像データの保存に失敗しました。データベースが破損している可能性があります');
+  }
+
+  await saveImageTagToDatabase(dispatch, imageData);
 
   await window.file.copy(tmpPath, filePath);
   await window.file.delete(tmpPath);
