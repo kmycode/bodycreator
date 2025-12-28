@@ -194,7 +194,7 @@ const EditPane: React.FC<{
         );
 
         const newTabs = [...elementTabs];
-        const pushIndex = newTabs.filter((t) => t.id.startsWith('person-')).length;
+        const pushIndex = newTabs.filter((t) => t.type === 'person').length;
         newTabs.splice(pushIndex, 0, {
           id: `person-${newData.idOfImage}`,
           type: 'person',
@@ -241,15 +241,15 @@ const EditPane: React.FC<{
   );
 
   const handleRemoveTab = useCallback(() => {
-    const activePersonTab = elementTabs.find((tab) => tab.id === selectedTabId);
-    if (!activePersonTab?.data) return;
+    const activeTab = elementTabs.find((tab) => tab.id === selectedTabId);
+    if (!activeTab?.data) return;
 
     dispatch(
       openModal({
         type: 'confirm',
         parameter: {
           id: 'editpane-remove-element-tab',
-          message: `本当に${selectedTabId.startsWith('person-') ? '人間' : '背景'}「${currentTabElementData.name}」を削除しますか？`,
+          message: `本当に${activeTab.type === 'person' ? '人間' : '背景'}「${currentTabElementData.name}」を削除しますか？`,
         },
       }),
     );
