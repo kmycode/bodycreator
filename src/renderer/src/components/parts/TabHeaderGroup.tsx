@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 export interface TabHeaderItem {
   id: string;
   title: string;
+  className?: string;
   specialTabType?: string;
 }
 
@@ -39,11 +40,15 @@ const TabHeaderGroup: React.FC<{
         <button
           key={header.id}
           data-id={header.id}
-          className={classNames({
-            'tabheader-tab': true,
-            selected: selectedId === header.id,
-            'tabheader-new': header.specialTabType === 'new',
-          })}
+          className={
+            classNames({
+              'tabheader-tab': true,
+              selected: selectedId === header.id,
+              'tabheader-new': header.specialTabType === 'new',
+            }) +
+            ' ' +
+            (header.className ?? '')
+          }
           onClick={handleClick}
         >
           {header.title}

@@ -194,6 +194,27 @@
       min-width: 40px;
       text-align: center;
     }
+
+    &.element-information {
+      background: #5c004c;
+      &.selected {
+        background: #c22ca9;
+      }
+    }
+
+    &.element-person {
+      background: #003d17;
+      &.selected {
+        background: #469b67;
+      }
+    }
+
+    &.element-background {
+      background: #050050;
+      &.selected {
+        background: #6d64ec;
+      }
+    }
   }
 }
 

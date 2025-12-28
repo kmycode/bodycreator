@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import TabHeaderGroup from '../../../parts/TabHeaderGroup';
+import TabHeaderGroup, { TabHeaderItem } from '../../../parts/TabHeaderGroup';
 import { ReactClickEvent } from '@renderer/models/types';
 import { useAppDispatch, useAppSelector } from '@renderer/models/store';
 import { clearModalResult, openModal } from '@renderer/models/entities/modal_state';
@@ -27,15 +27,19 @@ import { BackgroundEditor } from './BackgroundEditor';
 import { InformationEditor } from './InformationEditor';
 import { loadImageElements, preremoveImageFromDatabase } from '@renderer/models/utils/image_serializer';
 
-const initialTabs = [{ id: 'information', title: '情報' }];
+const initialTabs: InitialElementTab[] = [{ id: 'information', title: '情報', type: 'information' }];
 
 function makeStateToMutable<T>(from: T, merge?: Partial<T>): T {
   return { ...from, ...merge };
 }
 
-interface ElementTab {
+interface InitialElementTab {
   id: string;
+  type: 'person' | 'background' | 'information';
   title: string;
+}
+
+interface ElementTab extends InitialElementTab {
   data: Partial<PersonData> | Partial<BackgroundData>;
 }
 
@@ -133,6 +137,7 @@ const EditPane: React.FC<{
           (e) =>
             ({
               id: `person-${e.idOfImage}`,
+              type: 'person',
               title: e.name,
               data: personEntityToData(e),
             }) as ElementTab,
@@ -143,6 +148,7 @@ const EditPane: React.FC<{
             (e) =>
               ({
                 id: `background-${e.idOfImage}`,
+                type: 'background',
                 title: e.name,
                 data: backgroundEntityToData(e),
               }) as ElementTab,
@@ -191,6 +197,7 @@ const EditPane: React.FC<{
         const pushIndex = newTabs.filter((t) => t.id.startsWith('person-')).length;
         newTabs.splice(pushIndex, 0, {
           id: `person-${newData.idOfImage}`,
+          type: 'person',
           title: '人間',
           data: newData,
         });
@@ -209,10 +216,11 @@ const EditPane: React.FC<{
           generateInitialImageBackgroundEntity({ idOfImage: maxId + 1, name: '背景' }),
         );
 
-        const newTabs = [
+        const newTabs: ElementTab[] = [
           ...elementTabs,
           {
             id: `background-${newData.idOfImage}`,
+            type: 'background',
             title: '背景',
             data: newData,
           },
@@ -382,7 +390,11 @@ const EditPane: React.FC<{
     [setInformationData, handleCurrentImageUpdate, informationEntity],
   );
 
-  const tabs = [...elementTabs, ...initialTabs];
+  const tabs: TabHeaderItem[] = [...elementTabs, ...initialTabs].map((tab) => ({
+    id: tab.id,
+    title: tab.title,
+    className: `element-${tab.type}`,
+  }));
 
   return (
     <div className="editpane pane">
