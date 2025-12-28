@@ -15,7 +15,7 @@ import {
 import { TagEntity, updateTags } from '../entities/tag_list';
 import { deleteImageTabs } from '../entities/window_tab_group';
 import { AppDispatch, store } from '../store';
-import { saveDatabaseEntity } from './dbutil';
+import { saveDatabaseEntity } from './database_util';
 import { imageSize } from 'image-size';
 
 export const loadImageElements = async (dispatch: AppDispatch, imageId: number): Promise<void> => {

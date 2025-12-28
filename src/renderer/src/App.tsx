@@ -5,9 +5,9 @@ import WindowHeader from './components/layout/WindowHeader';
 import { WindowTabContainer } from './components/layout/WindowTabContainer';
 import { setCurrentDirectory, setInitialLoadStatus } from './models/entities/app_system';
 import { store, useAppDispatch, useAppSelector } from './models/store';
-import { loadDatabase } from './models/utils/databaseinitializer';
+import { loadDatabase } from './models/utils/database_initializer';
 import { FileDropReceiver } from './components/layout/FileDropReceiver';
-import { createImageByBuffer } from './models/utils/imageserializer';
+import { createImageByBuffer } from './models/utils/image_serializer';
 
 function App(): React.JSX.Element {
   const loadStatus = useAppSelector((state) => state.system.initialLoadStatus);

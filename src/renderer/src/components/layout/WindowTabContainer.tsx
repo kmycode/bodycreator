@@ -8,7 +8,7 @@ import {
   setImageIds,
   startSavingImage,
 } from '@renderer/models/entities/image_list';
-import { saveImageTagToDatabase, saveImageToDatabase } from '@renderer/models/utils/imageserializer';
+import { saveImageTagToDatabase, saveImageToDatabase } from '@renderer/models/utils/image_serializer';
 import { ConfigPage } from '../pages/config/ConfigPage';
 
 export const WindowTabContainer: React.FC<object> = () => {

@@ -15,46 +15,16 @@ import {
 } from '../entities/system_setting';
 import { generateInitialTagEntity, setTags, TagEntity } from '../entities/tag_list';
 import { AppDispatch } from '../store';
-import { generateSqlForInsertEntity } from './dbutil';
-import { databaseMigrations } from './databasemigrations';
-import { removeImagesFromDatabaseBeforeInitialization } from './imageserializer';
+import {
+  generateSqlForCreateIndex,
+  generateSqlForCreateTable,
+  generateSqlForInsertEntity,
+} from './database_util';
+import { databaseMigrations } from './database_migrations';
+import { removeImagesFromDatabaseBeforeInitialization } from './image_serializer';
 
 const createDatabase = async (): Promise<void> => {
   const db = window.db;
-
-  const generateSqlForCreateTable = (tableName: string, columns: object): string => {
-    const columnsSql = Object.entries(columns)
-      .map((entry) => {
-        const [key, value] = entry;
-        const valueType = typeof value;
-        const type = ['created_at', 'updated_at', 'date_time'].includes(key)
-          ? 'datetime'
-          : valueType === 'number'
-            ? 'INTEGER'
-            : valueType === 'string'
-              ? 'TEXT'
-              : 'undefined';
-
-        if (key === 'id') {
-          return '[id] INTEGER PRIMARY KEY AUTOINCREMENT';
-        } else {
-          return `[${key}] ${type} NOT NULL`;
-        }
-      })
-      .join(', ');
-
-    return `CREATE TABLE IF NOT EXISTS ${tableName} (${columnsSql})`;
-  };
-
-  const generateSqlForCreateIndex = (tableName: string, columnNames: string | string[]): string => {
-    if (typeof columnNames === 'string') {
-      const indexName = `i_${tableName}_${columnNames}`;
-      return `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${columnNames})`;
-    } else {
-      const indexName = `i_${tableName}_${columnNames.join('_')}`;
-      return `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${columnNames.join(', ')})`;
-    }
-  };
 
   await db.query(generateSqlForCreateTable('people', generateInitialImagePersonEntity()));
   await db.query(generateSqlForCreateTable('backgrounds', generateInitialImageBackgroundEntity()));

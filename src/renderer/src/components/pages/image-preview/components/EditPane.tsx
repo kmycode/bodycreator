@@ -25,7 +25,7 @@ import {
 import { PersonEditor } from './PersonEditor';
 import { BackgroundEditor } from './BackgroundEditor';
 import { InformationEditor } from './InformationEditor';
-import { loadImageElements, preremoveImageFromDatabase } from '@renderer/models/utils/imageserializer';
+import { loadImageElements, preremoveImageFromDatabase } from '@renderer/models/utils/image_serializer';
 
 const initialTabs = [{ id: 'information', title: '情報' }];
 

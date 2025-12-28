@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { Provider } from 'react-redux';
 import { store } from './models/store';
-import { createImageByBuffer } from './models/utils/imageserializer';
+import { createImageByBuffer } from './models/utils/image_serializer';
 import { IpcRendererEvent } from 'electron';
 import { openImageListTab, removeCurrentTab, reviveLatestTab } from './models/entities/window_tab_group';
 

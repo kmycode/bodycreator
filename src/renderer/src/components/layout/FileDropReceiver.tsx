@@ -1,5 +1,5 @@
 import { useAppDispatch } from '@renderer/models/store';
-import { createImageByBuffer } from '@renderer/models/utils/imageserializer';
+import { createImageByBuffer } from '@renderer/models/utils/image_serializer';
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
 

@@ -1,6 +1,6 @@
 import { generateInitialImageTagEntity, ImageInformationEntity } from '../entities/image_list';
 import { generateInitialTagEntity } from '../entities/tag_list';
-import { generateSqlForInsertEntity } from './dbutil';
+import { generateSqlForInsertEntity } from './database_util';
 
 type MigrationItem = { databaseVersion: number; codes: ((db: DbApi) => Promise<void>)[] };
 
@@ -72,4 +72,7 @@ export const databaseMigrations: MigrationItem[] = [
       },
     ],
   },
+  // 最初にDBを使う場合はこのマイグレーション処理を通さず、createDatabaseで一括作成する
+  // そのため、マイグレーション処理を追加する場合は初期データベース生成処理の修正も検討すること
+  // （カラム追加など、修正が不要な場合もある）
 ];

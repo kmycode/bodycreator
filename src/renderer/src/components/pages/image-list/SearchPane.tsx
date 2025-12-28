@@ -1,4 +1,4 @@
-import { pickTagNames, searchImage } from '@renderer/models/utils/imageserializer';
+import { pickTagNames, searchImage } from '@renderer/models/utils/image_serializer';
 import {
   cubeIcons,
   faceIcons,

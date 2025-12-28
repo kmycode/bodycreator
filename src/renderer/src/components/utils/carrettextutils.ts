@@ -1,4 +1,4 @@
-import { pickTagNames } from '@renderer/models/utils/imageserializer';
+import { pickTagNames } from '@renderer/models/utils/image_serializer';
 
 export const getCarretLineData = (
   text: string,
